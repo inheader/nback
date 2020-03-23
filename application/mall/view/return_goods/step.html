@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="__STATIC__layui/css/layui.css">
-<link rel="stylesheet" href="__STATIC__step-lay/step.css">
+<link rel="stylesheet" href="__STATIC__lib/layui/css/layui.css">
+<!--<link rel="stylesheet" href="__STATIC_/layui_exts/step.css">-->
 <div class="layui-fluid">
     <div class="layui-card">
         <div class="layui-card-body" style="padding-top: 40px;">
@@ -99,9 +99,12 @@
 
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="__STATIC__/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_LIB__layuiadmin/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 {if !$get}
 <script>
+    layui.config({
+        base:'__STATIC__layui_exts/',
+    });
     layui.use(['form', 'layedit', 'laydate','table','step','tableSelect'], function(){
         var $ = layui.jquery
             ,form = layui.form
@@ -248,10 +251,14 @@
 </script>
 {else }
 <script>
-    layui.use(['form', 'layedit', 'laydate','table','step','tableSelect'], function(){
+    layui.config({
+        base:'__STATIC__layui_exts/',
+    });
+    layui.use(['form', 'layedit', 'laydate','table','step','element','tableSelect'], function(){
         var $ = layui.jquery
             ,form = layui.form
-            ,table = layui.table;
+            ,table = layui.table
+            ,element = layui.element;
 
             var proid = '{$get.buyer_id}';
 
@@ -270,7 +277,6 @@
                 });
                 return false;
             });
-
 
             table.render({
                 elem: '#test'
