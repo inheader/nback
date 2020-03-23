@@ -1,0 +1,142 @@
+.gotop > a,
+.header h1,
+.rule-content .title-color,
+.rule-info-link i,
+.rules-link .rule-info-link a:visited {
+  color: #333;
+}
+.gotop,
+.header h1 {
+  text-align: center;
+}
+body {
+  background: #f5f5f5;
+}
+.header {
+  position: relative;
+  height: 44px;
+  line-height: 44px;
+  background: #fff;
+  border-bottom: 1px solid #e4e4e4;
+}
+.header h1 {
+  font-size: 0.34rem;
+}
+.back-arr {
+  position: absolute;
+  left: 15px;
+  top: 14px;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #666;
+  border-width: 0 0 2px 2px;
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+.infowrap {
+  font-size: 0.28rem;
+  background: #fff;
+  margin-top: 0.2rem;
+}
+.rules-link {
+  width: 100%;
+  padding-left: 0.3rem;
+  box-sizing: border-box;
+}
+.rules-link .rule-info-link {
+  height: 0.9rem;
+  line-height: 0.9rem;
+  border-bottom: 1px solid #e5e5e5;
+  position: relative;
+}
+.rule-info-link {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-self: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+.rule-info-link a {
+  -webkit-box: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+.rule-info-link i {
+  margin-right: 15px;
+  font-size: 12px;
+  height: 20px;
+  border: 1px solid #979797;
+  line-height: 20px;
+  display: inline-block;
+  padding: 0 8px;
+  border-radius: 10px;
+}
+.rules-link .rule-info-link a {
+  color: #333;
+  height: 100%;
+  width: 100%;
+  display: inline-block;
+}
+.arrow_r:after,
+.arrow_r:before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  transform: rotate(-45deg);
+}
+.arrow_r {
+  position: absolute;
+  right: 0.3rem;
+  top: 0.35rem;
+}
+.arrow_r:before {
+  display: inline-block;
+  background: #e5e5e5;
+}
+.arrow_r:after {
+  position: absolute;
+  left: -2px;
+  background: #fff;
+}
+.rules-link .rule-info-link:last-child {
+  border-bottom: none;
+}
+.rule-content {
+  background: #fff;
+  font-size: 0.24rem;
+  padding: 0 0.3rem;
+}
+.rule-content h2 {
+  font-size: 0.34rem;
+  margin-bottom: 0.1rem;
+}
+.rule-content h3 {
+  margin-bottom: 8px;
+}
+.rule-content p {
+  font-size: 14px;
+  line-height: 0.45rem;
+  margin-bottom: 10px;
+}
+.rule-content table {
+  border-collapse: collapse;
+}
+.rule-content td,
+.rule-content th {
+  border: 1px solid #e4e4e4;
+  font-size: 14px;
+  line-height: 0.45rem;
+}
+.gotop {
+  width: 100%;
+  padding-bottom: 10px;
+}
+.gotop > a {
+  font-weight: 700;
+}
+#meituanPlatform > tbody td:first-of-type {
+  width: 1.2rem;
+  text-align: center;
+}

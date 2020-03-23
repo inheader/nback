@@ -1,0 +1,69 @@
+a,
+button {
+  outline: 0;
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  -webkit-text-size-adjust: none;
+}
+input,
+select,
+textarea {
+  font-size: 100%;
+  font-family: inherit;
+}
+body,
+button,
+dd,
+dl,
+dt,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+html,
+input,
+ol,
+p,
+textarea,
+ul {
+  -webkit-box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  word-wrap: break-word;
+  word-break: break-all;
+  padding: 0;
+  margin: 0;
+}
+h4,
+h5,
+h6 {
+  font-size: 1em;
+}
+ol,
+ul {
+  padding-left: 0;
+  list-style-type: none;
+}
+img {
+  border: 0;
+}
+a {
+  text-decoration: none;
+}
+input,
+textarea {
+  outline: 0;
+  -webkit-appearance: none;
+  border-radius: 0;
+}
+i {
+  font-style: normal;
+}
+button {
+  border: none;
+  background: 0 0;
+}

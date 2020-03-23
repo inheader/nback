@@ -27,9 +27,20 @@
     font-size: 20px !important;
     margin-right: 10px;
 }
-
-.layadmin-shortcut li .iconfont {
-    display: inline-block;
+.layui-nav .layui-nav-item a{
+	padding: 0 25px 0 15px;
+}
+.layui-nav-tree .layui-nav-more{
+	right: 15px;
+}
+.layui-body{
+	background-color: rgb(242,242,242);
+}
+.layui-card-body .layadmin-carousel{
+	background-color: #fff;
+}
+.layadmin-shortcut li .iconfont{
+	display: inline-block;
     width: 100%;
     height: 60px;
     line-height: 60px;
