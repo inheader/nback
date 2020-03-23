@@ -1,0 +1,229 @@
+<form class="layui-form seller-alone-form" action="" style="min-height:600px;">
+    <input type="hidden" name="cp_id" value="{$find.cp_id}">
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this">基础配置</li>
+            <li>使用设置</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+
+                <div class="warning-msg-content" style="font-size:12px">
+                    <!--注意：-->
+                    <!--<br>-->
+                    <!--每次编辑保存后，总发放数量都会重置-->
+                </div>
+                <?php
+                    $useType = ['1'=>'平台推送','2'=>'用户领取','3'=>'不限'];
+                ?>
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label">使用方式</label>
+                    <div class="layui-input-block">
+                        <input type="radio" value="{$find.use_type}" title="{$useType[$find['use_type']]}" checked="">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><i class="required-color">*</i>优惠券名称：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_title" lay-verify="title" autocomplete="off" value="{$find.cp_title}" placeholder="请输入名称" class="layui-input" type="text">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">优惠券名称会显示到前台，请合理输入此名称</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">所属劵分类</label>
+                    <div class="layui-input-inline">
+                        <select disabled>
+                            <option value="{$find.category_id}">{$find.category_name}</option>
+                        </select>
+                    </div>
+                </div>
+                <!--start-->
+                {if $find.cp_type eq 1}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠券金额：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value="{$find.cp_price_discount}"  placeholder="请输入数字" class="layui-input" type="number">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">满：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_money_limit" lay-verify="title" autocomplete="off" value="{$find.cp_money_limit}" placeholder="请输入金额" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">元可用</div>
+                </div>
+                {elseif $find.cp_type eq 2 /}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">满：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_money_limit" lay-verify="title" autocomplete="off"   value="{$find.cp_money_limit}" placeholder="请输入金额" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">元可打折扣</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">折扣：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_money_discount" lay-verify="title" autocomplete="off" value="{$find.cp_money_discount}" placeholder="请输入金额" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">折</div>
+                </div>
+                {elseif $find.cp_type eq 3 /}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">现金劵金额：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value="{$find.cp_price_discount}"  placeholder="请输入数字" class="layui-input" type="number">
+                    </div>
+                </div>
+                {elseif $find.cp_type eq 4 /}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠券金额：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value="{$find.cp_price_discount}"  placeholder="请输入数字" class="layui-input" type="number">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">满：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_money_limit" lay-verify="title" autocomplete="off" value="{$find.cp_money_limit}"  value=""placeholder="请输入金额" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">元可用</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">满：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_num_limit" lay-verify="title" autocomplete="off"   value="{$find.cp_num_limit}" placeholder="请输入件数" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">件可用</div>
+                </div>
+                {/if}
+
+                <!--end-->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">总发放：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_num" lay-verify="title" autocomplete="off"  value="{$find.cp_num}"  placeholder="请输入数字" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">张</div>
+                    <div class="layui-form-mid layui-word-aux">0表示不限</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">每人领取：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="cp_percent_num" lay-verify="title" autocomplete="off" value="{$find.cp_percent_num}" placeholder="请输入数字" class="layui-input" type="number">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">张</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><i class="required-color">*</i>起止时间：</label>
+                    <div class="layui-input-inline seller-inline-6">
+                        <input  type="text" name="date" value="{$find.startTime} 到 {$find.endTime}" id="date" placeholder="请输入起止时间" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"><i class="required-color">*</i>发布时间：</label>
+                    <div class="layui-input-inline seller-inline-5">
+                        <input name="publish_time" lay-verify="title" value="{$find.publishTime}" autocomplete="off" id="publish_time" placeholder="请输入发布时间" class="layui-input" type="text">
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">即什么时候显示</div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否使用：</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="status" lay-skin="switch" value="1" lay-text="是|否" {if $find.status eq 1}checked=""{/if}>
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-tab-item">
+                <div class="warning-msg-content" style="font-size:12px">
+                    <!--注意：-->
+                    <!--<br>-->
+                    <!--每次编辑保存后，总发放数量都会重置-->
+                </div>
+
+                <div class="layui-form-item" pane="">
+                    <label class="layui-form-label"><i class="required-color">*</i>使用限制</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="class_type" value="1" title="全平台" {if $find.class_type eq 1} checked=""{/if}>
+                        <input type="radio" name="class_type" value="2" title="单店铺" {if $find.class_type eq 2} checked=""{/if}>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label"><i class="required-color">*</i>优惠劵说明：</label>
+                    <div id="notice_intro" style="display: none;">{$find.cp_desc}</div>
+                    <div class="layui-input-block">
+                        <script id="container" name="cp_desc" type="text/plain"></script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="promotion">提交</button>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    var ue = UE.getEditor('container');
+    var intro=$("#notice_intro").text();
+
+    ue.ready(function(){
+        ue.setContent(intro);
+    })
+</script>
+
+<script>
+    layui.use(['form', 'table','laytpl', 'laydate'], function(){
+        var publish_time = $("#publish_time_hidden").val() ? new Date($("#publish_time_hidden").val()*1000) : ''
+        var form = layui.form
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+            ,laytpl = layui.laytpl;
+        //时间插件
+        laydate.render({
+            elem: '#publish_time',
+            type: 'datetime',
+            value: publish_time
+        });
+
+        //时间插件
+        laydate.render({
+            elem: '#date',
+            range: '到',
+            type: 'datetime'
+        });
+
+        //提交
+        form.on('submit(promotion)', function(data){
+            $.ajax({
+                url:"{:url('coupon/edit')}",
+                type:'post',
+                data:data.field,
+                success:function(res){
+                    if(res.status === true){
+                        layer.msg('编辑成功', {
+                            time: 2000
+                        }, function(){
+                            window.location.href="{:url('coupon/index')}";
+                        });
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            },"json");
+            return false;
+        });
+
+    });
+
+</script>

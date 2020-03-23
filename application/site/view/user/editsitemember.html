@@ -1,0 +1,59 @@
+<div style="padding: 30px;" class="layui-form seller-alone-form">
+    <form class="layui-form seller-alone-form">
+        <input type="hidden" name="sm_id" value="{$data.sm_id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:100px"><i class="required-color">*</i> 姓名：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="buyer_name" required lay-verify="required"  autocomplete="off" class="layui-input" value="{$data.buyer_name}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:100px"><i class="required-color">*</i> 会员等级：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <select name="buyer_level" id="buyer_level" lay-filter="buyer_level">
+                    {volist name="levelList" id="vo"}
+                    <option value="{$vo.level}" {if condition="$data.buyer_level eq $vo.level"} selected {/if}>{$vo.level_name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:100px"><i class="required-color">*</i> 分类名称：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <select name="site_cat_id" id="site_cat_id" lay-filter="site_cat_id">
+                    {volist name="cateList" id="vo"}
+                    <option value="{$vo.id}" {if condition="$data.site_cat_id eq $vo.id"} selected {/if}>{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:100px"> 手机号码：</label>
+            <div class="layui-input-inline seller-inline-3" style="height:38px; line-height: 38px">
+                {$data.buyer_tel}
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:100px"> 微信openId：</label>
+            <div class="layui-form-mid seller-inline-3">{$data.wx_open_id}</div>
+        </div>
+        <button class="layui-btn layui-btn-fluid add-save-btn" lay-submit lay-filter="edit-siteMember">保存</button>
+    </form>
+</div>
+<script>
+    layui.use('form', function(){
+        layui.form.render();
+        layui.form.on('submit(edit-siteMember)', function(data){
+            JsPost("{:url('User/editSiteMember')}",data.field,function(res){
+                if(res.status){
+                    window.location.reload()
+                    // layer.msg(res.msg, {time:1300},function(){
+                    //     window.location.href = "{:url('User/sitemember')}";
+                    // });
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    });
+</script>

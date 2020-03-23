@@ -1,0 +1,286 @@
+<style type="text/css">
+	.layui-card-body{
+		background-color: #fff;
+		padding: 10px;
+		margin-top: 10px;
+		border: 1px solid #e6e6e6;
+	}
+
+	.layui-tab-card>.layui-tab-title{
+		background-color: #f9f9f9;
+		border-bottom: none;
+	}
+	.layui-tab-content{
+		padding: 0;
+	}
+	.layui-table, .layui-table-view{
+		margin: 0;
+	}
+    .layui-margin-10{
+        margin:10px ;
+    }
+</style>
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+
+<input type="hidden" value="{$actId}" id="actId"/>
+
+
+<form class="layui-form seller-form"  action="" >
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <label class="layui-form-label">商品名称：</label>
+            <div class="layui-input-inline seller-inline-4">
+                <input type="text" name="name" lay-verify="title" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="goods-search"><i class="iconfont icon-chaxun"></i>筛选</button>
+        </div>
+        <div style="float:right">
+            <div class="layui-inline">
+                <label class="layui-form-label">批量操作：</label>
+                <div class="layui-input-inline seller-inline-2">
+                    <select name="batchOperate" id="batchOperate" lay-filter="batchOperate">
+                        <option value=""></option>
+                        <option value="add_allGoods">添加全部商品</option>
+                        <option value="add_partGoods">添加部分商品</option>
+                        <option value="cancel_all">全部取消</option>
+                        <option value="cancel_part">批量取消</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-inline selectedGoods" style="display: none">
+                <button class="layui-btn layui-btn-sm" id="addGoods" lay-filter="addGoods" lay-submit><i class="layui-icon">&#xe608;</i>选择商品</button>
+            </div>
+
+        </div>
+
+    </div>
+</form>
+
+<div class="layui-card-body">
+	<div class="layui-tab layui-tab-card" lay-filter="goods-tab" id="goodsTable-div" style="display: none">
+        <div class="layui-tab-content">
+            <table id="goodsTable" lay-filter="goodsTable"></table>
+        </div>
+	</div>
+    <div id="allGoods-div" style="display: none">全部商品参加</div>
+</div>
+<script>
+    var table, window_box;
+    var actId = $("#actId").val();
+    layui.use(['form', 'layedit','upload', 'laydate','table','element'], function(){
+        var upload = layui.upload;
+        var element = layui.element;
+        var filter = {};
+        table = layui.table.render({
+            elem: '#goodsTable',
+            height: 'full-230',
+            cellMinWidth: '50',
+            page: 'true',
+            limit:'20',
+            url: "{:url('Goods/GoodsListForPage')}?_ajax=1&actId="+actId,
+            id:'goodsTable',
+            cols: [[
+                {type:'checkbox', fixed: 'left'},
+                {type:'numbers'},
+                {field:'image', width:70,title:'主图', align: 'center',templet: function(data){
+                        return '<a href="javascript:void(0);" onclick=viewImage("'+data.image+'")><image style="max-width:30px;max-height:30px;" src="'+data.image+'"/></a>';
+                }},
+                {field:'name', width:150,title:'名称', align: 'left'},
+                {field:'price', width:100,title:'销售价', align: 'center', templet:function(data){return data.price}},
+                {field:'marketable', width:100,title:'上下架', align: 'center',templet:function(data){
+                        if(data.marketable === '1'){
+                            return '<a href="javascript:void(0);">上架</a>';
+                        }else{
+                            return '<a href="javascript:void(0);">下架</a>';
+                        }
+                    }},
+                {field:'stock', width:100,title:'库存', align: 'center'},
+                {field:'operating',width:250,title:'操作', align: 'center',templet:function(data,actId){
+                        data['actId'] = actId;
+                    var html = '';
+                    html += '<a class="layui-btn layui-btn-xs edit-class" data-id="' + data.id + '" onclick="cancellation('+data.id+')">取消参加</a>';
+                    return html;
+                }, fixed: 'right'}
+            ]],
+            done:function(res){
+               if (res.isAllGoods === 1){
+                   $('#allGoods-div').show();
+                   $('#goodsTable-div').hide();
+               }else{
+                   $('#allGoods-div').hide();
+                   $('#goodsTable-div').show();
+               }
+            }
+        });
+
+        layui.form.on('submit(addGoods)', function(data){ //选择商品
+            JsGet('{:url("Goods/AddGoodsListForPage")}?actId='+actId,function (e) {
+                window_box = layer.open({
+                    type: 1,
+                    title: '选择商品',
+                    area: ['800px', '600px'], //宽高
+                    content: e,
+                    end: function () {
+                        table.reload();
+                    }
+                });
+            });
+            return false;
+        });
+
+
+        layui.form.on('submit(goods-search)', function(data){
+            var tempfilter=$.extend({},filter,data.field);//合并tab筛选和普通搜索
+            console.log("tempfilter",tempfilter)
+            table.reload({
+                where: tempfilter
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //批量操作
+        layui.form.on('select(batchOperate)', function(data){
+            switch (data.value){
+                case 'add_allGoods'://添加全部商品
+                    layer.confirm('选择全部商品后，部分商品的数据将不会保留，确定要选择全部商品？', {icon: 3, title:'提示'}, function(index){
+                        addAllProducts(actId);
+                        layer.close(index);
+                        $(".selectedGoods").hide();
+                    },function(index){
+                        layer.close(index);
+                        $(".selectedGoods").hide();
+                    });
+
+                    break;
+                case 'add_partGoods': //添加部商品
+                    $(".selectedGoods").show();
+                    break;
+                case 'cancel_all': //全部取消
+                    layer.confirm('确定要全部取消？', {icon: 3, title:'提示'}, function(index){
+                        //do something
+                        cancelAllProducts(actId);
+                        layer.close(index);
+                        $(".selectedGoods").hide();
+                    },function(index){
+                        layer.close(index);
+                        $(".selectedGoods").hide();
+                    });
+                    break;
+                case 'cancel_part': //部分取消
+                    var ids = isSelect();
+                    if(ids.length<=0){
+                        layer.msg("请先选要操作的数据");
+                        return false;
+                    };
+                    layer.confirm('确定要移除添加的商品？', {icon: 3, title:'提示'}, function(index){
+                        //do something
+                        cancelSelectProducts(ids);
+                        layer.close(index);
+                        $(".selectedGoods").hide();
+                    },function(index){
+                        layer.close(index);
+                        $(".selectedGoods").hide();
+                    });
+                    break;
+                default :
+                    layer.msg('请选择操作类型');
+                    return false;
+            }
+        });
+
+        function isSelect(){
+            //判断是否有选中
+            var checkStatus = layui.table.checkStatus('goodsTable');
+            var checkData = checkStatus.data;
+            var ids = [];
+            $.each(checkData,function (i,obj) {
+                ids.push(obj.id);
+            });
+            return ids
+        }
+
+        //取消参加
+        function cancellation(id){
+            $.ajax({
+                url: '{:url("Promotion/cancelActGoods")}',
+                type: 'post',
+                data: {
+                    'id': id,
+                    'actId': actId,
+                },
+                success: function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('goodsTable');
+                    });
+                }
+            });
+        }
+
+        /**
+         * 添加全部商品
+         * @param actId
+         */
+        function addAllProducts(actId){
+            $.ajax({
+                url: '{:url("Promotion/addActAllGoods")}',
+                type: 'post',
+                data: {
+                    'actId': actId,
+                },
+                success: function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('goodsTable');
+                    });
+                }
+            });
+        }
+
+        //取消全部商品
+        function cancelAllProducts(actId){
+            $.ajax({
+                url: '{:url("Promotion/cancelActAllGoods")}',
+                type: 'post',
+                data: {
+                    'actId': actId,
+                },
+                success: function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('goodsTable');
+                    });
+                }
+            });
+        }
+
+        //取消选中商品
+        function cancelSelectProducts(ids){
+            $.ajax({
+                url: '{:url("Promotion/cancelChooseActGoods")}',
+                type: 'post',
+                data: {
+                    'ids': ids.join(','),
+                    'actId': actId,
+                },
+                success: function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('goodsTable');
+                    });
+                }
+            });
+        }
+
+
+    });
+
+
+
+    // //选择商品
+    // $("#addGoods").click(function(){
+    //
+    // });
+</script>

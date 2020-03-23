@@ -1,0 +1,98 @@
+<div class="table-body">
+    <table id="orderTable" lay-filter="orderTable"></table>
+
+    <script type="text/html" id="barDemo">
+        {{# if (d.status === 3){ }}
+            <a class="layui-btn-xs">---</a>
+        {{# }else{ }}
+            <a class="layui-btn layui-btn-xs" lay-event="edit">冻结</a>
+        {{# } }}
+    </script>
+
+</div>
+
+<script>
+    layui.use(['table','form','laydate'],function(){
+        var table = layui.table,form = layui.form,date = layui.laydate;
+        table.render({
+            elem: '#orderTable',
+            height: 'full-330',
+            cellMinWidth: '80',
+            url: "{:url('sales/salesOrderList')}?salesId={$relation.sales_id}&buyerId={$relation.buyer_id}", //数据接口
+            id: "orderTable",
+            page: true ,//开启分页
+            limit:'20',
+            cols: [[ //表头
+                {type: 'numbers'},
+                {field: 'order_id', title: '订单ID'},
+                {field: 'order_sn', title: '订单编号'},
+                {field: 'buyer_name', title: '用户', width: 200, sort: true,align:'center'},
+                {field: 'money', title: '佣金', width: 200, sort: true,align:'center'},
+                {field: 'total', title: '商品总金额', width: 200, sort: true,align:'center'},
+                {field: 'status', title: '状态', width: 200, sort: true,align:'center',templet: function (value) {
+                        if(value.status == 1)
+                        {
+                            return '未支付';
+                        } else if(value.status == 2)
+                        {
+                            return '已支付';
+                        } else if(value.status == 3)
+                        {
+                            return '已退款';
+                        } else if(value.status == 4){
+                            return '已失效';
+                        }
+                    }},
+                {field: 'order_time', title: '订单日期', width: 200, sort: true,align:'center'},
+                // {field: 'sort', title: '排序', width: 80, sort: true,align:'center'},
+                {fixed: 'right', title:'操作', toolbar: '#barDemo', minWidth:150},
+            ]],
+            done: function (res,curr,count) {
+                $(".layui-table-cell").css({
+                    "height" : 'auto'
+                });
+            }
+        });
+
+        date.render({
+            elem: '#date',
+            range: '~'
+        });
+
+        //监听行工具事件
+        table.on('tool(orderTable)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'edit'){
+                layer.confirm('确定冻结该订单吗？', function(index){
+                    $.ajax({
+                        url: '{:url("sales/frozenOrder")}',
+                        type: 'post',
+                        data: {order_id:data.order_id},
+                        dataType: 'json',
+                        success: function (e) {
+                            if (e.status === true) {
+                                layer.msg(e.msg);
+                                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                // parent.layer.close(index); //再执行关闭
+                            } else {
+                                layer.msg(e.msg);
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+                // layer.prompt({
+                //     formType: 2
+                //     ,value: data.email
+                // }, function(value, index){
+                //     obj.update({
+                //         email: value
+                //     });
+                //     layer.close(index);
+                // });
+            }
+        });
+
+    });
+</script>

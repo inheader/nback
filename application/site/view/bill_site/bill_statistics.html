@@ -1,0 +1,145 @@
+<script src="__STATIC_LIB__echarts/build/dist/echarts.js"></script>
+<div class="layadmin-tabsbody-item layui-show">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <i class="iconfont icon-dingdan1"></i>统计列表
+            </div>
+            <div class="layui-card-body">
+                <div id="graphic" class="">
+                    <div class="layui-form">
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="150">
+                                <col width="150">
+                                <col width="200">
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>统计名称</th>
+                                <th align="right">金额/数量</th>
+                                <!--<th>管理</th>-->
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>成功发票订单额</td>
+                                <td style="text-align: right">{$collect}</td>
+                                <!--<td>-->
+                                    <!--<div class="layui-btn-group">-->
+                                        <!--<button type="button" class="layui-btn layui-btn-normal layui-btn-radius" id="refresh">刷新</button>-->
+                                    <!--</div>-->
+                                <!--</td>-->
+                            </tr>
+                            <tr>
+                                <td>已处理发票订单</td>
+                                <td style="text-align: right">{$collect_ok}</td>
+                                <!--<td>-->
+                                    <!--<div class="layui-btn-group">-->
+                                        <!--<button type="button" class="layui-btn layui-btn-normal layui-btn-radius" id="refresh_ok">刷新</button>-->
+                                    <!--</div>-->
+                                <!--</td>-->
+                            </tr>
+                            <tr>
+                                <td>未处理发票订单</td>
+                                <td style="text-align: right">{$collect_no}</td>
+                                <!--<td>-->
+                                    <!--<div class="layui-btn-group">-->
+                                        <!--<button type="button" class="layui-btn layui-btn-normal layui-btn-radius" id="refresh_no">刷新</button>-->
+                                    <!--</div>-->
+                                <!--</td>-->
+                            </tr>
+                            <tr>
+                                <td>退货</td>
+                                <td style="text-align: right">{$collect_refund}</td>
+                                <!--<td>-->
+                                    <!--<div class="layui-btn-group">-->
+                                        <!--<button type="button" class="layui-btn layui-btn-normal layui-btn-radius" id="refresh_refund">刷新</button>-->
+                                    <!--</div>-->
+                                <!--</td>-->
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">
+                <i class="iconfont icon-dingdan1"></i>订单统计
+            </div>
+            <div class="layui-card-body">
+                <div id="graphic" class="">
+                    <div id="main" class="main" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: '__STATIC_LIB__echarts/build/dist'
+        }
+    });
+    require(
+        ['echarts','echarts/chart/line'],
+        function (ec) {
+            var myChart = ec.init(document.getElementById('main'));
+            var option = {
+                title: {text:'近7天票据订单量统计'},
+                tooltip: {show:true},
+                legend: {},
+                yAxis: [{type:'value'}],
+                xAxis: [],
+                series: []
+            };
+            $.get('{:url("BillSite/statistics")}').done(function (data) {
+                myChart.setOption({
+                    legend: data.legend,
+                    xAxis: data.xAxis,
+                    series: data.series
+                });
+            });
+            myChart.setOption(option);
+        }
+    );
+    require(
+        [
+            'echarts',
+            'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+        ],
+
+        //
+        // function (ec) {
+        //     // 基于准备好的dom，初始化echarts图表
+        //     var myChart = ec.init(document.getElementById('users'));
+        //
+        //     var option = {
+        //
+        //         tooltip: {
+        //             show: true
+        //         },
+        //         legend: {},
+        //         xAxis : [],
+        //         yAxis : [],
+        //         series : []
+        //     };
+        //     $.get('{:url("user/statistics")}').done(function (data) {
+        //         myChart.setOption({
+        //             legend: data.legend,
+        //             xAxis: data.xAxis,
+        //             series: data.series
+        //         });
+        //     });
+        //     // 为echarts对象加载数据
+        //     myChart.setOption(option);
+        // }
+    );
+</script>

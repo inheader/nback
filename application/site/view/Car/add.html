@@ -1,0 +1,245 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<div class="layui-card-body">
+    <form class="layui-form" action="">
+        <hr>
+        <div class="layui-form-item">
+            <label class="layui-form-label">车辆牌号:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="car_number" lay-verify="required" autocomplete="off" placeholder="请输入车辆牌号" class="layui-input">
+            </div>
+            <em>注：苏D5876UZ</em>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">车辆类型:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="car_type" lay-verify="required" autocomplete="off" placeholder="车辆类型" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">通行证级别:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="car_level" autocomplete="off" placeholder="通行证级别" class="layui-input">
+            </div>
+        </div>
+        <hr>
+        <div class="layui-form-item">
+            <label class="layui-form-label">车厢长度:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_box_length" lay-verify="required" autocomplete="off" placeholder="车厢长度" class="layui-input">
+            </div>
+            <label>/m</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">车厢宽度:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_box_width" lay-verify="required" autocomplete="off" placeholder="车厢宽度" class="layui-input">
+            </div>
+            <label>/m</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">可装高度:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_box_height" lay-verify="required" autocomplete="off" placeholder="可装高度" class="layui-input">
+            </div>
+            <label>/m</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">可装体积:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_box_weight" lay-verify="required" autocomplete="off" placeholder="可装体积" class="layui-input">
+            </div>
+            <label>/m³</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">核载吨位:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_tons" lay-verify="required" autocomplete="off" placeholder="核载吨位" class="layui-input">
+            </div>
+            <label>/kg</label>
+        </div>
+
+        <hr>
+        <div class="layui-form-item">
+            <label class="layui-form-label">起步公里:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_start_km" lay-verify="required" autocomplete="off" placeholder="起步公里" class="layui-input">
+            </div>
+            <label>/km</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">起步价格:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_start_price" lay-verify="required" autocomplete="off" placeholder="起步价格" class="layui-input">
+            </div>
+            <label>/元</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">超里程价:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_km_price" lay-verify="required" autocomplete="off" placeholder="超里程价" class="layui-input">
+            </div>
+            <label>/元</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">最远可送:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_km_end" lay-verify="required" autocomplete="off" placeholder="最远可送" class="layui-input">
+            </div>
+            <label>/km</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">加收特快费:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_express_price" lay-verify="required" autocomplete="off" placeholder="加收特快费" class="layui-input">
+            </div>
+            <label>/元</label>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">每公里加收:</label>
+            <div class="layui-input-inline">
+                <input type="number" name="car_express_km_price" lay-verify="required" autocomplete="off" placeholder="每公里额外加收" class="layui-input">
+            </div>
+            <label>/元</label>
+        </div>
+        <hr>
+        <div class="layui-form-item">
+            <label class="layui-form-label">是否加急:</label>
+            <div class="layui-input-block">
+                <input type="radio" lay-filter="urgent" name="is_urgent" value="0" title="否" checked="">
+                <input type="radio" lay-filter="urgent" name="is_urgent" value="1" title="是">
+            </div>
+        </div>
+
+        <style>
+            .hide{
+                display: none;
+            }
+        </style>
+
+        <div class="hide">
+            <div class="layui-form-item">
+                <label class="layui-form-label">起步公里:</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="car_start_km_urgent"  autocomplete="off" placeholder="起步公里" class="layui-input">
+                </div>
+                <label>/km</label>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">起步价格:</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="car_start_price_urgent"  autocomplete="off" placeholder="起步价格" class="layui-input">
+                </div>
+                <label>/元</label>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">超里程价:</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="car_km_price_urgent"  autocomplete="off" placeholder="超里程价" class="layui-input">
+                </div>
+                <label>/元</label>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">最远可送:</label>
+                <div class="layui-input-inline">
+                    <input type="number" name="car_km_end_urgent"  autocomplete="off" placeholder="最远可送" class="layui-input">
+                </div>
+                <label>/km</label>
+            </div>
+            <hr>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态:</label>
+            <div class="layui-input-block">
+                <input type="radio" name="status" value="1" title="正常" checked="">
+                <input type="radio" name="status" value="0" title="停用">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,laydate = layui.laydate;
+
+        //监听指定开关
+        form.on('switch(switchTest)', function(data){
+            layer.msg('开关checked：'+ (this.checked ? 'true' : 'false'), {
+                offset: '6px'
+            });
+            layer.tips('温馨提示：请注意开关状态的文字可以随意定义，而不仅仅是ON|OFF', data.othis)
+        });
+
+
+        form.on('radio(urgent)', function (data) {
+            var urgent = data.value;
+            if(urgent == 0)
+            {
+                $(".hide").hide();
+            } else if(urgent == 1)
+            {
+                $(".hide").show();
+            }
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+
+            $.ajax({
+                url: '{:url("Car/add")}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status === true) {
+                        layer.msg(e.msg);
+                        parent.location.reload();
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+            return false;
+        });
+
+        //表单取值
+        layui.$('#LAY-component-form-getval').on('click', function(){
+            var data = form.val('example');
+            alert(JSON.stringify(data));
+        });
+
+    });
+</script>

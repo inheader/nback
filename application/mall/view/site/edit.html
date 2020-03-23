@@ -1,0 +1,427 @@
+<form class="layui-form seller-alone-form">
+  <input type="hidden" name="site_id" value="{$info.site_id}">
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺类型：</label>
+    {if $isAdd == 1}
+    <div class="layui-input-block">
+      <input name="site_type" value="1" title="云商城" checked="" type="radio">
+      <input name="site_type" value="0" title="积分商城" type="radio">
+    </div>
+    {else}
+    {if $info['site_type'] == 1}
+    <div class="layui-input-block">
+      <input title="云商城" checked="" type="radio">
+    </div>
+    {else}
+    <div class="layui-input-block">
+      <input title="积分商城" checked="" type="radio">
+    </div>
+    {/if}
+    {/if}
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label"><i class="required-color">*</i>物流方式：</label>
+    {if $isAdd == 1}
+    <div class="layui-input-block">
+      <input name="shipping_type" value="mall" title="佩祥物流" checked="" type="radio">
+      <input name="shipping_type" value="site" title="店铺物流" type="radio">
+    </div>
+    {else}
+    {if $info['site_shipping_fee_type'] == 'mall'}
+    <div class="layui-input-block">
+      <input title="佩祥物流" checked="" type="radio">
+    </div>
+    {else}
+    <div class="layui-input-block">
+      <input title="店铺物流" checked="" type="radio">
+    </div>
+    {/if}
+    {/if}
+  </div>
+
+  <label class="layui-form-label">店铺名称：</label>
+  {if $canEditSiteClass == 1}
+  <div class="layui-input-inline">
+    <div class="layui-form-item">
+      <div class="layui-input-inline seller-inline-4">
+        <input type="text" name="site_name" value="{$info.site_name}" lay-verify="required" placeholder="请输入店铺名称"
+          autocomplete="off" class="layui-input">
+      </div>
+    </div>
+  </div>
+  {else}
+  <div class="layui-form-mid seller-inline-3">{$info.site_name}</div>
+  {/if}
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">厂家电话：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="site_mobile" value="{$info.site_mobile}" placeholder="请输入店铺电话" autocomplete="off"
+        class="layui-input">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">客服电话：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="site_mobile_1" value="{$info.site_mobile_1}" placeholder="请输入店铺电话" autocomplete="off"
+        class="layui-input">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺固定退货费：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="return_shipping_fee" value="{$info.return_shipping_fee}" autocomplete="off"
+        class="layui-input">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺订单基本运费：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="order_shipping_fee" value="{$info.order_shipping_fee}" autocomplete="off"
+        class="layui-input">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺购买手续费：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="site_noun" value="{$info.site_noun}" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">满多少包邮：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="free_shipping_fee" value="{$info.free_shipping_fee}" autocomplete="off"
+        class="layui-input">
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">商品库存警戒值：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="goods_stocks_warn" value="{$info.goods_stocks_warn}" autocomplete="off"
+        class="layui-input">
+    </div>
+  </div>
+
+  {if !$info.trousers}
+  <div class="layui-form-item">
+    <label class="layui-form-label">仓库标识：</label>
+    <div class="layui-input-inline seller-inline-4">
+      <input type="number" name="trousers" value="{$info.trousers}" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+  {else}
+  <!--<div class="layui-form-mid seller-inline-3">{$info.trousers}</div>-->
+  {/if}
+
+  <label class="layui-form-label"> 店铺分类：</label>
+  {if $canEditSiteClass == 1}
+  <div class="layui-input-inline">
+    {php}
+    $isEdie = 0;
+    if(!empty($info) && !empty($info['site_id']))
+    {
+    $isEdie = 1;
+    }
+    {/php}
+    <select name="class_id" id="class_id" lay-filter="class_id" {if $isEdie==1} disabled {/if}> <option value="">请选择店铺分类
+      </option>
+      {volist name="classList" id="vo"}
+      <option value="{$vo.class_id}" {if condition="$info.class_id eq $vo.class_id" } selected {/if}>{$vo.class_name}
+        </option> {/volist} </select> </div> {else} <div class="layui-form-mid seller-inline-3">{$className}</div>
+  {/if}
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺简介：</label>
+    <div class="layui-input-block">
+      <textarea placeholder="请输入店铺简介" name="site_desc" class="layui-textarea">{$info.site_desc}</textarea>
+    </div>
+  </div>
+
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺LOGO：</label>
+    <button type="button" class="layui-btn" id="logoUpload">上传图片</button>
+    <div class="layui-upload-list" style="padding-left:110px">
+      <div class="loading-block" style="display: none;width:60px;height:60px;text-align: center;line-height: 60px">
+        <div class="loading layui-anim-rotate layui-anim-loop">
+          <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+        </div>
+      </div>
+      <img class="layui-upload-img" src="{$info.site_logo}" id="image_src_head_img" style="width:60px;height:60px;">
+      <input type="hidden" name="site_logo" />
+    </div>
+  </div>
+
+  <div class="layui-form-item posters" style="margin-top:15px;margin-bottom:15px">
+    <label class="layui-form-label">店铺海报：</label>
+    <button type="button" class="layui-btn" id="postersUpload">上传图片</button>
+    <div class=" layui-upload-list" style="padding-left:110px">
+      <div class="loading-block" style="display: none;width:60px;height:60px;text-align: center;line-height: 60px">
+        <div class="loading layui-anim-rotate layui-anim-loop">
+          <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+        </div>
+      </div>
+      {if $info.site_posters}
+      <img style="width:250px;height: 130px;" src="{$info.site_posters}">
+      {/if}
+      <input type="hidden" name="site_posters" />
+    </div>
+  </div>
+
+  {if $isAdd != 1}
+  <div class="layui-form-item">
+    <label class="layui-form-label">店铺地址列表(可添加多个)</label>
+    <div style="width:100px;display: inline-block">
+      <button class="layui-btn layui-btn-primary layui-btn-xs" onclick="addadr()" type=button>添加地址</button>
+    </div>
+    <div style="height:10px"></div>
+    <div
+      style="border:1px solid #eee;padding:20px;padding-left:0;background: #fcfcfc;display: inline-block;min-width: 716px">
+      <div id="adr-list">
+
+        {volist name="info.addressList" id="vo" key="key" empty="$empty"}
+        <!--对于新增的amsaId，为0-->
+        <div class="p-item">
+          <input type="hidden" name="amsaId[{$key}]" value="{$vo.amsaId}">
+          <div class="layui-form-item" style="display: inline-block">
+            <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 经度：</label>
+            <div class="layui-input-inline seller-inline-2">
+              <input name="longitude[{$key}]" value="{$vo.longitude}" class="layui-input" lay-verify="required" />
+            </div>
+          </div>
+          <div class="layui-form-item" style="display: inline-block">
+            <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 纬度：</label>
+            <div class="layui-input-inline seller-inline-2">
+              <input name="latitude[{$key}]" value="{$vo.latitude}" class="layui-input" lay-verify="required" />
+            </div>
+          </div>
+          <div class="layui-form-item" style="display: inline-block">
+            <label class="layui-form-label" style="width:60px;padding:9px 0 "><i class="required-color">*</i>地址：</label>
+            <div class="layui-input-inline seller-inline-5">
+              <input name="address[{$key}]" value="{$vo.address}" class="layui-input" lay-verify="required" />
+            </div>
+          </div>
+          <div class="del-btn" style="display: inline-block;
+                                color:red;
+                                height:38px;
+                                line-height: 38px;
+                                vertical-align: top;
+                                text-decoration: underline;
+                                cursor: pointer">删除</div>
+        </div>
+        {/volist}
+      </div>
+
+    </div>
+
+  </div>
+
+  {if $canEditSiteClass == 1}
+  <div class="layui-form-item" style="margin-top:10px">
+    <label class="layui-form-label"><i class="required-color">*</i>店铺管理员：</label>
+    <div style="width:100px;display: inline-block">
+      <button class="layui-btn layui-btn-primary layui-btn-xs" onclick="addUser()" type="button">添加管理员</button>
+    </div>
+    <div style="height:10px"></div>
+
+
+    <div style="border:1px solid #eee;padding:20px;background: #fcfcfc;display: inline-block;min-width: 716px">
+      <?php
+                        $empty = !empty($authList);
+                    ?>
+      {if condition="$empty"}
+      <div style="padding:10px;border-bottom:1px solid #ddd;margin-top:-20px;margin-bottom:20px">
+        {volist name='authList' id='vo' key='userKey'}
+        <div
+          style="display: inline-block;background:#fff4d6;line-height: 20px;height:20px;border-radius:16px;padding:3px 15px;margin-right:10px;color:#cd9706">
+          已有用户名{$userKey}:{$vo.userName}
+        </div>
+        {/volist}
+      </div>
+      {/if}
+
+      <div id="user-list" style="padding-left:20px">
+
+      </div>
+    </div>
+  </div>
+  {/if}
+
+  {/if}
+
+
+  <div class="layui-form-item" style="margin-top:50px">
+    <div class="layui-input-block">
+      <button type="button" class="layui-btn" lay-submit lay-filter="add-site">保存</button>
+      <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+    </div>
+  </div>
+  <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</form>
+<script>
+  layui.use(['form', 'upload'], function () {
+    var $ = layui.$, form = layui.form;
+    form.render();
+    //各种基于事件的操作，下面会有进一步介绍
+    form.on('submit(add-site)', function (data) {
+      JsPost("{:url('Site/edit')}", data.field, function (res) {
+        if (res.status) {
+          if (res.data === 1) {
+            layer.msg(res.msg, { time: 1300 }, function () {
+              window.location.href = "{:url('Site/index')}";
+            });
+          } else {
+            layer.msg(res.msg, { time: 1300 }, function () {
+              window.location.href = "{:url('Site/edit')}";
+            });
+          }
+        } else {
+          layer.msg(res.msg);
+        }
+      });
+    });
+    var upload = layui.upload;
+    //执行实例  /images/uploadimage?encode=utf-8
+    var pa = $('#logoUpload').parents(".layui-form-item");
+    function uploadInst() {
+      upload.render({
+        elem: '#logoUpload' //绑定元素
+        , url: '/images/uploadimage?encode=utf-8' //上传接口
+        , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+          $(pa).find(".loading-block").show();
+          $(pa).find("img").hide();
+        }
+        , done: function (res) {
+          console.log(res)
+          if (res.status) {
+            $(pa).find("img").attr("src", res.data.url);
+            $(pa).find("img").show();
+            $(pa).find(".loading-block").hide();
+            $(pa).find("input[name='site_logo']").val(res.data.url)
+          }
+        }
+        , error: function () {
+          //请求异常回
+          $(pa).find(".loading-block").hide();
+          $(pa).find("img").show();
+
+        }
+      });
+    }
+    uploadInst();
+
+    //店铺海报图片上传
+    var poster = $('#postersUpload').parents('.posters')
+    function uploadPoster() {
+      upload.render({
+        elem: '#postersUpload' //绑定元素
+        , url: '/images/uploadimage?encode=utf-8' //上传接口
+        , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+          $(poster).find(".loading-block").show();
+          $(poster).find("img").hide();
+        }
+        , done: function (res) {
+          console.log(res)
+          if (res.status) {
+            $(poster).find("img").attr("src", res.data.url);
+            $(poster).find("img").show();
+            $(poster).find(".loading-block").hide();
+            $(poster).find("input[name='site_posters']").val(res.data.url)
+          }
+        }
+        , error: function () {
+          //请求异常回
+          $(poster).find(".loading-block").hide();
+          $(poster).find("img").show();
+
+        }
+      });
+    }
+    uploadPoster();
+
+  });
+
+  /*添加地址*/
+  function addadr() {
+    var i = $(".p-item").length + 1;
+    $("#adr-list").append('<div class="p-item">\n' +
+      '                   <input type="hidden" name="amsaId[' + i + ']" value="0">\n' +
+      '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+      '                        <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 经度：</label>\n' +
+      '                        <div class="layui-input-inline seller-inline-2">\n' +
+      '                            <input name="longitude[' + i + ']" value="" class="layui-input" lay-verify="required"/>\n' +
+      '                        </div>\n' +
+      '                    </div>\n' +
+      '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+      '                        <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 纬度：</label>\n' +
+      '                        <div class="layui-input-inline seller-inline-2">\n' +
+      '                            <input name="latitude[' + i + ']" value="" class="layui-input" lay-verify="required"/>\n' +
+      '                        </div>\n' +
+      '                    </div>\n' +
+      '                    <div class="layui-form-item" style="display: inline-block">\n' +
+      '                        <label class="layui-form-label" style="width:60px;padding:9px 0 "><i class="required-color">*</i>地址：</label>\n' +
+      '                        <div class="layui-input-inline seller-inline-5">\n' +
+      '                            <input name="address[' + i + ']" value="" class="layui-input" lay-verify="required"/>\n' +
+      '                        </div>\n' +
+      '                    </div>\n' +
+      '                    <div class="del-btn"\n' +
+      '                         style="display: inline-block;\n' +
+      '                            color:red;\n' +
+      '                            height:38px;\n' +
+      '                            line-height: 38px;\n' +
+      '                            vertical-align: top;\n' +
+      '                            text-decoration: underline;\n' +
+      '                            cursor: pointer">删除</div>\n' +
+      '                </div>')
+  }
+
+  /*添加用户*/
+  function addUser() {
+    var i = $(".p-item").length + 1;
+    $("#user-list").append('<div class="p-item">\n' +
+      '                    <input type="hidden" name="userId[' + i + ']" value="0">\n' +
+      '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+      '                        <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 用户名：</label>\n' +
+      '                        <div class="layui-input-inline seller-inline-4">\n' +
+      '                            <input class="layui-input" lay-verify="required" name="userName[' + i + ']" value=""/>\n' +
+      '                        </div>\n' +
+      '                    </div>\n' +
+      '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+      '                        <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 密码：</label>\n' +
+      '                        <div class="layui-input-inline seller-inline-4">\n' +
+      '                            <input class="layui-input" lay-verify="required" name="userPassWord[' + i + ']" value=""/>\n' +
+      '                        </div>\n' +
+      '                    </div>\n' +
+      '                    <div class="del-btn"\n' +
+      '                         style="display: inline-block;\n' +
+      '                            color:red;\n' +
+      '                            height:38px;\n' +
+      '                            line-height: 38px;\n' +
+      '                            vertical-align: top;\n' +
+      '                            text-decoration: underline;\n' +
+      '                            cursor: pointer">删除</div>\n' +
+      '                </div>')
+
+  }
+
+  $(function () {
+    /*删除地址*/
+    $("#adr-list").on('click', '.del-btn', function () {
+      $(this).parents(".p-item").remove();
+      $(".p-item").each(function (i, el) {
+        $(el).find("input[name^=amsaId]").attr("name", 'amsaId[' + (i + 1) + ']');
+        $(el).find("input[name^=longitude]").attr("name", 'longitude[' + (i + 1) + ']');
+        $(el).find("input[name^=latitude]").attr("name", 'latitude[' + (i + 1) + ']');
+        $(el).find("input[name^=address]").attr("name", 'address[' + (i + 1) + ']');
+      })
+    });
+  })
+
+
+</script>

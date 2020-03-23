@@ -1,0 +1,159 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.seller.css">
+
+<form class="layui-form seller-alone-form" action="" id="add_form">
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>选择用户</label>
+        <div class="layui-input-inline seller-inline-6">
+            <select name="buyer_id" id="buyer_id" lay-verify="required" lay-search="">
+                <option value="">搜索/选择</option>
+                {foreach $buyer as $key=>$vo }
+                <option value="{$vo.buyer_id}">{$vo.buyer_name}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div style="height:10px"></div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>真实姓名</label>
+        <div class="layui-input-inline">
+            <input type="text" name="username" lay-verify="username" autocomplete="off" placeholder="请输入用户姓名" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>身份证号码</label>
+        <div class="layui-input-inline">
+            <input type="text" name="card_id" lay-verify="card_id" autocomplete="off" placeholder="身份证号码" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>营业执照代码</label>
+        <div class="layui-input-inline">
+            <input type="text" name="business_code" lay-verify="business_code" autocomplete="off" placeholder="营业执照代码" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>营业执照</label>
+        <div class="layui-upload">
+            <button type="button" name="business" class="layui-btn" id="image">上传</button>
+            <div class="layui-upload-list">
+                <img class="layui-upload-img" id="demo1" width="140px" height="80px">
+                <p id="demoText"></p>
+            </div>
+            <input type='hidden' name='image[business]' value="" id="images">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>手机号码</label>
+        <div class="layui-input-inline">
+            <input type="text" name="phone" lay-verify="phone" autocomplete="off" placeholder="手机号码" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>公司全名称</label>
+        <div class="layui-input-inline">
+            <input type="text" name="company" lay-verify="company" autocomplete="off" placeholder="公司全名称" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>申请金额</label>
+        <div class="layui-input-inline">
+            <input type="number" name="apply_money" lay-verify="price" autocomplete="off" placeholder="申请金额" class="layui-input">
+        </div>
+    </div>
+
+    <!--<div style="height:10px"></div>-->
+    <!--<div class="layui-form-item">-->
+        <!--<label class="layui-form-label">状态</label>-->
+        <!--<div class="layui-input-block">-->
+            <!--<input type="radio" name="status" value="0" title="未审核" checked="">-->
+            <!--<input type="radio" name="status" value="1" title="已申请">-->
+            <!--<input type="radio" name="status" value="2" title="未通过">-->
+            <!--<input type="radio" name="status" value="3" title="已审核">-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="save-areaCredit">添加</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+
+</form>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_JS__jshop.js"></script>
+<script>
+    layui.use(['form','layer','upload'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,upload = layui.upload;
+
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#image'
+            ,accept:'image'  // 允许上传的文件类型
+            ,exts: 'jpg|png|gif' //设置一些后缀，用于演示前端验证和后端的验证
+            ,url: "{:url('ajax/upload')}"
+            ,data:{}
+            ,before: function(obj){
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, image, result){
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+            }
+            ,done: function(res){
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+                if(res.code === 0)
+                {
+                    $('#images').val(res.src);
+                }
+
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+
+        //监听提交
+        form.on('submit(save-areaCredit)', function(data){
+            JsPost("{:url('AreaCredit/creditAdd')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    parent.location.reload();
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

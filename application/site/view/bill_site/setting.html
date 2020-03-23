@@ -1,0 +1,60 @@
+<!--<link rel="stylesheet" href="__STATIC__layui/css/layui.css">-->
+<form class="layui-form seller-alone-form">
+    <div class="layui-form-item">
+        <label class="layui-form-label">(增值税)普通税率：</label>
+        <div class="layui-input-inline">
+            <input type="number" name="ordinary_tax" value="{$info.ordinary_tax}" placeholder="请输入税率" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">(增值税)专业税率：</label>
+        <div class="layui-input-inline">
+            <input type="number" name="special_tax" value="{$info.special_tax}" placeholder="请输入税率" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" pane="">
+        <label class="layui-form-label">可否开票：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="is_bill" value="1" title="是" {if $info.is_bill == 1}checked=""{/if}>
+            <input type="radio" name="is_bill" value="2" title="否" {if $info.is_bill == 2}checked=""{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label">开票说明：</label>
+        <div class="layui-input-block">
+            <textarea name="bill_content" placeholder="请输入说明" class="layui-textarea">{$info.bill_content}</textarea>
+        </div>
+    </div>
+    <br>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="setting">保存</button>
+        </div>
+    </div>
+</form>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form'], function(){
+        var $ = layui.$, form = layui.form;
+        form.render();
+        //各种基于事件的操作，下面会有进一步介绍
+        form.on('submit(setting)', function (data) {
+            JsPost("{:url('BillSite/save')}", data.field, function (res) {
+                if (res.status) {
+                    if (res.data === 1) {
+                        layer.msg(res.msg, { time: 1300 }, function () {
+
+                        });
+                    } else {
+                        layer.msg(res.msg, { time: 1300 }, function () {
+
+                        });
+                    }
+                } else {
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    });
+</script>

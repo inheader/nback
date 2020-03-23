@@ -1,0 +1,152 @@
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<hr>
+<form class="layui-form" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">任务标题</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" required lay-verify="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">任务用户</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="plus" title="会员" checked="">
+            <input type="checkbox" name="general" title="普通">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">开始时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="task_start_time" class="layui-input" id="test6" placeholder="">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">结束时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="task_end_time" class="layui-input" id="test5" placeholder="">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">优惠劵</label>
+        <div class="layui-input-block">
+            <table class="layui-hide" id="test" lay-filter="test"></table>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">权重</label>
+        <div class="layui-input-inline">
+            <input type="number" name="weight" value="0" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="1" title="正常" checked="">
+            <input type="radio" name="status" value="0" title="隐藏">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">确定</button>
+        </div>
+    </div>
+
+</form>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form','table','laydate'], function() {
+        var form = layui.form
+            , table = layui.table
+            , layer = layui.layer
+            ,laydate = layui.laydate;
+
+        table.render({
+            elem: '#test'
+            ,url: "{:url('coupon/getCoupon')}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,title: '用户数据表'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'cp_title', title:'优惠劵', width:600, fixed: 'left', unresize: true, sort: true,templet:function(res){
+                        return res.cp_title + '('+res.startTime+'-'+res.endTime+')';
+                    }}
+                ,{field:'num', title:'数量', minWidth:120, edit: 'text'}
+            ]]
+            ,page: true
+            ,limit:20
+        });
+
+        //监听单元格编辑
+        table.on('edit(test3)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+            layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+        });
+
+        //日期时间选择器
+        laydate.render({
+            elem: '#test5'
+            ,type: 'datetime'
+        });
+        laydate.render({
+            elem: '#test6'
+            ,type: 'datetime'
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+
+            //表格数据
+            var mycars = new Array();
+            var tables = table.cache.test;
+            for(j = 0,len=tables.length; j < len; j++) {
+                if(tables[j].LAY_CHECKED === true)
+                {
+                    //写入新数组
+                    mycars.push(tables[j]);
+                }
+            }
+            //请求ajax
+            $.ajax({
+                url: "{:url('Coupon/addTask')}",
+                async:false,
+                type: 'post',
+                data:{
+                    'content': data.field,
+                    'table':mycars
+                },
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status === true) {
+                        layer.msg(e.msg);
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+            console.log(mycars);
+            return false;
+        });
+
+    });
+
+</script>

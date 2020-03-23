@@ -1,0 +1,52 @@
+
+
+<form class="layui-form seller-alone-form">
+    <input type="hidden" name="site_id" value="{$info.class_id}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>分类名称：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="site_name" value="{$info.class_name}" lay-verify="required" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类LOGO：</label>
+        <button type="button" class="layui-btn">上传图片</button>
+        <div class="layui-upload-list" style="padding-left:110px">
+            <img class="layui-upload-img" src="{$info.class_logo}" id="image_src_head_img" style="width:60px;height:60px;">
+            <input type="hidden" name="site_logo"/>
+        </div>
+    </div>
+    </div>
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="add-site">保存</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</form>
+<script>
+    layui.use('form', function(){
+        var $ = layui.$,form = layui.form;
+        form.render();
+        //各种基于事件的操作，下面会有进一步介绍
+
+        form.on('submit(add-site)', function(data){
+            JsPost("{:url('Site/editClass')}",data.field,function(res){
+                if(res.status){
+                    layer.msg(res.msg, {time:1300},function(){
+                        window.location.href = "{:url('Site/siteClass')}";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    });
+
+
+
+</script>

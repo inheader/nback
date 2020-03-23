@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="__STATIC__layui/css/layui.css">
+<hr>
+<form class="layui-form layui-form-pane" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">代金券名称</label>
+        <div class="layui-input-block">
+            <input type="text" value="{$coupon.coupon_name}" autocomplete="off" placeholder="请输入标题" class="layui-input" disabled>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">代金券面额</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$coupon.coupon_price}" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input" disabled>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">代金券数量</label>
+            <div class="layui-input-block">
+                <input type="text" value="{$coupon.coupon_total}" id="date1" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">已领取数量</label>
+            <div class="layui-input-inline">
+                <input type="text" value="{$coupon.is_send_num}" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">有效期</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$coupon.begin_time}" autocomplete="off" class="layui-input" disabled>
+        </div>
+        <!--<div class="layui-form-mid layui-word-aux">请务必填写用户名</div>-->
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">失效期</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$coupon.end_time}" autocomplete="off" class="layui-input" disabled>
+        </div>
+        <!--<div class="layui-form-mid layui-word-aux">请务必填写用户名</div>-->
+    </div>
+</form>

@@ -1,0 +1,52 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<form class="layui-form" action="">
+    <input type="hidden" name="salesId" value="{$res.sid}">
+    <input type="hidden" name="date" value="{$res.date}">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">目标销售额：</label>
+            <div class="layui-input-inline">
+                <input type="number" name="target" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+        </div>
+    </div>
+
+</form>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['table','form','upload'], function() {
+        var table = layui.table, form = layui.form, upload = layui.upload;
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+
+            $.ajax({
+                url: '{:url("sales/report")}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status === true) {
+                        layer.msg(e.msg);
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,357 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">__STATIC__/lib/layui/layui.all.js
+<style>
+    * {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    .center-div {
+        position: absolute;
+        left: 50%;
+        margin-left: -150px;
+        margin-top: 200px;
+        width: 300px;
+    }
+
+    #result-list {
+        /*position: absolute;*/
+        top: 45px;
+        width: 310px;
+        border: 1px solid #999;
+        border-radius: 4px;
+    }
+
+    #result-list li {
+        width: 300px;
+        height: 35px;
+        font-size: 14px;
+        line-height: 35px;
+        padding-left: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ededed;
+        cursor: pointer;
+    }
+
+    #result-list li:hover {
+        background: #F2F4F8;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>
+<form class="layui-form" id="form_add" action="">
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型</label>
+        <div class="layui-input-block">
+            <input type="radio" name="type" value="1" title="活动单页" lay-filter="delivery" id="delivery" checked="">
+            <input type="radio" name="type" value="2" title="商品活动" lay-filter="delivery" id="goods">
+            <input type="radio" name="type" value="3" title="店铺活动" lay-filter="delivery" id="site">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <!--<div class="layui-inline">-->
+        <label class="layui-form-label">活动日期</label>
+        <div class="layui-input-inline">
+            <input type="text" name="date" class="layui-input" id="date">
+        </div>
+        <!--</div>-->
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">活动图片</label>
+            <div class="layui-input-inline seller-inline-4">
+                <div class="layui-upload">
+                    <input type="hidden" name="image" id="demo2" class="img">
+                    <button type="button" class="layui-btn" id="test1">上传图片</button>
+                    <div class="layui-upload-list">
+                        <img class="layui-upload-img" id="demo1" width="250" height="250">
+                        <p id="demoText"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户类型</label>
+        <div class="layui-input-block">
+            <input type="radio" name="scope" value="1" title="全部用户" lay-filter="scope" id="a" checked="">
+            <input type="radio" name="scope" value="2" title="部分用户" lay-filter="scope" id="b">
+            <input type="radio" name="scope" value="3" title="新用户" lay-filter="scope" id="c">
+        </div>
+    </div>
+    <div class="layui-form-item b" style="display: none;">
+        <label class="layui-form-label">活动用户</label>
+        <div class="layui-inline">
+            <input type="text" name="buyer_id" id="demo" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <!-- 单页活动 -->
+    <div class="layui-form-item delivery">
+        <div class="layui-inline">
+            <label class="layui-form-label">活动链接</label>
+            <div class="layui-input-inline">
+                <input type="tel" name="url" id="url" autocomplete="off" class="layui-input url">
+            </div>
+            <div class="layui-form-mid layui-word-aux">链接格式:page/index</div>
+        </div>
+    </div>
+    <!-- 商品活动 -->
+    <div class="layui-form-item goods" style="display: none">
+        <label class="layui-form-label">活动商品</label>
+        <div class="layui-input-inline">
+            <input type="text" name="goods_id" id="good" autocomplete="off" class="layui-input g">
+            <ul id="goods-list" class="hide"></ul>
+        </div>
+        <div class="layui-form-mid layui-word-aux">搜索货号:SD0556，存在商品就行</div>
+    </div>
+    <!-- 店铺活动 -->
+    <div class="layui-form-item site" style="display: none">
+        <label class="layui-form-label">活动店铺</label>
+        <div class="layui-input-inline">
+            <input type="text" name="site_id" id="sites" autocomplete="off" class="layui-input s">
+            <ul id="result-list" class="hide"></ul>
+        </div>
+        <div class="layui-form-mid layui-word-aux">搜索店铺名称显示出来之后，复制需要的店铺，粘贴到框中</div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="1" title="启用" checked="">
+            <input type="radio" name="status" value="2" title="禁用">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="add-popup">立即提交</button>
+        </div>
+    </div>
+</form>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.config({
+        base:'__STATIC__layui_exts/',
+    });
+    layui.use(['form', 'layedit', 'laydate','upload','tableSelect'], function(){
+        // var publish_time = $("#publish_time_hidden").val() ? new Date($("#publish_time_hidden").val()*1000) : '';
+        var form = layui.form
+            ,layer = layui.layer
+            ,layedit = layui.layedit
+            ,upload = layui.upload
+            ,laydate = layui.laydate
+            ,tableSelect = layui.tableSelect;
+
+        form.render();
+        //日期时间范围
+        laydate.render({
+            elem: '#date'
+            ,type: 'datetime'
+            ,range: true
+            // ,value:publish_time
+        });
+        tableSelect.render({
+            elem: '#demo',
+            searchKey: 'name',
+            checkedKey: 'buyer_id',
+            searchPlaceholder: '自定义文字和name',
+            table: {
+                url: "{:url('Delivery/get_buyer_info')}",
+                cols: [[
+                    { type: 'checkbox' },
+                    { field: 'buyer_id', title: 'ID', width: 100 },
+                    { field: 'buyer_name', title: '用户名称', width: 300 },
+                    { field: 'pay', title: '是否下单', width: 100 },
+                    { field: 'buyer_tel', title: '手机号', width: 180 },
+                ]]
+            },
+            done: function (elem, data) {
+                var NEWJSON = []
+                layui.each(data.data, function (index, item) {
+                    NEWJSON.push(item.buyer_id)
+                });
+                elem.val(NEWJSON.join(","))
+            }
+        });
+        //用户选择
+        form.on('radio(scope)',function (data) {
+            if(data.value == 1 || data.value == 3) //全部用户 && 新用户
+            {
+                $(".b").hide();
+            }
+            if(data.value == 2) //部分用户
+            {
+                $(".a").hide();
+                $(".b").show();
+            }
+        });
+        //监听radio
+        form.on('radio(delivery)',function (data) {
+            // console.log(data.value);
+            if(data.value == 1)
+            {
+                $(".delivery").css("display",'block');
+                $(".goods").css("display",'none');
+                $(".site").css("display",'none');
+                //
+                $(".g").val("");
+                $(".s").val("");
+                //
+                $("img").attr("lay-filter","required");
+            } else if(data.value == 2){
+                $(".delivery").css("display",'none');
+                $(".goods").css("display",'block');
+                $(".site").css("display",'none');
+                //
+                $(".url").val("");
+                $(".s").val("");
+                //
+                $("img").attr("lay-filter","required");
+            } else if(data.value == 3){
+                $(".delivery").css("display",'none');
+                $(".goods").css("display",'none');
+                $(".site").css("display",'block');
+                //
+                $(".url").val("");
+                $(".g").val("");
+                //
+                $("img").attr("lay-filter","required");
+            }
+        });
+        //活动商品
+        $('#good').on('input', function() {
+            var _this = this;
+            setTimeout(function() {
+                $.ajax({
+                    url: '{:url("Delivery/search_goods")}',
+                    type: 'get',
+                    data: {
+                        'keywords': $(_this).val(),
+                    },
+                    dataType: 'json',
+                    success: function (e) {
+                        $("#goods-list").html(""); //清空列表
+                        var larr = new Array();
+                        var n = 0;
+                        if ($(_this).val() != "") {
+                            e.forEach(function (va) {
+                                larr[n++] = va;
+                            });
+                            if (larr.length != 0) {
+                                var listr = "";
+                                larr.forEach(function(value) {
+                                    listr += '<li>' + value.name +'-'+ value.id + '</li>';
+                                });
+                                $("#goods-list").removeClass("hide").html(listr);
+                            } else {
+                                $("#goods-list").addClass("hide")
+                            }
+                        } else {
+                            $("#goods-list").addClass("hide")
+                        }
+                    }
+                });
+            }, 0);
+        });
+        //活动店铺
+        $('#sites').on('input', function() {
+            var _this = this;
+            setTimeout(function() {
+                $.ajax({
+                    url: '{:url("Delivery/search_site")}',
+                    type: 'get',
+                    data: {
+                        'keywords': $(_this).val(),
+                    },
+                    dataType: 'json',
+                    success: function (e) {
+                        $("#result-list").html(""); //清空列表
+                        var larr = new Array();
+                        var n = 0;
+                        if ($(_this).val() != "") {
+                            e.forEach(function (va) {
+                                larr[n++] = va;
+                            });
+                            if (larr.length != 0) {
+                                var listr = "";
+                                larr.forEach(function(value) {
+                                    listr += '<li>' + value.site_name +'-'+ value.site_id + '</li>';
+                                });
+                                $("#result-list").removeClass("hide").html(listr);
+                            } else {
+                                $("#result-list").addClass("hide");
+                            }
+                        } else {
+                            $("#result-list").addClass("hide");
+                        }
+                    }
+                });
+            }, 0);
+        });
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            ,url: '/images/uploadimage?encode=utf-8'
+            ,before: function(obj){
+
+                //预读本地文件示例，不支持ie8
+                obj.preview(function(index, file, result){
+                    $('#demo1').attr('src', result); //图片链接（base64）
+                });
+            }
+            ,done: function(res){
+                if(res.status)
+                {
+                    console.log(res.data.url);
+                    $('#demo2').val(res.data.url)
+                }
+                //如果上传失败
+                if(res.code > 0){
+                    return layer.msg('上传失败');
+                }
+                //上传成功
+            }
+            ,error: function(){
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function(){
+                    uploadInst.upload();
+                });
+            }
+        });
+
+        //监听提交
+        form.on('submit(add-popup)', function(data){
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+            $.ajax({
+                url: '{:url("Delivery/add_popup")}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: function (e) {
+                    if(e.status === true)
+                    {
+                        layer.msg(e.msg);
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                        table.reload('popup');
+                    }else{
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+            return false;
+        });
+
+
+    });
+</script>

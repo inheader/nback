@@ -1,0 +1,134 @@
+<style type="text/css">
+    .layui-card-body{
+        background-color: #fff;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #e6e6e6;
+    }
+
+    .layui-tab-card>.layui-tab-title{
+        background-color: #f9f9f9;
+        border-bottom: none;
+    }
+    .layui-tab-content{
+        padding: 0;
+    }
+    .layui-table, .layui-table-view{
+        margin: 0;
+    }
+    .layui-margin-10{
+        margin:10px ;
+    }
+    .layui-card-body .bottom-btn{
+        text-align: right;
+        padding-top:20px
+
+    }
+</style>
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+
+<input type="hidden" value="{$actId}" id="actId"/>
+<form class="layui-form seller-form"  action="" >
+    <div class="layui-form-item" style="border:0px">
+        <div class="layui-inline">
+            <label class="layui-form-label">商品名称：</label>
+            <div class="layui-input-inline seller-inline-4">
+                <input type="text" name="name" lay-verify="title" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="goods-search"><i class="iconfont icon-chaxun"></i>筛选</button>
+        </div>
+
+    </div>
+</form>
+<form class="layui-form btn-form"  action="" >
+    <div class="layui-card-body" style="padding-top:0px;margin:0px;border:0px">
+        <div class="layui-tab layui-tab-card" lay-filter="goods-tab">
+            <div class="layui-tab-content" >
+                <table id="selectGoodsTable" lay-filter="test"></table>
+            </div>
+        </div>
+        <div class="bottom-btn">
+            <button type="button" class="layui-btn" lay-filter="confirmSelect" lay-submit>确定</button>
+            <button type="button" class="layui-btn layui-btn-primary" lay-filter="cancel" onclick="layer.closeAll()">取消</button>
+        </div>
+    </div>
+</form>
+<script>
+    var table1, window_box;
+    var actId = $("#actId").val();
+    layui.use(['form', 'layedit','upload', 'laydate','table','element'], function(){
+        var upload = layui.upload;
+        var element = layui.element;
+        var filter = {};
+        table1 = layui.table.render({
+            elem: '#selectGoodsTable',
+            height: 400,
+            cellMinWidth: '50',
+            page: 'true',
+            limit:'20',
+            url: "{:url('Goods/AddActGoodsList')}?_ajax=1&actId="+actId,
+            id:'selectGoodsTable',
+            cols: [[
+                {type:'checkbox', fixed: 'left'},
+                {type:'numbers'},
+                {field:'image', width:70,title:'主图', align: 'center',templet: function(data){
+                        return '<a href="javascript:void(0);" onclick=viewImage("'+data.image+'")><image style="max-width:30px;max-height:30px;" src="'+data.image+'"/></a>';
+                    }},
+                {field:'name', width:150,title:'名称', align: 'left'},
+                {field:'price', width:100,title:'销售价', align: 'center', templet:function(data){return data.price}},
+                {field:'stock', width:100,title:'库存', align: 'center'},
+            ]],
+        });
+        //搜索
+        layui.form.on('submit(goods-search)', function(data){
+            var tempfilter=$.extend({},filter,data.field);//合并tab筛选和普通搜索
+            table1.reload({
+                where: tempfilter
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //判断是否有选中的商品
+        function isSelect(){
+            var checkStatus = layui.table.checkStatus('selectGoodsTable');
+            var checkData = checkStatus.data;
+            var ids = [];
+            $.each(checkData,function (i,obj) {
+                ids.push(obj.id);
+            });
+            return ids
+        }
+
+        //提交
+        layui.form.on('submit(confirmSelect)', function(data){
+            var ids = isSelect();
+            if(ids.length<=0){
+                layer.msg("请先选要操作的数据");
+                return false;
+            };
+            $.ajax({
+                url: '{:url("Promotion/addActGoods")}',
+                type: 'post',
+                data: {
+                    'id': ids.join(','),
+                    'actId': actId,
+                },
+                success: function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                    });
+                    layer.closeAll();
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+
+
+
+
+</script>

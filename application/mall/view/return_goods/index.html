@@ -1,0 +1,133 @@
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <a class="layui-btn layui-btn-sm" href="{:url('ReturnGoods/step')}?type=a" target="_blank">主动制单</a>
+    </div>
+</script>
+<script type="text/html" id="barDemo">
+    {{# if(d.status == 0){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="start">通过</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="off">拒绝</a>
+    {{# }else if(d.status == 1){ }}
+        {{# if(d.off == 0){ }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" href="{:url('ReturnGoods/step')}?id={{d.id}}" target="_blank">跟踪制单</a>
+        {{# }else{ }}
+            --
+        {{# } }}
+    {{# } }}
+</script>
+
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('ReturnGoods/index')}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            // ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+            //     title: '提示'
+            //     ,layEvent: 'LAYTABLE_TIPS'
+            //     ,icon: 'layui-icon-tips'
+            // }]
+            ,title: '退货申请'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'sn', title:'单号', width:190, fixed: 'left', unresize: true, sort: true}
+                ,{field:'img_url', title:'退货截图', width:130,templet:function (res) {
+                        return '<a href="'+res.img_url+'" target="_blank"><img src="'+res.img_url+'" /></a>';
+                    }}
+                ,{field:'name', title:'联系人', width:120}
+                ,{field:'phone', title:'手机号', width:180, sort: true}
+                ,{field:'address', title:'地址', width:100}
+                ,{field:'status', title:'状态', width:100, sort: true,templet:function (res) {
+                        if(res.status == 0)
+                        {
+                            return "等待审核";
+                        } else if(res.status == 1){
+                            return "清点货物中";
+                        } else if(res.status == 2)
+                        {
+                            return "完成退货";
+                        } else if(res.status == 3)
+                        {
+                            return "拒绝退货";
+                        }
+                    }}
+                ,{field:'createTime', title:'申请时间', width:160}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', minWidth:150}
+            ]]
+            ,page: true
+        });
+
+        // //头工具栏事件
+        // table.on('toolbar(test)', function(obj){
+        //     var checkStatus = table.checkStatus(obj.config.id);
+        //     switch(obj.event){
+        //         case 'makeBillAdd':
+        //             var data = checkStatus.data;
+        //             layer.alert(JSON.stringify(data));
+        //             break;
+        //     }
+        // });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'start'){ //审核通过
+                $.ajax({
+                    url: '{:url("ReturnGoods/on")}',
+                    type: 'post',
+                    data: {id:data.id},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            layer.msg(e.msg);
+                            layui.table.reload();
+                            // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            // parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+            } else if(obj.event === 'off'){ //审核拒绝
+                $.ajax({
+                    url: '{:url("ReturnGoods/off")}',
+                    type: 'post',
+                    data: {id:data.id},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            layer.msg(e.msg);
+                            layui.table.reload();
+                            // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            // parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

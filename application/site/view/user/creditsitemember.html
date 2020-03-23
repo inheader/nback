@@ -1,0 +1,72 @@
+<div class="layui-form" style="margin-top: 20px;">
+    {if condition="strtoupper($result['id'])"}
+        <div class="layui-form-item">
+                <label class="layui-form-label">赊账审核：</label>
+                <div class="layui-input-block">
+                    该用户已获得该店铺赊账权限
+                </div>
+        </div>
+        {else /}
+        <div class="layui-form-item">
+                <label class="layui-form-label">赊账审核：</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="is_credit" value="1" title="无"><div class="layui-unselect layui-form-radio"><div>无</div></div>
+                    <input type="radio" name="is_credit" value="2" title="有"><div class="layui-unselect layui-form-radio"><div>有</div></div>
+                </div>
+        </div>
+    {/if}
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <div class="layui-input-block">
+                <input type="hidden" name="sm_id" value="{$data['sm_id']}" title="有">
+                <input type="hidden" name="site_id" value="{$data['site_id']}" title="有">
+                <input type="hidden" name="buyer_id" value="{$data['buyer_id']}" title="有">
+                <button class="layui-btn layui-btn-sm credit-balance-save">更改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //渲染表单
+    var laytpl = '';
+    layui.use(['form','laytpl'], function(){
+        var $ = layui.jquery
+        var form = layui.form;
+        form.render();
+        // 保存权限
+        $(document).on('click', '.credit-balance-save', function(data){
+            var is_credit = $('input[name="is_credit"]:checked').val(); 
+            var sm_id = $('input[name="sm_id"]').val(); 
+            var site_id = $('input[name="site_id"]').val();
+            var buyer_id = $('input[name="buyer_id"]').val();
+            let datas = {
+                'is_credit' : is_credit,
+                'sm_id' : sm_id,
+                'site_id' : site_id,
+                'buyer_id' : buyer_id,
+            }
+            if(!data){
+                layer.msg('请选择数据', {time: 1300});
+                return false;
+            }
+            $.ajax({
+                url: '{:url("User/doBalanceCredit")}',
+                type: 'post',
+                data: datas,
+                dataType: 'json',
+                success: function(e){
+                    if(e.status === true){
+                       layer.msg(e.msg, {time: 1300}, function(){
+                            window.location.href='{:url("User/sitemember")}';
+                        });
+                    }else{
+                        layer.msg(e.msg, {time: 1300});
+                    }
+                }
+            });
+            return false;
+        });
+    });
+
+</script>

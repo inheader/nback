@@ -1,0 +1,105 @@
+<div style="padding:30px" class="layui-form layui-form-pane">
+
+    <input type="hidden" id="id" value="{$info.amcc_id}">
+    <input type="hidden" id="spc_id" value="{$info.spc_id}">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">标签：</label>
+            <div class="layui-input-inline">
+                <select id="tags" name="tagsName" lay-filter="brand_id">
+                    <option value="">请选择标签</option>
+                    {if condition="count($tagsList)>0"}
+                    {volist name="$tagsList" id="vo"}
+                        <option value="{$vo.name}" {if $info.tags eq $vo.name}selected{/if}>{$vo.name}</option>
+                    {/volist}
+                    {/if}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">排序：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sort" id="sort" value="{$info.sort}" lay-verify="required" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <button class="layui-btn layui-btn-fluid edit-class-btn-1" lay-submit="" lay-filter="edit-class-btn">保存</button>
+</div>
+
+<!--<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>-->
+<!--<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>-->
+    <script>
+        //渲染表单
+        layui.use('form', function(){
+        var form = layui.form;
+        form.render();
+
+        //监听提交
+        form.on('submit(edit-class-btn)', function(data){
+
+                var id = $("#id").val();
+                var spc_id = $("#spc_id").val();
+                var tags = $("#tags").val();
+                var sort = $("#sort").val();
+
+                    $.ajax({
+                        url: '{:url("site/editClassTagsPost")}',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            'id': id,
+                            'spc_id': spc_id,
+                            'tags': tags,
+                            'sort': sort,
+                        },
+                        success: function(e){
+                            if(e.status){
+                                layer.close(window_box);
+                                layer.msg(e.msg);
+                            }else{
+                                layer.msg(e.msg);
+                            }
+                        }
+                    });
+
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+            return false;
+        });
+
+
+        //编辑保存数据
+        // $(document).on('click', '.edit-class-btn-1', function(){
+        //     var id = $("#id").val();
+        //     var spc_id = $("#spc_id").val();
+        //     var tags = $("#tags").val();
+        //
+        //     $.ajax({
+        //         url: '{:url("site/editClassTagsPost")}',
+        //         type: 'post',
+        //         dataType: 'json',
+        //         data: {
+        //             'id': id,
+        //             'spc_id': spc_id,
+        //             'tags': tags,
+        //         },
+        //         success: function(e){
+        //             if(e.status){
+        //                 // layer.close(window_box);
+        //                 layer.msg(e.msg);
+        //             }else{
+        //                 layer.msg(e.msg);
+        //             }
+        //         }
+        //     });
+        //     return false;
+        // });
+
+    });
+</script>

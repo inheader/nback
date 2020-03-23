@@ -1,0 +1,18 @@
+{if $type eq 1}
+<div class="layui-form-item">
+    <label class="layui-form-label">装配方式：</label>
+    <div class="layui-input-block">
+        <input type="radio" name="sex" value="1" title="拼车配送" checked="">
+        <input type="radio" name="sex" value="2" title="专车配送" disabled>
+    </div>
+</div>
+{else /}
+<div class="layui-form-item">
+    <label class="layui-form-label">装配方式：</label>
+    <div class="layui-input-block">
+        <input type="radio" name="sex" value="1" title="拼车配送" checked="">
+        <input type="radio" name="sex" value="2" title="专车配送">
+    </div>
+</div>
+{/if}
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>

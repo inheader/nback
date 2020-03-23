@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="__STATIC__layui/css/layui.css">
+<div class="layui-card-body">
+    <table class="layui-hide" id="goods" lay-filter="goods"></table>
+</div>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function() {
+        var table = layui.table;
+
+        table.render({
+            elem: '#goods'
+            ,url: "{:url('ReturnGoods/step_2_get_return_goods')}?orderId={$good.orderId}&bindBn={$good.bindBn}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', { //, 'print'自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '商品数据表'
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'goods_name', title:'商品名', width:120}
+                ,{field:'osp_price', title:'价格', width:100}
+                ,{field:'goods_num', title:'购买数量', width:120, sort: true}
+                ,{field:'goods_return_num', title:'退货数量', width:120, sort: true}
+                ,{field:'goods_bn', title:'货号', width:100}
+
+            ]]
+            ,page: true
+        });
+
+    });
+</script>

@@ -1,0 +1,219 @@
+<div class="layui-form seller-form"  action="" >
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <label class="layui-form-label seller-inline-2">手机号：</label>
+            <div class="layui-input-inline seller-inline-4">
+                <input type="text" name="mobile" lay-verify="mobile" placeholder="请输入搜索手机号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label seller-inline-2">更新时间：</label>
+            <div class="layui-input-inline seller-inline-4">
+                <input type="text" id="date" name="date" lay-verify="title" placeholder="请选择更新时间段" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="sales-search"><i class="iconfont icon-chaxun"></i>筛选</button>
+        </div>
+
+    </div>
+</div>
+
+<div class="table-body">
+    <table class="layui-table" id="sales" lay-filter="sales"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
+        <button class="layui-btn layui-btn-sm" lay-event="add">新增</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="buyer">客户</a>
+    <a class="layui-btn layui-btn-xs" lay-event="cash">提现记录</a>
+    <a class="layui-btn layui-btn-xs" lay-event="flow">流水</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['table','form','laydate'], function() {
+        var table = layui.table, form = layui.form,date = layui.laydate;
+        table.render({
+            elem: '#sales'
+            ,url:"{:url('sales/investment')}"
+            ,toolbar: '#toolbarDemo'
+            ,title: '招商数据表'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'sales_id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'buyer_name', title:'招商昵称', width:120, edit: 'text'}
+                ,{field:'real_name', title:'真实姓名', width:120, edit: 'text'}
+                // ,{field:'email', title:'邮箱', width:150, edit: 'text', templet: function(res){
+                //         return '<em>'+ res.email +'</em>'
+                //     }}
+                ,{field:'mobile', title:'手机号', width:80, edit: 'text', sort: true}
+                ,{field:'wechat', title:'微信号', width:100}
+                ,{field:'type', title:'类型'}
+                ,{field:'created_at', title:'加入时间', width:120}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:300}
+            ]]
+            ,page: true
+        });
+
+        date.render({
+            elem: '#date',
+            range: '到'
+        });
+
+        //头工具栏事件
+        table.on('toolbar(sales)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'add':
+                    console.log("sss");
+                    //多窗口模式，层叠置顶
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        ,title: '添加招商'
+                        ,area: ['900px', '550px']
+                        ,shade: 0
+                        ,maxmin: true
+                        // ,offset: [ //为了演示，随机坐标
+                        //     Math.random()*($(window).height()-300)
+                        //     ,Math.random()*($(window).width()-390)
+                        // ]
+                        ,content: "{:url('Sales/add')}?type=2"
+                        ,zIndex: layer.zIndex //重点1
+                        ,success: function(layero){
+                            layer.setTop(layero); //重点2
+                        }
+                    });
+                    break;
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(sales)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    $.ajax({
+                        url: '{:url("sales/del")}',
+                        type: 'get',
+                        data: {sid:data.sales_id},
+                        dataType: 'json',
+                        success: function (e) {
+                            if (e.status === true) {
+                                layer.msg(e.msg);
+                            } else {
+                                layer.msg(e.msg);
+                            }
+                        }
+                    });
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '编辑'
+                    ,area: ['900px', '550px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('Sales/edit')}?sid=" +data.sales_id
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+
+            } else if(obj.event === 'buyer'){ //客户
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: data.real_name+'的客户'
+                    ,area: ['900px', '550px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('Sales/myBuyer')}?sid=" +data.sales_id
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            } else if(obj.event === 'cash'){ //提现
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: data.real_name+'的提现记录'
+                    ,area: ['900px', '550px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('Sales/salesCashLog')}?sid=" +data.sales_id
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            } else if(obj.event === 'flow'){ //流水
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: data.real_name+'的流水记录'
+                    ,area: ['900px', '550px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('Sales/salesFlow')}?sid=" + data.sales_id
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            }
+        });
+
+        form.on('submit(sales-search)', function(data){
+            layui.table.reload('sales', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+</script>

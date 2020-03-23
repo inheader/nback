@@ -1,0 +1,168 @@
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__/jquery-2.1.3.min.js"> </script>
+<link rel="stylesheet" href="__STATIC_JS__croppic/croppic.css">
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__croppic/croppic.js"> </script>
+
+<style>
+    #container{
+        padding: 0px;
+        border-radius:0px;
+        border-width:0px;
+    }
+    #img_preview{
+        display: inline;
+        float: left;
+        margin-top: 40px;
+        overflow: hidden;
+    }
+    .imgdiv{
+        display: inline;
+        float: left;
+        text-align: center;
+        border: 1px solid #ccc;
+        padding: 5px;
+        padding-bottom: 0;
+        margin-right: 10px;
+    }
+    #operate{
+    	margin-top: 5px;
+    }
+    #operate a{
+     	cursor:pointer
+    }
+    #operate a:hover{
+    	color: #009688;
+    }
+    .layui-btn{
+    	margin-top: 10px;
+    }
+</style>
+<form class="layui-form seller-alone-form" action="{:url('credit/doEdit')}" method="post">
+    <input type="hidden" name="data[mall_id]" value="{$data.mall_id}">
+    <input type="hidden" name="data[site_id]" value="{$data.site_id}">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;"> <legend>基础信息</legend></fieldset>
+    <div class="layui-form-item">
+        <label class="layui-form-label">申请人姓名：</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$data.username}" lay-verify="title" autocomplete="off" class="layui-input layui-disabled" disabled>
+            
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">身份证号码：</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$data.card_id}"  lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">手机号码：</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$data.phone}"  lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">申请金额：</label>
+        <div class="layui-input-inline">
+            <input type="text" value="{$data.apply_money}"  lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+        </div>
+    </div>
+
+    {if $data.type == 0}
+        <div class="layui-form-item">
+            <label class="layui-form-label">公司名称：</label>
+            <div class="layui-input-inline">
+                <input type="text" value="{$data.company}"  lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">营业执照代码：</label>
+            <div class="layui-input-inline">
+                <input type="text" value="{$data.business_code}"  lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+            </div>
+        </div>
+
+        <div class="layui-upload">
+            <label class="layui-form-label">营业执照：</label>
+            <div class="layui-upload-list">
+                <a href="{$data.business}" target="_blank"><img class="layui-upload-img"  src="{$data.business}" width="180" height=""></a>
+            </div>
+        </div>
+    {/if}
+
+    <div class="layui-upload">
+        <label class="layui-form-label">身份证正反面：</label>
+        <div class="layui-upload-list">
+            <a href="{$data.card_img}" target="_blank"><img class="layui-upload-img"  src="{$data.card_img}" width="180" height=""></a>
+        </div>
+        <label class="layui-form-label"></label>
+        <div class="layui-upload-list">
+            <a href="{$data.cardup_img}" target="_blank"><img class="layui-upload-img"  src="{$data.cardup_img}" width="180" height=""></a>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注：</label>
+        <div class="layui-input-inline">
+            <textarea name="data[remarks]" rows="3">{$data.remarks}</textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">一审审核：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="data[schedule]" value="3" title="拒绝"><div class="layui-unselect layui-form-radio"><div>拒绝</div></div>
+            <input type="radio" name="data[schedule]" value="2" title="通过" checked><div class="layui-unselect layui-form-radio" ><div>通过</div></div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input type="hidden" name="data[id]" id="id" value="{$data.id}">
+            <input type="hidden" name="data[buyer_id]" id="id" value="{$data.buyer_id}">
+            <button class="layui-btn" lay-submit="" lay-filter="save">保存</button>
+            <a href="javascript:history.back(-1);" class="layui-btn layui-btn-primary">返回</a>
+        </div>
+    </div>
+</form>
+
+
+<script>
+    //渲染表单
+    var laytpl = '';
+    layui.use(['form','laytpl','upload'], function(){
+        var $ = layui.jquery
+                ,upload = layui.upload;
+        var form = layui.form;
+            laytpl = layui.laytpl;
+
+        form.render();
+        //保存商品
+        form.on('submit(save)', function(data){
+            formData = data.field;
+            if(!formData){
+                layer.msg('请先完善数据', {time: 1300});
+                return false;
+            }
+            $.ajax({
+                url: '{:url("Credit/doCredit")}',
+                type: 'post',
+                data: formData,
+                dataType: 'json',
+                success: function(e){
+                    if(e.status == true){
+                       layer.msg(e.msg, {time: 1300, end:function() {
+                               window.location.href = '{:url("Credit/index")}'
+                           }
+                        });
+                    }else{
+                        layer.msg(e.msg, {time: 1300});
+                    }
+                }
+            });
+            return false;
+        });
+    });
+
+
+</script>

@@ -1,0 +1,10 @@
+*.DS_Store
+.idea/vcs.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/workspace.xml
+.idea/php.xml
+.idea/jsshop.iml
+.idea/*
+vendor/*
+config/database.php

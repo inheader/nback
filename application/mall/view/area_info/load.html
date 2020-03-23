@@ -1,0 +1,130 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.seller.css">
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<style type="text/css">
+  .layui-card-body {
+    background-color: #fff;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #e6e6e6;
+  }
+
+  .layui-tab-card>.layui-tab-title {
+    background-color: #f9f9f9;
+    border-bottom: none;
+  }
+
+  .layui-tab-content {
+    padding: 0;
+  }
+
+  .layui-table,
+  .layui-table-view {
+    margin: 0;
+  }
+
+  .layui-margin-10 {
+    margin: 10px;
+  }
+</style>
+
+<div class="layui-card-body">
+  <form class="layui-form" action="" id="edit-form">
+
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+      <legend>加载页面信息</legend>
+    </fieldset>
+
+    <div class="layui-form-item load" style="margin-top:15px;margin-bottom:15px">
+      <label class="layui-form-label">加载图片：</label>
+      <button type="button" class="layui-btn" id="loadUpload">上传图片</button>
+      <div class=" layui-upload-list" style="padding-left:110px">
+        <div class="loading-block" style="display: none;width:60px;height:60px;text-align: center;line-height: 60px">
+          <div class="loading layui-anim-rotate layui-anim-loop">
+            <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+          </div>
+        </div>
+        <img style="width:250px;height: 130px;" src="{$info.load_img}">
+        <input type="hidden" name="load_img" />
+      </div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">背景颜色：</label>
+      <div class="layui-input-inline">
+        <input type="text" value="" placeholder="请选择颜色" class="layui-input" id="load-form-input" name="back_color" readonly>
+      </div>
+      <div class="layui-inline" style="left: -11px;">
+        <div id="load-form"></div>
+      </div>
+    </div>
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="area-add"><i
+            class="iconfont icon-add"></i>确定</button>
+      </div>
+    </div>
+  </form>
+</div>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+  layui.use(['form', 'layer', 'colorpicker', 'upload'], function () {
+    var form = layui.form
+      , layer = layui.layer,
+      colorpicker = layui.colorpicker
+      , upload = layui.upload;
+
+    //渲染
+    colorpicker.render({
+      elem: '#load-form'
+      , color: '#1c97f5'
+      , done: function (color) {
+        $('#load-form-input').val(color);
+      }
+    });
+
+    form.on('submit(area-add)', function (data) {
+      JsPost("{:url('AreaInfo/addLoad')}", data.field, function (data) {
+        if (data.status) {
+          layer.msg(data.msg);
+          parent.location.reload();
+        } else {
+          layer.msg(data.msg);
+        }
+      });
+      return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    });
+
+    //店铺海报图片上传
+    var poster = $('#loadUpload').parents('.load')
+    function uploadPoster() {
+      upload.render({
+        elem: '#loadUpload' //绑定元素
+        , url: '/images/uploadimage?encode=utf-8' //上传接口
+        , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+          $(poster).find(".loading-block").show();
+          $(poster).find("img").hide();
+        }
+        , done: function (res) {
+          console.log(res)
+          if (res.status) {
+            $(poster).find("img").attr("src", res.data.url);
+            $(poster).find("img").show();
+            $(poster).find(".loading-block").hide();
+            $(poster).find("input[name='load_img']").val(res.data.url)
+          }
+        }
+        , error: function () {
+          //请求异常回
+          $(poster).find(".loading-block").hide();
+          $(poster).find("img").show();
+
+        }
+      });
+    }
+    uploadPoster();
+
+  });
+</script>

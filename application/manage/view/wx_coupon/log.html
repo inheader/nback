@@ -1,0 +1,23 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<table class="layui-hide" id="test"></table>
+
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__/jquery-2.1.3.min.js"> </script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url: "{:url('WxCoupon/log')}?cid={$cid}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,cols: [[
+                {field:'buyer_id', width:80, title: 'ID', sort: true}
+                ,{field:'buyer_name', width:120, title: '用户名'}
+                ,{field:'num', width:120, title: '领取数量'}
+            ]]
+            ,id: 'testReload'
+            ,page: true
+        });
+    });
+</script>

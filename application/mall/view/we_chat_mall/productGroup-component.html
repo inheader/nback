@@ -1,0 +1,45 @@
+<!--商品组公告设置-->
+
+
+    <div class="goodsGroup-edit">
+        <input type="hidden" value="{$data.field_id}" class="field_id" name="field_id" id="field_id"/>
+        <input type="hidden" value="ProductGroup" class="field_type" name="field_type" id="field_type"/>
+        <div class="warning-msg-content">
+            显示所选分类的推荐商品
+        </div>
+        <div class="edit-cell">
+            <div class="lab">位置</div>
+            <div class="text">
+                <input type="number" name="sort" value="{$data.field_list.sort}"/>
+            </div>
+        </div>
+        <div class="edit-cell">
+            <div class="lab"><span style="color:red">*</span>标题</div>
+            <div class="text">
+                <input type="text" lay-verify="required" class="layui-input" maxlength="10" name="groupName" id="groupName" value="{$data.field_list.groupName}"/>
+            </div>
+        </div>
+
+        <div class="edit-cell">
+            <div class="lab"><span style="color:red">*</span>商品数量</div>
+            <div class="text">
+                <input type="number" class="layui-input" lay-verify="required" name="maxProductNum" id="maxProductNum" value="{$data.field_list.maxProductNum}"/>
+            </div>
+        </div>
+
+        <div class="edit-cell">
+            <div class="lab">推荐类型</div>
+            <div class="text">
+                <select name="class_id" id="class_id" lay-verify="required">
+                    {volist name="class_list" id="v"}
+                        {if condition="$v.class_id eq $data.field_list.class_id"}
+                            <option value="{$v.class_id}" selected>{$v.class_name}</option>
+                        {else/}
+                        <option value="{$v.class_id}">{$v.class_name}</option>
+                        {/if}
+                    {/volist}
+                </select>
+            </div>
+        </div>
+
+    </div>

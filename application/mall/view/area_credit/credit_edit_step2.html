@@ -1,0 +1,75 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.seller.css">
+
+<div class="layui-form seller-alone-form" action="" id="edit_form">
+    <input type="hidden" name="buyer_id" value="{$find.buyer_id}">
+    <input type="hidden" name="mall_id" value="{$find.mall_id}">
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>签押合同</label>
+        <div class="layui-input-inline">
+            <img src="{$find.contract}" width="260px" height="160px">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实审金额</label>
+        <div class="layui-input-inline">
+            <input type="number" name="actual_money" lay-verify="actual_money" autocomplete="off" placeholder="{$find.apply_money}" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">进度</label>
+        <div class="layui-input-block">
+            <input type="radio" name="schedule" value="8" title="通过三审" {if $find.schedule eq 8}checked{/if}>
+            <input type="radio" name="schedule" value="9" title="拒绝" {if $find.schedule eq 9}checked{/if}>
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注</label>
+        <div class="layui-input-inline">
+            <textarea name="remark">{$find.remark}</textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="save-areaCredit">确定</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+
+</form>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_JS__jshop.js"></script>
+<script>
+    layui.use(['form','layer','upload'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,upload = layui.upload;
+
+        //监听提交
+        form.on('submit(save-areaCredit)', function(data){
+            JsPost("{:url('AreaCredit/creditEditStep2')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    parent.location.reload();
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

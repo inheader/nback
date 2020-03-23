@@ -1,0 +1,140 @@
+<table class="layui-hide" id="building" lay-filter="building"></table>
+
+<script type="text/html" id="barDemo">
+    {{# if(d.status == 0){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="state">审核</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="end">拒绝</a>
+    {{#} }}
+    <a class="layui-btn layui-btn-xs" lay-event="info">查看</a>
+</script>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+    layui.use(['table', 'laydate', 'form'], function(){
+        var layer = layui.layer,
+            table = layui.table,
+            laydate = layui.laydate,
+            form = layui.form;
+        //时间插件
+        laydate.render({
+            elem: '#date',
+            range: '到',
+            format: 'yyyy-MM-dd'
+        });
+        table.render({
+            elem: '#building'
+            ,url: "{:url('BuildingMall/index')}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '工地表'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'building_sn', title:'装修排单号', width:180}
+                ,{field:'buyer_name', title:'用户', width:120}
+                ,{field:'buyer_mobile', title:'用户号码', width:120}
+                ,{field:'building_address', title:'装修地址', width:320}
+                ,{field:'desc', title:'备注', width:320}
+                ,{field:'status', title:'状态', width:120,templet:function (res) {
+                        return res.status == 1 ? "已审核" : res.status == 4 ? '已拒绝' : '审核中';
+                    }}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', minWidth:150}
+            ]]
+            ,page: true
+            ,id: 'building'
+        });
+        //筛选条件
+        form.on('submit(*)', function(data){
+            table.reload('building',{
+                where: data.field,
+                page: {curr: 1}
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //监听行工具事件
+        table.on('tool(building)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'state'){ //审核
+                // layer.prompt({
+                //     formType: 2
+                //     ,value: data.email
+                // }, function(value, index){
+                    $.ajax({
+                        url: '{:url("BuildingMall/state")}?id='+data.id+'&state=10',
+                        type: 'get',
+                        // data: data.id,
+                        dataType: 'json',
+                        success: function (e) {
+                            if (e.status === true) {
+                                layer.msg(e.msg);
+                                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                // parent.layer.close(index); //再执行关闭
+                                //执行重载
+                                table.reload('building');
+                            } else {
+                                layer.msg(e.msg);
+                            }
+                        }
+                    });
+                    return false;
+                    // obj.update({
+                    //     email: value
+                    // });
+                    // layer.close(index);
+                // });
+            } else if(obj.event === 'end'){ //拒绝
+                $.ajax({
+                    url: '{:url("BuildingMall/state")}?id='+data.id+'&state=40',
+                    type: 'get',
+                    // data: data.id,
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            layer.msg(e.msg);
+                            //执行重载
+                            table.reload('building');
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+                return false;
+            } else if(obj.event === 'info') //查看
+            {
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '工地信息'
+                    ,area: ['500px', '680px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('BuildingMall/info')}?id="+data.id
+                    // ,btn: ['继续弹出', '全部关闭'] //只是为了演示
+                    ,yes: function(){
+                        $(that).click();
+                    }
+                    ,btn2: function(){
+                        layer.closeAll();
+                    }
+
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            }
+        });
+
+    });
+</script>

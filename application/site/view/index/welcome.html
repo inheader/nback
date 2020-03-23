@@ -1,0 +1,215 @@
+<script src="__STATIC_LIB__echarts/build/dist/echarts.js"></script>
+<div class="layadmin-tabsbody-item layui-show">
+    <div class="layui-row layui-col-space15">
+            <div class="layui-col-md16">
+                <div class="layui-row layui-col-space15">
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <i class="iconfont icon-caozuo"></i>快捷操作
+                            </div>
+                            <div class="layui-card-body">
+                                <div class="layui-carousel layadmin-carousel layadmin-shortcut">
+                                    <ul class="layui-row layui-col-space10 layui-this">
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('goods/index')}">
+                                                <i class="iconfont icon-goods"></i>
+                                                <cite>商品</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('order/index')}">
+                                                <i class="iconfont icon-dingdan1"></i>
+                                                <cite>订单</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('user/index')}">
+                                                <i class="iconfont icon-user"></i>
+                                                <cite>会员</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('notice/index')}">
+                                                <i class="iconfont icon-gonggao"></i>
+                                                <cite>公告</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('promotion/index')}">
+                                                <i class="iconfont icon-promotion"></i>
+                                                <cite>促销</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('ship/index')}">
+                                                <i class="iconfont icon-bangzhupeisongfuwu"></i>
+                                                <cite>配送</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('payments/index')}">
+                                                <i class="iconfont icon-zhifu-01"></i>
+                                                <cite>支付方式</cite>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="javascript:;" lay-href="{:url('setting/index')}">
+                                                <i class="iconfont icon-review"></i>
+                                                <cite>平台设置</cite>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6">
+                        <div class="layui-card">
+                            <div class="layui-card-header">
+                                <i class="iconfont icon-daiban"></i>待办事项
+                            </div>
+                            <div class="layui-card-body">
+                                <div class="layui-carousel layadmin-carousel layadmin-backlog">
+                                    <ul class="layui-row layui-col-space10 layui-this">
+                                        <li class="layui-col-xs6">
+                                            <a href="javascript:;" lay-href="{:url('order/index')}" class="layadmin-backlog-body">
+                                                <h3>待支付</h3>
+                                                <p><cite>{$unpaid_count}</cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a href="javascript:;" lay-href="{:url('order/index')}" class="layadmin-backlog-body">
+                                                <h3>待发货</h3>
+                                                <p><cite>{$unship_count}</cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a href="javascript:;" lay-href="{:url('bill_aftersales/index')}" class="layadmin-backlog-body">
+                                                <h3>待售后</h3>
+                                                <p><cite>{$after_sales_count}</cite></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs6">
+                                            <a href="javascript:;" lay-href="{:url('goods/index')}" class="layadmin-backlog-body">
+                                                <h3>库存报警</h3>
+                                                <p><cite>{$goods_statics.totalWarn}</cite></p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <i class="iconfont icon-dingdan1"></i>订单统计
+                    </div>
+                    <div class="layui-card-body">
+                        <div id="graphic" class="">
+                            <div id="main" class="main" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        <i class="iconfont icon-user"></i>会员统计
+                    </div>
+                    <div class="layui-card-body">
+                        <div id="graphics" class="">
+                            <div id="users" class="main" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script type="text/javascript">
+                // 路径配置
+                require.config({
+                    paths: {
+                        echarts: '__STATIC_LIB__echarts/build/dist'
+                    }
+                });
+                require(
+                    ['echarts', 'echarts/chart/line'],
+                    function(ec) {
+                        var myChart = ec.init(document.getElementById('main'));
+                        var option = {
+                            title: {
+                                text: '最近7天订单量统计'
+                            },
+                            tooltip: {
+                                show: true
+                            },
+                            legend: {},
+                            yAxis: [{
+                                type: 'value'
+                            }],
+                            xAxis: [],
+                            series: []
+                        };
+                        $.get('{:url("order/statistics")}').done(function(data) {
+                            myChart.setOption({
+                                legend: data.legend,
+                                xAxis: data.xAxis,
+                                series: data.series
+                            });
+                        });
+                        myChart.setOption(option);
+                    }
+                );
+                require(
+                    [
+                        'echarts',
+                        'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
+                    ],
+
+
+                    function(ec) {
+                        // 基于准备好的dom，初始化echarts图表
+                        var myChart = ec.init(document.getElementById('users'));
+
+                        var option = {
+
+                            tooltip: {
+                                show: true
+                            },
+                            legend: {},
+                            xAxis: [],
+                            yAxis: [],
+                            series: []
+                        };
+                        $.get('{:url("user/statistics")}').done(function(data) {
+                            myChart.setOption({
+                                legend: data.legend,
+                                xAxis: data.xAxis,
+                                series: data.series
+                            });
+                        });
+                        // 为echarts对象加载数据
+                        myChart.setOption(option);
+                    }
+                );
+            </script>
+        </div>
+</div>
+<style>
+    .loading-more {
+        overflow: hidden;
+    }
+
+    .loading-more>div {
+        display: inline-block;
+    }
+
+    .loading-more a {
+        float: right;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+</style>

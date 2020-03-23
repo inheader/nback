@@ -1,0 +1,91 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+    <table class="layui-hide" id="test"  lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="addBuyer">添加下线</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">移除</a>
+    <a class="layui-btn layui-btn-success layui-btn-xs" href="{:url('sales/salesOrderList')}?salesId={{d.sales_id}}&buyerId={{d.buyer_id}}" target="_blank">客户下单列</a>
+</script>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('Sales/myBuyer')}?sid={$sales.sales_id}&type={$sales.type}"
+            ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,toolbar: '#toolbarDemo'
+            ,cols: [[
+                {field:'buyer_id', width:80, title: 'ID', sort: true}
+                ,{field:'buyer_name', width:200, title: '客户'}
+                // ,{field:'sex', width:80, title: '性别', sort: true}
+                ,{field:'right', width:200, title: '操作', toolbar: '#barDemo', sort: true}
+            ]]
+            ,page: true
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            console.log(obj.event);
+            switch(obj.event){
+                case 'addBuyer':
+                    var data = checkStatus.data;
+                    //多窗口模式，层叠置顶
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        ,title: '添加客户'
+                        ,area: ['400px', '400px']
+                        ,shade: 0
+                        ,maxmin: true
+                        // ,offset: [ //为了演示，随机坐标
+                        //     Math.random()*($(window).height()-300)
+                        //     ,Math.random()*($(window).width()-390)
+                        // ]
+                        ,content: "{:url('Sales/addBuyer')}?sid={$sales.sales_id}"
+                        ,zIndex: layer.zIndex //重点1
+                        ,success: function(layero){
+                            layer.setTop(layero); //重点2
+                        }
+                    });
+                    break;
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的移除么', function(index){
+                    $.ajax({
+                        url: '{:url("sales/removeBuyer")}',
+                        type: 'post',
+                        data: {
+                            sid:data.sales_id,
+                            buyer_id:data.buyer_id
+                        },
+                        dataType: 'json',
+                        success: function (e) {
+                            if (e.status === true) {
+                                layer.msg(e.msg);
+                            } else {
+                                layer.msg(e.msg);
+                            }
+                        }
+                    });
+                    obj.del();
+                    layer.close(index);
+                });
+            }
+        });
+
+    });
+</script>

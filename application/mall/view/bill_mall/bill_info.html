@@ -1,0 +1,78 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<div class="layadmin-tabsbody-item layui-show">
+    <div class="layui-col-md12">
+        <div class="layui-card">
+            <!--<div class="layui-card-header">发票信息</div>-->
+            <div class="layui-card-body">
+                <table class="layui-table" lay-size="lg">
+                    <colgroup>
+                        <col width="150">
+                        <col width="200">
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>头部</th>
+                        <th>信息</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>发票抬头</td>
+                        <td>{$buyer_bill_info.header_name}</td>
+                    </tr>
+                    <tr>
+                        <td>发票类型</td>
+                        <td>{$buyer_bill_info.bill_tax_type == 1 ? '普通发票' : '专业发票'}</td>
+                    </tr>
+                    <tr>
+                        <td>抬头类型</td>
+                        <td>{$buyer_bill_info.header_type == 1 ? '个人' : '企业'}</td>
+                    </tr>
+                    <tr>
+                        <td>寄送地址</td>
+                        <td>{$address.area_info} {$address.address}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                {if $buyer_bill_info.header_type == 2}
+                <table class="layui-table" lay-size="lg">
+                    <colgroup>
+                        <col width="150">
+                        <col width="200">
+                        <col>
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>头部</th>
+                        <th>信息</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>税号</td>
+                        <td>{$buyer_bill_info.tax_number}</td>
+                    </tr>
+                    <tr>
+                        <td>开户银行</td>
+                        <td>{$buyer_bill_info.open_card}</td>
+                    </tr>
+                    <tr>
+                        <td>开户账号</td>
+                        <td>{$buyer_bill_info.open_card_account}</td>
+                    </tr>
+                    <tr>
+                        <td>企业地址</td>
+                        <td>{$buyer_bill_info.company_address}</td>
+                    </tr>
+                    <tr>
+                        <td>企业电话</td>
+                        <td>{$buyer_bill_info.company_phone}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>

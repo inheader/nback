@@ -1,0 +1,1 @@
+<?php/** * Created by PhpStorm. * User: Lyunp * Date: 2019/12/24 * Time: 15:05 */namespace app\common\model;/** * 工地模型层 * Class AreaMallBuilding * @package app\common\model */class AreaMallBuilding extends Common{}

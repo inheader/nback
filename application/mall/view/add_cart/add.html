@@ -1,0 +1,114 @@
+<form class="layui-form aftersales_form" id="aftersales_form" action="" style="margin:10px;">
+    <style>
+        .layui-form-item .layui-form-checkbox[lay-skin="primary"] {
+            margin:0;
+        }
+    </style>
+    <div class="layui-form-item">
+        <table id="AddCartData" lay-filter="AddCartData"></table>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">手机号：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">
+                <input type="text" name="phone" value=""  lay-verify="required" autocomplete="off" placeholder="请输入用户手机号码" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="save">保存</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    layui.use(['form', 'table'], function(){
+        layui.form.render();
+        layui.table.render({
+            elem: '#AddCartData'
+            ,cols: [[ //标题栏
+                // {field: 'id', title: 'ID', minWidth: 5},
+                {type:'numbers'},
+                {field: 'name', title: '商品名称', width: 350},
+                {field: 'bn', title: '商品编码', width: 100},
+                {field: 'price', title: '商品价格', width: 80},
+                {field: 'lock', title: '商品数量', width: 100, templet: '#inputTool', unresize: true},
+                {field:'operating',width:150,title:'操作', align: 'center',templet:function(data){
+                    var html = '';
+                    html += '<a class="layui-btn layui-btn-xs dele-class" data-id="' + data.id + '">删除</a>';
+                    return html;
+                }, fixed: 'right'}
+            ]]
+            ,data: stringToJson(htmlDecodeByRegExp('{$goods}'))
+            //,skin: 'line' //表格风格
+            ,even: true
+            ,id: 'CartDataReload'
+            //,page: true //是否显示分页
+            //,limits: [5, 7, 10]
+            ,limit: 150 //每页默认显示的数量
+        });
+
+        // 删除数据库中字段
+        function removes(data,val) {
+            let arr = [];
+            for (var i = 0; i < data.length; i++) {
+                if (data[i] != val){
+                    arr.push(data[i])
+                }
+            }
+            return arr;
+        };
+
+        // 删除商品
+        $(document).on('click', '.dele-class', function(){
+            var id = $(this).attr('data-id');
+            let tocart = localStorage.getItem('tocart')
+            let tocartarr = tocart.split(',');
+            let data = removes(tocartarr,id);
+            localStorage.setItem('tocart',data);
+            let newcart = localStorage.getItem('tocart');
+            
+            var resp = $.ajax({type:'get',url: "{:url('AddCart/readd')}", data:'data='+newcart, async: false });
+            if(resp.responseJSON.return ==0 ){
+                //执行重载
+                layui.table.reload('CartDataReload', {
+                    data: resp.responseJSON.data
+                });
+            }
+        });
+
+        //保存商品
+        layui.form.on('submit(save)', function(data){
+            let phone = data.field.phone;
+            let ids = localStorage.getItem('tocart');
+            if(!phone){
+                layer.msg('请填写手机号码', {time: 1300});
+                return false;
+            }
+            
+            $.ajax({
+                url: '{:url("AddCart/doAdd")}',
+                type: 'post',
+                data: 'ids='+ids +'&data='+JSON.stringify(data.field),
+                dataType: 'json',
+                success: function(e){
+                    if(e.status === true){
+                        localStorage.setItem('tocart','');
+                        layer.msg(e.msg, {time: 1300}, function(){
+                            window.location.href='{:url("AddCart/index")}';
+                        });
+                    }else{
+                        layer.msg(e.msg, {time: 1300});
+                    }
+                }
+            })
+            return false;
+        });
+
+    });
+</script>
+
+<script type="text/html" id="inputTool" >
+    <input type="number" name="goods_sum[]" value="" lay-verify="title" autocomplete="off" placeholder="请输入商品数量" class="layui-input">
+</script>

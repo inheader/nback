@@ -1,0 +1,183 @@
+<link rel="stylesheet" href="__STATIC__step-lay/step.css">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding-top: 40px;">
+            <div class="lay-step" style="width: 750px;">
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">1</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">选择订单信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">2</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">退货商品信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head step-item-head-active"><i class="layui-icon">3</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">确认退货单</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-head"><i class="layui-icon">4</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">完成</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="layui-card-body">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="show">查看</a>
+    </script>
+
+    <form class="layui-form" style="margin: 0 auto;max-width: 800px;padding-top: 40px;">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" lay-submit lay-filter="form-a">
+                    &emsp;下一步&emsp;
+                </button>
+            </div>
+        </div>
+    </form>
+
+</div>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form','table'], function(){
+        var form = layui.form
+            ,table = layui.table;
+
+
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('ReturnGoods/step_2_return_table')}?buyerId=<?php echo $_GET['buyerId']?>&bind=<?php echo $_GET['bind']?>"
+            // ,toolbar: true
+            ,title: '退货单信息'
+            // ,totalRow: true
+            ,cols: [[
+                {field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'order_sn', title:'订单编号', width:200}
+                ,{field:'return_sn', title:'退货编码', width:200}
+                ,{field:'refund_type_name', title:'返款方式', width:100}
+                ,{field:'price', title:'退货金额(不含物流费)', width:180}
+                ,{field:'refund_price', title:'预退款(可修改)', width:200,edit:'text',style:'background-color: #5FB878;',templet:function (res) {
+                        return '<a >'+res.refund_price+'(最高:'+res.refund_price_sum+')'+'</a>';
+                    }}
+                ,{fixed: 'right', title:'操作',toolbar: '#barDemo', minWidth:50}
+            ]]
+            ,page: true
+            // ,response: {
+            //     statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
+            // }
+            // ,parseData: function(res){ //将原始数据解析成 table 组件所规定的数据
+            //     return {
+            //         "code": res.status, //解析接口状态
+            //         "msg": res.message, //解析提示文本
+            //         "count": res.total, //解析数据长度
+            //         "data": res.rows.item //解析数据列表
+            //     };
+            // }
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'show'){
+                // layer.prompt({
+                //     formType: 2
+                //     ,value: data.email
+                // }, function(value, index){
+                //     obj.update({
+                //         email: value
+                //     });
+                //     layer.close(index);
+                // });
+
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: data.order_sn+'订单商品信息'
+                    ,area: ['600px', '380px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('ReturnGoods/step_2_get_return_goods')}?orderId="+data.order_id+"&bindBn="+data.bind_sn
+                    // ,btn: ['全部关闭'] //只是为了演示'继续弹出',
+                    ,yes: function(){
+                        $(that).click();
+                    }
+                    ,btn2: function(){
+                        layer.closeAll();
+                    }
+
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            }
+        });
+
+        //监听单元格编辑
+        table.on('edit(test)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+            $.ajax({
+                url: '{:url("ReturnGoods/step_2_update_table_price")}?orderId='+data.order_id+"&bindSn="+data.bind_sn,
+                async:false,
+                type: 'post',
+                data:{
+                    'refund_price': value
+                },
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status === true) {
+                        layer.msg(e.msg);
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+            // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+        });
+
+        //监听提交
+        form.on('submit(form-a)', function(){
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+            console.log(table.cache.test);
+            var datas = table.cache.test;
+            for(j = 0,len=datas.length; j < len; j++) {
+                if(datas[j].refund_price <= 0)
+                {
+                    layer.msg('其中有退货价格没填写');
+                    return false;
+                }
+            }
+            //跳转完成
+            window.location.href = "{:url('ReturnGoods/step_3')}?goods="+JSON.stringify(datas);
+            return false;
+        });
+
+    });
+</script>

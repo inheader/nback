@@ -1,0 +1,1 @@
+<?php/** * Created by PhpStorm. * User: Lyunp * Date: 2019/12/30 * Time: 16:51 */namespace app\common\model;class MallPopupGroup extends Common{}

@@ -1,0 +1,168 @@
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="addTask">新建任务</button>
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    {{# if(d.task_state == 0){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="send">一键推送</a>
+    {{# }else{ }}
+    --
+    {{# } }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url: "{:url('Coupon/getTaskList')}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '群发劵'
+            ,cols: [[
+                // {type: 'checkbox', fixed: 'left'}
+                {field:'task_id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'title', title:'任务标题', width:600}
+                ,{field:'task_state', title:'任务状态', width:150,templet:function(res){
+                        if(res.task_state == 0)
+                        {
+                            return "未推送";
+                        } else if(res.task_state == 1){
+                            return "已推送";
+                        }
+                    }}
+                ,{field:'created_at', title:'创建时间', width:180}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', minWidth:150}
+            ]]
+            ,page: true
+            ,id:'testReload'
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'addTask':
+                    //多窗口模式，层叠置顶
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        ,title: '创建任务'
+                        ,area: ['900px', '700px']
+                        ,shade: 0
+                        ,maxmin: true
+                        // ,offset: [ //为了演示，随机坐标
+                        //     Math.random()*($(window).height()-300)
+                        //     ,Math.random()*($(window).width()-390)
+                        // ]
+                        ,content: "{:url('Coupon/addTask')}"
+                        // ,btn: ['继续弹出', '全部关闭'] //只是为了演示
+                        ,yes: function(){
+                            $(that).click();
+                        }
+                        ,btn2: function(){
+                            layer.closeAll();
+                        }
+                        ,zIndex: layer.zIndex //重点1
+                        ,success: function(layero){
+                            // table.reload('testReload');
+                            layer.setTop(layero); //重点2
+                        }
+                        ,end:function(res){
+                            table.reload('testReload');
+                        }
+                    });
+                    break;
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除么?', function(index){
+                    $.ajax({
+                        url: "{:url('Coupon/del')}?ids="+data.task_id,
+                        async:false,
+                        type: 'get',
+                        data:{},
+                        dataType: 'json',
+                        success: function (e) {
+                            if (e.status === true) {
+                                layer.msg(e.msg);
+                                // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                // parent.layer.close(index); //再执行关闭
+                            } else {
+                                layer.msg(e.msg);
+                            }
+                        }
+                    });
+                    obj.del();
+                    layer.close(index);
+                    return false;
+                });
+            } else if(obj.event === 'send'){
+                //请求ajax
+                $.ajax({
+                    url: "{:url('Coupon/sendGoCoupon')}?id="+data.task_id,
+                    async:false,
+                    type: 'get',
+                    data:{},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            layer.msg(e.msg);
+                            // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            // parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+
+                // layer.prompt({
+                //     formType: 2
+                //     ,value: data.email
+                // }, function(value, index){
+                //     obj.update({
+                //         email: value
+                //     });
+                //     layer.close(index);
+                // });
+
+                return false;
+            }
+        });
+    });
+</script>

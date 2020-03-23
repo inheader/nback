@@ -1,0 +1,169 @@
+<div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
+    <button data-method="setTop" class="layui-btn">开通授权</button>
+</div>
+
+<div class="table-body">
+    <table class="layui-hide" id="creditRoot" lay-filter="creditRoot"></table>
+</div>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="multiRootDel">批量拉黑</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isDel">批量删除</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+    layui.use(['table','layer'], function(){
+        var table  = layui.table
+            ,layer = layui.layer;
+
+        table.render({
+            elem: '#creditRoot'
+            ,url: "{:url('AreaCredit/creditRootIndex')}"
+            ,toolbar: '#toolbarDemo'
+            ,id:'id'
+            ,cols: [[
+                {type:'checkbox'}
+                ,{field:'id', width:80, title: 'ID', sort: true}
+                ,{field:'buyerName', title: '用户名', Width: 80}
+                ,{field:'created_at', width:160, title: '授权日期'}
+                ,{field:'status', width:80, title: '状态'}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+            ]]
+            ,page: true
+        });
+
+        //头工具栏事件
+        table.on('toolbar(creditRoot)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'multiRootDel':
+                    var data = checkStatus.data;
+                    if(data.length === 0){
+                        parent.layer.msg('请先选择数据行！', {icon: 2});
+                        return ;
+                    }
+                    var ids = "";
+                    for(var i=0;i<data.length;i++){
+                        ids += data[i].id+",";
+                    }
+                    parent.layer.msg('拉黑中...', {icon: 16,shade: 0.3,time:5000});
+                    JsPost("{:url('AreaCredit/creditRootBlockMulti')}",{ids:ids},function(res){
+                        if(res.status){
+                            layer.msg(res.msg);
+                            location.reload();
+                        }
+                        layer.msg(res.msg);
+                    });
+                    break;
+                case 'isDel':
+                    var data = checkStatus.data;
+                    if(data.length === 0){
+                        parent.layer.msg('请先选择要删除的数据行！', {icon: 2});
+                        return ;
+                    }
+                    var ids = "";
+                    for(var i=0;i<data.length;i++){
+                        ids += data[i].id+",";
+                    }
+                    parent.layer.msg('删除中...', {icon: 16,shade: 0.3,time:5000});
+                    JsPost("{:url('AreaCredit/creditRootDelMulti')}",{ids:ids},function(res){
+                        if(res.status){
+                            layer.msg(res.msg);
+                            location.reload();
+                        }
+                        layer.msg(res.msg);
+                    });
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(creditRoot)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    JsGet("{:url('AreaCredit/delRoot')}?id="+data.id,function(res){
+                        if(res.status){
+                            location.reload();
+                        }
+                        layer.msg(res.msg);
+                    });
+                    obj.del();
+                    layer.close(index);
+                });
+            }else if(obj.event === 'edit'){
+
+                var that = this;
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '编辑'
+                    ,area: ['450px', '380px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('AreaCredit/creditRootEdit')}?id=" + data.id
+                    // ,btn: ['关闭'] //只是为了演示
+                    // ,btn2: function(){
+                    //     layer.closeAll();
+                    // }
+
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+
+            }
+        });
+
+        //触发事件
+        var active = {
+            setTop: function(){
+                var that = this;
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '添加授权'
+                    ,area: ['450px', '380px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('AreaCredit/creditRootAdd')}"
+                    // ,btn: ['关闭'] //只是为了演示
+                    // ,btn2: function(){
+                    //     layer.closeAll();
+                    // }
+
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            }
+        }
+
+        $('#layerDemo .layui-btn').on('click', function(){
+            var othis = $(this), method = othis.data('method');
+            active[method] ? active[method].call(this, othis) : '';
+        });
+
+    });
+
+
+</script>

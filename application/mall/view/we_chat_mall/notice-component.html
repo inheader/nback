@@ -1,0 +1,66 @@
+<!--通知公告设置-->
+<div class="notice-edit">
+    <input type="hidden" value="{$data.field_id}" class="field_id" name="field_id" id="field_id"/>
+    <input type="hidden" value="Notice" class="field_type" name="field_type" id="field_type"/>
+    <div class="warning-msg-content">
+        最多可添加10条公告
+    </div>
+    <div class="notice-item">
+        <div class="lab">位置</div>
+        <div class="text">
+            <input type="number" name="sort" value="{$data.field_list.sort}"/>
+        </div>
+    </div>
+    <div class="notice-list">
+        <?php
+           $empty = !empty($data['field_list']['content']);
+        ?>
+        {if condition="$empty"}
+            {volist name="data.field_list.content" id="v"}
+                <div class="notice-item">
+                    <div class="lab"><span style="color:red">*</span>公告内容</div>
+                    <div class="textarea">
+                        <div class="del-notice-btn" onclick="delNotice(this)">X</div>
+                        <textarea placeholder="最多200个字符" lay-verify="required" maxlength="200" style="height:100%;" name="content[{$key}]">{$v}</textarea>
+                    </div>
+                </div>
+            {/volist}
+        {else/}
+            <div class="notice-item">
+                <div class="lab"><span style="color:red">*</span>公告内容</div>
+                <div class="textarea">
+                    <div class="del-notice-btn" onclick="delNotice(this)">X</div>
+                    <textarea placeholder="最多200个字符" lay-verify="required" maxlength="200" style="height:100%;" name="content[0]"></textarea>
+                </div>
+            </div>
+        {/if}
+
+    </div>
+    <div class="add-btn" onclick="addNotice()">+ 添加公告</div>
+</div>
+
+<script>
+    function addNotice(){
+        let i = $(".notice-item").length;
+        if(i<10){
+            $(".notice-list").append('<div class="notice-item">'+
+                    '<div class="lab"><span style="color:red">*</span>公告内容</div>'+
+                    '<div class="textarea">'+
+                    '<div class="del-notice-btn" onclick="delNotice(this)">X</div>'+
+                    '<textarea placeholder="最多200个字符" lay-verify="required" maxlength="200" style="height:100%;" name="content['+i+']"></textarea>'+
+                    '</div>'+
+                    '</div>')
+        }else{
+            layer.msg('最多可添加10条公告');
+        }
+
+    }
+
+    function delNotice(obj){
+        $(obj).parents(".notice-item").remove();
+        $(".notice-item").each(function(index,el){
+            $(el).find("textarea").attr("name","content["+index+"]");
+        })
+    }
+
+</script>

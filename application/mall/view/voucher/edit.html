@@ -1,0 +1,432 @@
+<style type="text/css">
+	.layui-card-body{
+		background-color: #fff;
+		padding: 10px;
+		margin-top: 10px;
+		border: 1px solid #e6e6e6;
+	}
+	.layui-tab-card>.layui-tab-title{
+		background-color: #f9f9f9;
+		border-bottom: none;
+	}
+	.layui-tab-content{
+		padding: 0;
+	}
+	.layui-table, .layui-table-view{
+		margin: 0;
+	}
+    .layui-margin-10{
+        margin:10px ;
+    }
+    .red{
+        background-color: red;
+    }
+</style>
+
+<script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.js"></script>
+<div id="app">
+    <div class="layui-card-body">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>用户提交信息</legend>
+        </fieldset>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">料单：</label>
+                <div class="layui-input-inline seller-inline-4">
+                        <a href="{$data.good_img}" target="_blank"><img src="{$data.good_img}" style="width: 200px; height:200px;" /></a>
+                </div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-col-xs4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">下单人：</label>
+                    <div class="layui-input-inline seller-inline-4">
+                        <div class="layui-form-mid layui-word-aux">{$data.buyerInfo.buyer_name}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">下单电话：</label>
+                    <div class="layui-input-inline seller-inline-4">
+                        <div class="layui-form-mid layui-word-aux">{$data.buyerInfo.buyer_tel}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">下单地址：</label>
+                    <div class="layui-input-inline seller-inline-4">
+                        <div class="layui-form-mid layui-word-aux">{$data.buyerAddressInfo.area_info}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">收货人：</label>
+                    <div class="layui-input-inline seller-inline-4">
+                        <div class="layui-form-mid layui-word-aux">{$data.buyerAddressInfo.buyer_name}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">收货电话：</label>
+                    <div class="layui-input-inline seller-inline-4">
+                        <div class="layui-form-mid layui-word-aux">{$data.buyerAddressInfo.tel_phone}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-xs4">
+                <div class="layui-inline">
+                    <label class="layui-form-label">料单备注：</label>
+                    <div class="layui-input-inline seller-inline-4">
+                        <div class="layui-form-mid layui-word-aux">{$data.remark}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-card-body">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>一键导入</legend>
+        </fieldset>
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <div class="layui-form-label">导入操作</div>
+                <div class="layui-form-block">
+                    <input type="file" class="layui-btn layui-btn-primary" id="LAY-excel-import-excel" multiple="multiple">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-form-label"></div>
+                <div class="layui-form-block">
+                    <p class="help-block" style="color: #f00;">高级浏览器可以在本页面上直接将文件拖入</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="layui-card-body" v-if="orderDetail !=''">
+        <div class="layui-tab layui-tab-card" lay-filter="goods-tab">
+            <fieldset class="layui-elem-field layui-field-title">
+                <legend>订单信息</legend>
+            </fieldset>
+            <table lay-filter="parse-table-demo" class="layui-table">
+                <thead>
+                <tr>
+                    <th lay-data="{field:'username', width:200}">商品ID</th>
+                    <th lay-data="{field:'sign', minWidth: 180}">货号</th>
+                    <th lay-data="{field:'sign', minWidth: 180}">商品名称</th>
+                    <th lay-data="{field:'sign', minWidth: 180}">商品价格</th>
+                    <th lay-data="{field:'sign', minWidth: 180}">商品数量</th>
+                </tr> 
+                </thead>
+                <tbody>
+                    <tr v-for="(item,key) in orderDetail">
+                        <td>{{item.goods_id}}</td>
+                        <td>{{item.bn}}</td>
+                        <td>{{item.name}}</td>
+                        <td>{{item.price}}</td>
+                        <td>{{item.goods_num}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="layui-card-body" v-else>
+        <div class="layui-tab layui-tab-card" lay-filter="goods-tab">
+            <div class="layui-form-item" style="padding:10px;">
+                <div class="layui-col-md6" >
+                    <input type="text" name="keyword" lay-verify="title" v-model="keyword" style="display: inline-block; float: left;" placeholder="请输入商品名称\货号" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-col-md6">
+                    <button class="layui-btn" style="display: inline-block; float: left;" @click="leave" lay-filter="goods-search"><i class="iconfont icon-chaxun"></i>搜索</button>
+                </div>
+            </div>
+            <span class="layui-tab-title">全部商品</span>
+            <div class="layui-tab-content" >
+                <table lay-filter="parse-table-demo" class="layui-table">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'username', width:200}">ID</th>
+                        <th lay-data="{field:'joinTime', width:150}">图片</th>
+                        <th lay-data="{field:'joinTime', width:150}">货品编号</th>
+                        <th lay-data="{field:'sign', minWidth: 180}">商品名称</th>
+                        <th lay-data="{field:'sign', minWidth: 180}">价格</th>
+                        <th lay-data="{field:'sign', minWidth: 180}">搬运费</th>
+                        <th lay-data="{field:'sign', minWidth: 180}">合计</th>
+                        <th lay-data="{field:'sign', minWidth: 180}">操作</th>
+                    </tr> 
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item,key) in osData">
+                            <td>{{item.id}}</td>
+                            <td><img v-bind:src="item.images" /></td>
+                            <td>{{item.bn}}</td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.price}}</td>
+                            <td>{{item.transport_fee}}</td>
+                            <td>{{(parseFloat(item.price) + parseFloat(item.transport_fee)).toFixed(2)}}</td>
+                            <td><button class="layui-btn layui-btn-sm" @click="joins(item.id,key)"><i class="iconfont icon-jiahao"></i>加入</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-tab layui-tab-card" lay-filter="goods-tab">
+            <span class="layui-tab-title">全部商品</span>
+            <div class="layui-tab-content" >
+                <table lay-filter="parse-table-demo" class="layui-table">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'username', width:200}">ID</th>
+                        <th lay-data="{field:'joinTime', width:150}">货号</th>
+                        <th lay-data="{field:'joinTime', width:150}">商品名称</th>
+                        <th lay-data="{field:'joinTime', width:150}">商品数量</th>
+                        <th lay-data="{field:'sign', minWidth: 180}">操作</th>
+                    </tr> 
+                    </thead>
+                    <tbody>
+                    <tr v-for="item in goodsGroupData">
+                        <td>{{item.id}}</td>
+                        <td>{{item.bn}}</td>
+                        <td>{{item.name}}</td>
+                        <td><input type="number" ref="num" class="layui-input" /></td>
+                        <td><button class="layui-btn layui-btn-sm" @click="removes(item.id)"><i class="iconfont icon-review"></i>删除</button></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" @click="submits()" >保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="LAY-excel-export-ans">
+    {{# layui.each(d.data, function(file_index, item){ }}
+    <blockquote class="layui-elem-quote">{{d.files[file_index].name}}</blockquote>
+    <div class="layui-tab">
+        <ul class="layui-tab-title">
+            {{# layui.each(item, function(sheet_name, content) { }}
+            <li>{{sheet_name}}</li>
+            {{# }); }}
+        </ul>
+        <div class="layui-tab-content">
+            {{# layui.each(item, function(sheet_name, content) { }}
+            <div class="layui-tab-item">
+                <table class="layui-table">
+                    {{# layui.each(content, function(row_index, value) { }}
+                    {{# var col_index = 0 }}
+                    <tr>
+                        {{# layui.each(value, function(col_key, val) { }}
+                        <td id="table-export-{{file_index}}-{{sheet_name}}-{{row_index}}-{{col_index++}}">{{val}}</td>
+                        {{# });}}
+                    </tr>
+                    {{# });}}
+                </table>
+            </div>
+            {{# }); }}
+        </div>
+    </div>
+    {{# }) }}
+</script>
+<script>
+    // $(function(){
+        layui.use(['layer','form','excel','laytpl', 'element'], function(){
+            var layer = layui.layer,
+                $ = layui.jquery,
+                form = layui.form,
+                excel = layui.excel,
+                laytpl = layui.laytpl
+                element = layui.element;
+
+                $('#LAY-excel-import-excel').change(function(e) {
+                    var files = e.target.files;
+                    try {
+                        excel.importExcel(files, {
+                            fields: {
+                                'ku': 'A'
+                                ,'sn': 'B'
+                                ,'name': 'C'
+                                ,'type': 'D'
+                                ,'Unit': 'E'
+                                ,'num': 'F'
+                                ,'price': 'G'
+                            }
+                        }, function(data) {
+                            // console.log(data[0].Sheet1);
+                            // 如果不需要展示直接上传，可以再次 $.ajax() 将JSON数据通过 JSON.stringify() 处理后传递到后端即可
+                            layer.open({
+                                title: '导入文件信息结果'
+                                , area: ['800px', '400px']
+                                , tipsMore: true
+                                , content: laytpl($('#LAY-excel-export-ans').html()).render({data: data, files: files})
+                                ,btn: ['确定']
+                                , success: function (layero) {
+                                    element.render('tab')
+                                    var btn = layero.find('.layui-layer-btn');
+                                    // btn.find('.layui-layer-btn0').attr(
+                                    //
+                                    // );
+                                    btn.click(function(){
+                                        $.ajax({
+                                            url: '{:url("Voucher/import_photo")}',
+                                            type: 'post',
+                                            dataType: 'json',
+                                            data: {
+                                                'id': "<?php echo $_GET['id'];?>",
+                                                'data': data[0].Sheet1
+                                            },
+                                            success: function(e){
+                                                if (e.status === true) {
+                                                    layer.msg(e.msg);
+                                                    window.location.reload();
+                                                }else{
+                                                    layer.msg(e.msg);
+                                                }
+                                            }
+                                        })
+                                    });
+                                    console.log(data);
+                                    // layui.code({})
+                                }
+                            })
+                        });
+                    }catch (e) {
+                        layer.alert(e.message);
+                    }
+                });
+        });
+    // })
+</script>
+
+<script type="text/javascript">
+
+var app = new Vue({
+    el: '#app',
+    data: {
+        keyword : '',
+        id : {$data.id},
+        buyer_id : {$data.buyer_id},
+        mall_id : {$data.mall_id},
+        osData:{},
+        goodsGroup:[],
+        goodsGroupData:{},
+        orderDetail:{},
+    },
+    methods: {
+
+        // 当页面离开时
+        leave : function(){
+            this.search(this.keyword);  
+        },
+
+        // 搜索
+        search: function(keyword){
+            let self = this;
+            let url = "{:url('Voucher/search')}?name=" + keyword + "&mall_id=" + self.mall_id;
+            axios.get(url).then((resp)=>{
+                console.log(resp);
+                if(resp.status == 200 && resp.data.code == 200){
+                    self.osData = resp.data.data;
+                }
+            }).catch((err)=>{
+                console.log(err);
+            });
+        },
+
+        // 加入
+        joins : function(id,key){
+            let list = this.goodsGroup;
+            if(list.indexOf(id) == -1){
+                list.push(id);
+                this.listData();
+            }else{
+                alert('该商品已经添加过！');
+            }
+            
+        },
+
+        // 移除
+        removes : function(id){
+            let list = this.goodsGroup;
+            // console.log(list.indexOf(id));
+            if(list.indexOf(id) != -1){
+                if(list.indexOf(id) == 0){
+                    this.goodsGrou = list.shift();
+                }else{
+                    this.goodsGroup = list.splice(list.indexOf(id));
+                }
+                this.listData();
+            }
+        },
+
+        // 请求结果集
+        listData : function(){
+            let self = this;
+            let url = "{:url('Voucher/getGoodsGroup')}?data=" + self.goodsGroup;
+            axios.get(url).then((resp)=>{
+                console.log(resp);
+                if(resp.status == 200 && resp.data.code == 200){
+                    self.goodsGroupData = resp.data.data;
+                }
+            }).catch((err)=>{
+                console.log(err);
+            });
+        },
+
+        // 表单提交
+        submits : function(){
+            let url = "{:url('Voucher/doOrder')}"
+            let nums = [];
+            for (let row of this.$refs.num) {
+                nums.push(row.value);
+            }
+            let data = {
+                'id' : this.id,
+                'buyer_id' : this.buyer_id,
+                'mall_id' : this.mall_id,
+                "ids":this.goodsGroup,
+                "nums":nums,
+            };
+            axios.post(url,data).then(res=>{
+                console.log('res=>',res);
+                if(res){
+                    // 刷新本页面
+                    location.reload();
+                    // // 返回上一页
+                    // window.history.back(-1);
+                }
+            }).catch((err)=>{
+                console.log(err);
+            });
+        }
+
+
+    },
+    // 初始化
+    mounted : function () {
+        var self = this;
+        self.$nextTick(function(){
+            let url = "{:url('Voucher/getOrderPhoto')}?photo_id=" + self.id;
+            axios.get(url).then((resp)=>{
+                if(resp.status == 200 && resp.data.code == 200){
+                    console.log(resp.data.data);
+                    self.orderDetail = resp.data.data;
+                }
+            }).catch((err)=>{
+                console.log(err);
+            });
+        });
+    }
+});
+
+</script>
+
+

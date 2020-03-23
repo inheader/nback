@@ -1,0 +1,129 @@
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+<div class="table-body">
+    <table id="applyList" lay-filter="applyList"></table>
+
+    <script type="text/html" id="barDemo">
+        {{# if(d.status == 2 || d.status == 3 ){ }}
+        --
+        {{# }else{ }}
+        <a class="layui-btn layui-btn-xs" lay-event="start">通过</a>
+        <a class="layui-btn layui-btn-xs" lay-event="end">拒绝</a>
+        {{# } }}
+        <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>-->
+    </script>
+
+</div>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form','layer', 'layedit', 'laydate','table'], function(){
+        var table = layui.table;
+        layui.table.render({
+            elem: '#applyList',
+            height: 'full-330',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'10',
+            url: "{:url('Site/applylist')}?_ajax=1",
+            id:'applyList',
+            cols: [[
+                {type:'numbers'},
+                {field:'id', width:70, title:'ID'},
+				{field:'buyer_id', width:100,title:'用户ID'},
+                {field:'buyer_name', width:130,title:'用户名'},
+                {field:'buyer_header', width:100,title:'头像', align: 'center',templet: function(data){
+                    return '<a href="javascript:void(0);" onclick=viewImage("'+data.buyer_header+'")><image style="max-width:30px;max-height:30px;" src="'+data.buyer_header+'"/></a>';
+                }},
+                {field:'business', width:100,title:'营业执照', align: 'center',templet: function(data){
+                    return '<a href="javascript:void(0);" onclick=viewImage("'+data.business+'")><image style="max-width:30px;max-height:30px;" src="'+data.business+'"/></a>';
+                }},
+                {field:'buyer_id', width:70, title:'用户ID'},
+                {field:'company_name', width:110, title:'公司名称'},
+                {field:'legal_name', width:110, title:'联系人'},
+                {field:'legal_phone', width:110, title:'联系电话'},
+                {field:'agent_brand', width:110, title:'代理品牌'},
+                {field:'product_cate', width:110, title:'产品类别'},
+                {field:'status', width:110, title:'申请状态',templet:function (res) {
+                        if(res.status == 1)
+                        {
+                            return "已申请";
+                        } else if(res.status == 2)
+                        {
+                            return "已通过";
+                        } else if(res.status == 3)
+                        {
+                            return "已拒绝";
+                        }
+                    }},
+                {field:'created_at', width:200,title:'申请时间'},
+                {field:'right', width:200,title:'操作',toolbar: '#barDemo'},
+            ]]
+        });
+
+        //监听行工具事件
+        table.on('tool(applyList)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'start'){   //审核通过
+
+                $.ajax({
+                    url: '{:url("Site/start")}',
+                    type: 'get',
+                    data: {id:data.id},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            layer.msg(e.msg);
+                            // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            // parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+                // layer.prompt({
+                //     formType: 2
+                //     ,value: data.email
+                // }, function(value, index){
+                //     obj.update({
+                //         email: value
+                //     });
+                //     layer.close(index);
+                // });
+            } else if(obj.event === 'end')//审核拒绝
+            {
+                $.ajax({
+                    url: '{:url("Site/end")}',
+                    type: 'get',
+                    data: {id:data.id},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            layer.msg(e.msg);
+                            // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            // parent.layer.close(index); //再执行关闭
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+            }
+        });
+        //表单
+        layui.form.on('submit(*)', function(data){
+            layui.table.reload('applyList', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+

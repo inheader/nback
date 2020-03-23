@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<table class="layui-hide" id="test"></table>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('Sales/salesCashLog')}?sid={$sales.sales_id}"
+            ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,cols: [[
+                {field:'id', width:80, title: 'ID', sort: true}
+                ,{field:'sales_order_id', width:150, title: '订单Id'}
+                ,{field:'type', width:80, title: '类型', sort: true}
+                ,{field:'price', width:80, title: '金额'}
+                ,{field:'remark', title: '备注', width: '30%', minWidth: 100} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                ,{field:'created_at', title: '日期', sort: true}
+            ]]
+        });
+    });
+</script>

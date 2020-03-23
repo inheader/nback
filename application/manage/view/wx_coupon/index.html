@@ -1,0 +1,200 @@
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="add">预创建</button>
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="send">发送劵</a>
+    <a class="layui-btn layui-btn-xs" lay-event="log">领取记录</a>
+</script>
+
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use('table', function() {
+        var table = layui.table;
+        //代金券列表
+        table.render({
+            elem: '#test'
+            ,url: "{:url('WxCoupon/index')}"
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '用户数据表'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                ,{field:'id', title:'ID', width:80, fixed: 'left', unresize: true, sort: true}
+                ,{field:'coupon_name', title:'代金券名称', width:120, edit: 'text'}
+                ,{field:'coupon_max_total', title:'每人可领/张', width:120}
+                ,{field:'coupon_stock_status', title:'状态', width:120,templet:function(value){
+                    if(value.coupon_stock_status == '1')
+                    {
+                        return "未激活";
+                    } else if(value.coupon_stock_status == '2')
+                    {
+                        return "审批中";
+                    } else if(value.coupon_stock_status == '4')
+                    {
+                        return "已激活";
+                    }
+                }}
+                ,{field:'create_time', title:'创建时间', width:120}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:300}
+            ]]
+            ,id: 'testReload'
+            ,page: true
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'add':
+                    //多窗口模式，层叠置顶
+                    layer.open({
+                        type: 2 //此处以iframe举例
+                        ,title: '添加'
+                        ,area: ['350px', '450px']
+                        ,shade: 0
+                        ,maxmin: true
+                        // ,offset: [ //为了演示，随机坐标
+                        //     Math.random()*($(window).height()-300)
+                        //     ,Math.random()*($(window).width()-390)
+                        // ]
+                        ,content: "{:url('WxCoupon/add')}"
+                        // ,btn: ['继续弹出', '全部关闭'] //只是为了演示
+                        // ,yes: function(){
+                        //     $(that).click();
+                        // }
+                        ,btn2: function(){
+                            layer.closeAll();
+                        }
+                        ,zIndex: layer.zIndex //重点1
+                        ,success: function(layero){
+                            layer.setTop(layero); //重点2
+                        }
+                    });
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'detail') //详情
+            {
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '详情'
+                    ,area: ['400px', '450px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('WxCoupon/detail')}?cid=" + data.coupon_id
+                    // ,btn: ['继续弹出', '全部关闭'] //只是为了演示
+                    // ,yes: function(){
+                    //     $(that).click();
+                    // }
+                    ,btn2: function(){
+                        layer.closeAll();
+                    }
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            } else if(obj.event === 'send'){ //发送劵
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '发送'
+                    ,area: ['550px', '660px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('WxCoupon/send')}?cid=" + data.coupon_id
+                    // ,btn: ['继续弹出', '全部关闭'] //只是为了演示
+                    // ,yes: function(){
+                    //     $(that).click();
+                    // }
+                    ,btn2: function(){
+                        layer.closeAll();
+                    }
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            } else if(obj.event === 'log') //领取记录
+            {
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '记录'
+                    ,area: ['550px', '660px']
+                    ,shade: 0
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('WxCoupon/log')}?cid=" + data.coupon_id
+                    // ,btn: ['继续弹出', '全部关闭'] //只是为了演示
+                    // ,yes: function(){
+                    //     $(that).click();
+                    // }
+                    ,btn2: function(){
+                        layer.closeAll();
+                    }
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        layer.setTop(layero); //重点2
+                    }
+                });
+            }
+        });
+
+    });
+</script>

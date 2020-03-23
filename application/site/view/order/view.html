@@ -1,0 +1,133 @@
+<style>
+	.layui-form-label{
+		width: 100px;
+		padding: 5px 15px;
+	}
+	.layui-form-mid{
+		padding: 5px 0 !important;
+	}
+</style>
+<div class="layui-form seller-alone-form">
+	<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+		<ul class="layui-tab-title">
+			<li class="layui-this">基本信息</li>
+			<li>收货人信息</li>
+			<li>商品信息</li>
+			<li>备注信息</li>
+            <li>订单记录</li>
+		</ul>
+	  	<div class="layui-tab-content">
+			<!--订单信息-->
+			<div class="layui-tab-item layui-show">
+				<div class="layui-form-item" lay-size="sm">
+					<label class="layui-form-label">订单号：</label>
+					<div class="layui-form-mid seller-inline-4">{$order.order_sn}</div>
+                    <label class="layui-form-label">订单金额：</label>
+                    {if $order['order_type'] == 'points_order'}
+                    <div class="layui-form-mid seller-inline-4">{$order.order_point_price}积分</div>
+                    {else}
+                    <div class="layui-form-mid seller-inline-4">￥{$order.order_price}元</div>
+                    {/if}
+                    <label class="layui-form-label">运费价格：</label>
+                    <div class="layui-form-mid seller-inline-4">￥{$order.order_shipping_fee}元</div>
+
+                    <label class="layui-form-label">订单状态：</label>
+                    <div class="layui-form-mid seller-inline-4">{$order.status_text}</div>
+
+                    <label class="layui-form-label">挑楼费：</label>
+                    <div class="layui-form-mid seller-inline-4">￥{$order.order_floor_fee}元</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">下单时间：</label>
+					<div class="layui-form-mid seller-inline-4">{:date('Y-m-d H:i:s', $order.order_add_time)}</div>
+				</div>
+			</div>
+
+			<!--收货人信息-->
+			<div class="layui-tab-item">
+				<div class="layui-form-item">
+					<label class="layui-form-label">收货人姓名：</label>
+					<div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_name}</div>
+
+					<label class="layui-form-label">收货人电话：</label>
+					<div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_tel}</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">收货地址：</label>
+					<div class="layui-form-mid seller-inline-9">{$order.buyerInfo.receiver_address_info}</div>
+				</div>
+			</div>
+
+			<!--商品详情-->
+			<div class="layui-tab-item">
+				<table class="layui-table" lay-size="sm">
+					<thead>
+						<tr>
+							<th>商品名称</th>
+							<th>商品价格</th>
+							<th>购买数量</th>
+							<th>商品总价</th>
+							<th>SKU</th>
+							<th>已发货数量</th>
+						</tr>
+					</thead>
+					<tbody>
+						{foreach $order.items as $key=>$vo}
+							<tr>
+								<td>{$vo.goods_name}</td>
+
+                                {if $order['order_type'] == 'points_order'}
+                                <td>{$vo.osp_point_price}</td>
+                                {else}
+                                <td>{$vo.osp_full_price}</td>
+                                {/if}
+
+								<td>{$vo.goods_num}</td>
+
+                                {if $order['order_type'] == 'points_order'}
+                                <td>{$vo.all_point_price}</td>
+                                {else}
+                                <td>{$vo.all_full_price}</td>
+                                {/if}
+
+								<td>{$vo.sku}</td>
+                                <td>{$vo.goods_send_num}</td>
+							</tr>
+						{/foreach}
+					</tbody>
+				</table>
+			</div>
+
+			<!--备注信息-->
+			<div class="layui-tab-item">
+				<div class="layui-form-item">
+					<label class="layui-form-label">订单备注：</label>
+					<div class="layui-form-mid seller-inline-9">{$order.order_remark}</div>
+				</div>
+			</div>
+
+            <!--订单记录-->
+            <div class="layui-tab-item">
+                <table class="layui-table" lay-size="sm">
+                    <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>描述</th>
+                        <th>时间</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $order.order_log as $key=>$vo}
+                    <tr>
+                        <td>{$vo.order_sn}</td>
+                        <td>{$vo.log_msg}</td>
+                        <td>{$vo.log_time}</td>
+                    </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+
+		</div>
+	</div> 
+</div>	

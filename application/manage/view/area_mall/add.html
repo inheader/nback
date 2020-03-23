@@ -1,0 +1,340 @@
+<form  class="layui-form seller-alone-form" id="add_form">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>区域名称：</label>
+        <div class="layui-input-inline seller-inline-6">
+            <select name="mall_name" id="areaid" lay-verify="required" lay-search="">
+            </select>
+        </div>
+
+    </div>
+    <div style="height:10px"></div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>区域地址：</label>
+        <div style="width:100px;display: inline-block">
+            <!--<button class="layui-btn layui-btn-primary layui-btn-xs" type="button" id="ply">添加区域地址</button>-->
+            <button type="button" class="layui-btn  layui-btn-primary layui-btn-xs">添加区域地址</button>
+        </div>
+        <div style="height:10px"></div>
+
+        <div style="margin-bottom:15px">
+            <div id="adr-list" style="padding-left:120px">
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">联动选择框</label>
+        <div class="layui-input-inline">
+            <select name="province" id="province" lay-select lay-filter="province">
+                <option value="">请选择省</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="city" id="city" lay-select lay-filter="city">
+                <option value="">请选择市</option>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="area" id="area">
+                <option value="">请选择县/区</option>
+            </select>
+        </div>
+        <!--<div class="layui-form-mid layui-word-aux"><a class="layui-btn" lay-filter="add_area">添加</a></div>-->
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>区域管理员：</label>
+        <div style="width:100px;display: inline-block">
+            <button class="layui-btn layui-btn-primary layui-btn-xs" onclick="addUser()" type="button">添加管理员</button>
+        </div>
+        <div style="height:10px"></div>
+
+        <div style="border:1px solid #eee;padding:20px;background: #fcfcfc;display: inline-block;min-width: 716px">
+            <div id="user-list" style="padding-left:20px">
+                
+            </div>
+        </div>
+
+    </div>
+
+    <div style="height:10px"></div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>固定区域运费</label>
+        <div class="layui-input-inline">
+            <input type="text" name="shipping_fee" value="0.00" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>订单金额达到免邮</label>
+        <div class="layui-input-inline">
+            <input type="text" name="free_shipping_fee" value="0.00" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>退货的固定基础运费</label>
+        <div class="layui-input-inline">
+            <input type="text" name="return_shipping_fee" value="0.00" lay-verify="required" placeholder="请输入" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="save-areaMall">保存</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+
+</form>
+<style>
+    .nodata{
+        color:#999;
+        line-height: 20px;
+        height:20px
+    }
+</style>
+
+<script>
+
+
+    //如果有需要到镇的改改就可以实现
+    var url = "{:url('ajax/getAreaList')}"; //数据请求地址
+    var province = "广东省"; //编辑需要的省
+    var city = "广州市"; //编辑需要的市
+    var district = "天河区"; //编辑需要的县/区
+
+    layui.use(['jquery','form','layer','table'], function(){
+        layui.form.render();
+
+        
+        layui.form.on('submit(save-areaMall)', function(data){
+            JsPost("{:url('AreaMall/saveAreaMapping')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    window.location.reload()
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        });
+
+        //
+        JsPost("{:url('ajax/getArea')}",'',function (res) {
+
+            var msg = res.data;
+            var htm = '<option value="">直接选择或搜索选择</option>';
+
+            for (var i = 0; i < msg.length ; i++) {
+
+                htm += '"<option value="'+msg[i]['name']+'">' + msg[i]['name']+"</option> ";
+
+            };
+
+            $("#areaid").append(htm);
+
+            // console.log(res.data);
+            layui.form.render('select');
+        });
+
+        //联动1
+        JsPost("{:url('ajax/getAreaList')}",'',function (res) {
+
+            var msg = res.data;
+            var htm = '<option value="">请选择</option>';
+
+            for (var i = 0; i < msg.length ; i++) {
+
+                htm += '"<option value="'+msg[i]['value']+'">' + msg[i]['name']+"</option> ";
+
+            };
+
+            $("#province").append(htm);
+
+            // console.log(res.data);
+            layui.form.render('select');
+        });
+
+        //获取市级
+        layui.form.on('select(province)', function(data){
+            // console.log(data.value);
+            JsPost("{:url('ajax/getAreaList')}",{province:data.value},function (res) {
+
+                $("#city").empty();
+                layui.form.render('select');
+                // console.log(res.data)
+                var city = res.data;
+                var htm = '<option value="">请选择</option>';
+
+                for (var i = 0; i < city.length ; i++) {
+
+                    htm += '"<option value="'+city[i]['value']+'">' + city[i]['name']+"</option> ";
+
+                };
+
+                $("#city").append(htm);
+
+                // console.log(res.data);
+                layui.form.render('select');
+                return false;
+            });
+        });
+
+        //获取区级
+        layui.form.on('select(city)', function(data){
+            // console.log(data.value);
+            JsPost("{:url('ajax/getAreaList')}",{city:data.value},function (res) {
+
+                $("#area").empty();
+                layui.form.render('select');
+                // console.log(res.data)
+                var city = res.data;
+                var htm = '<option value="">请选择</option>';
+
+                for (var i = 0; i < city.length ; i++) {
+
+                    htm += '"<option value="'+city[i]['value']+'">' + city[i]['name']+"</option> ";
+
+                };
+
+                $("#area").append(htm);
+
+                // console.log(res.data);
+                layui.form.render('select');
+                return false;
+            });
+        });
+
+    });
+
+
+
+
+    
+    /*添加地址*/
+    function addAdr(){
+        $.ajax({
+            type:'get',
+            url: "{:url('area_mall/addAdr')}",
+            data:'',
+            success:function(e){
+                if(e.status){
+                    window.box = layer.open({
+                        type: 1,
+                        content: e.data,//
+                        area: ['600px', '500px'],
+                        title:'选择地区',
+                        btn: ['确定','取消'],
+                        yes: function(index, layero){
+                            var idlist = [];
+                            if ($("#qu").find("input[type=checkbox]:checked").length == 0){
+                                layer.msg('请选择地区');
+                            }else{
+                                var sheng = $("#sheng option:checked").text();
+                                var shi = $("#shi option:checked").text();
+                                $("#qu").find("input[type=checkbox]:checked").each(function(index,el){
+
+                                    idlist.push({name:sheng+shi+$(el).attr("title"),id:$(el).val()});
+
+                                });
+                                var html = '';
+                                idlist.forEach(function(el,index){
+                                    html = html + '<div class="adr-item">'+el.name+'<span class="closed">X</span><input type="hidden" value="'+el.id+'" name="adr_id['+index+']"/> </div>';
+                                });
+                                // $("#adr-list").empty();
+                                $("#adr-list").append(html);
+                                layer.close(index);
+                            }
+                        }
+                    });
+                }else{
+                    layer.msg(e.msg);
+                }
+            }
+        });
+    }
+
+    /*删除地区*/
+    $("body").on("click",".adr-item .closed",function(){
+        $(this).parents(".adr-item").remove();
+        if ($(".adr-item").length > 0){
+            $(".nodata").hide();
+        }else{
+            $(".nodata").show();
+        }
+    });
+
+
+    /*添加用户*/
+    function addUser(){
+        var i = $(".p-item").length+1;
+        $("#user-list").append('<div class="p-item">\n' +
+            '                    <input type="hidden" name="userId['+i+']" value="0">\n' +
+            '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+            '                        <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 用户名：</label>\n' +
+            '                        <div class="layui-input-inline seller-inline-4">\n' +
+            '                            <input class="layui-input" lay-verify="required" name="userName['+i+']" value=""/>\n' +
+            '                        </div>\n' +
+            '                    </div>\n' +
+            '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+            '                        <label class="layui-form-label" style="width:60px;padding:9px 0"><i class="required-color">*</i> 密码：</label>\n' +
+            '                        <div class="layui-input-inline seller-inline-4">\n' +
+            '                            <input class="layui-input" lay-verify="required" name="userPassWord['+i+']" value=""/>\n' +
+            '                        </div>\n' +
+            '                    </div>\n' +
+            '                    <div class="del-btn"\n' +
+            '                         style="display: inline-block;\n' +
+            '                            color:red;\n' +
+            '                            height:38px;\n' +
+            '                            line-height: 38px;\n' +
+            '                            vertical-align: top;\n' +
+            '                            text-decoration: underline;\n' +
+            '                            cursor: pointer">删除</div>\n' +
+            '                </div>')
+
+    }
+
+    /*删除用户*/
+    $("#user-list").on('click','.del-btn',function(){
+        $(this).parents(".p-item").remove();
+        $(".p-item").each(function(i,el){
+            $(el).find("input[name^=userId]").attr("name",'userId['+(i+1)+']');
+            $(el).find("input[name^=userName]").attr("name",'userName['+(i+1)+']');
+            $(el).find("input[name^=userPassWord]").attr("name",'userPassWord['+(i+1)+']');
+        })
+    });
+
+
+
+
+</script>
+<style>
+    .adr-item{
+        display: inline-block;
+        height:20px;
+        line-height: 20px;
+        border-radius: 12px;
+        padding:2px 10px;
+        background: #009688;
+        color:#ffffff;
+        margin-right:20px;
+        margin-bottom:10px;
+    }
+    .adr-item .closed{
+        margin-left:10px;
+        cursor: pointer;
+    }
+</style>
+

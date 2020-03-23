@@ -1,0 +1,84 @@
+<style type="text/css">
+    .layui-form-label {
+        width: 100px;
+    }
+</style>
+<div class="layui-form seller-alone-form" style="padding:10px">
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 0;">
+        <legend>收货人信息</legend>
+    </fieldset>
+    <div class="layui-form-item" lay-size="sm">
+        <label class="layui-form-label">订单号：</label>
+        <div class="layui-form-mid seller-inline-4">{$order.order_sn}</div>
+        <input type="hidden" id="order_id" value="{$order.order_id}">
+        <!--<label class="layui-form-label">配送方式：</label>-->
+    </div>
+    <div class="layui-form-item" lay-size="sm">
+        <label class="layui-form-label">收货人姓名：</label>
+        <div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_name}</div>
+        <label class="layui-form-label">收货人电话：</label>
+        <div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_tel}</div>
+    </div>
+    <div class="layui-form-item" lay-size="sm">
+        <label class="layui-form-label">详细收货地址：</label>
+        <div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_address_info}</div>
+    </div>
+    <div class="layui-form-item" lay-size="sm">
+        <label class="layui-form-label">买家备注信息：</label>
+        <div class="layui-form-mid seller-inline-4">{$order.order_remark}</div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>商品详情</legend>
+    </fieldset>
+    <table class="layui-table" lay-size="sm">
+        <thead>
+        <tr>
+            <th>商品名称</th>
+            <th>商品价格</th>
+            <th>购买数量</th>
+            <th>商品总价</th>
+            <th>SKU</th>
+            <th>已发货数量</th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $order.items as $key=>$vo}
+        <tr>
+            <td>{$vo.goods_name}</td>
+
+            {if $order['order_type'] == 'points_order'}
+            <td>{$vo.osp_point_price}</td>
+            {else}
+            <td>{$vo.osp_full_price}</td>
+            {/if}
+
+            <td>{$vo.goods_num}</td>
+
+            {if $order['order_type'] == 'points_order'}
+            <td>{$vo.all_point_price}</td>
+            {else}
+            <td>{$vo.all_full_price}</td>
+            {/if}
+
+            <td>{$vo.sku}</td>
+            <td>{$vo.goods_send_num}</td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+    <!--<div class="layui-form-item" lay-size="sm">-->
+    <!--<label class="layui-form-label">发货备注：</label>-->
+    <!--<div class="layui-input-inline seller-inline-9">-->
+    <!--<input type="text" id="memo" value="" class="layui-input">-->
+    <!--</div>-->
+    </div>
+
+    <button class="layui-btn layui-btn-fluid order-ship-btn">发货</button>
+</div>
+<script>
+    //渲染表单
+    layui.use('form', function() {
+        var form = layui.form;
+        form.render();
+    });
+</script>

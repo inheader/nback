@@ -1,0 +1,394 @@
+<style>
+    .layui-btn .layui-icon{
+        margin-right: 0;
+    }
+</style>
+<form class="layui-form seller-form" action="">
+    <div class="layui-form-item layui-inline" style="margin-bottom:10px">
+        <label class="layui-form-label">店铺分类：</label>
+        <div class="layui-input-inline">
+            <select name="class_id" lay-filter="class_id">
+                <option value="">请选择分类</option>
+                {if $count > 0}
+                {volist name="$classList" id="vo"}
+                    <option value="{$vo.class_id}">{$vo.class_name}</option>
+                {/volist}
+                {/if}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-inline">
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm add-class"><i class="layui-icon">&#xe608;</i> 添加</button>
+        </div>
+    </div>
+</form>
+
+<div class="table-body">
+	<table id="categories" lay-data="{id: 'categories'}"></table>
+</div>
+<!-- lay-event="edit"  lay-event="del"-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs add-class-cat" data-id="{{d.id}}">添加子分类</a>
+    <a class="layui-btn layui-btn-xs add-goods" data-id="{{d.id}}">添加商品</a>
+    <a class="layui-btn layui-btn-xs show-goods" data-id="{{d.id}}">查看商品</a>
+    <a class="layui-btn layui-btn-xs edit-class-brand" data-id="{{d.id}}">设置标签</a>
+    <a class="layui-btn layui-btn-xs edit-class" data-id="{{d.id}}">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs del-class" data-id="{{d.id}}">删除</a>
+</script>
+
+<script>
+    var window_box;
+    var classId;
+    layui.use(['form', 'table', 'layer'], function(){
+        var layer = layui.layer, $ = layui.jquery, table = layui.table, form = layui.form;
+        //获取商品分类数据
+        table.render({
+            id: 'categories',
+            elem: '#categories',
+            url: '{:url("site/quickClassCat")}?_ajax=1',
+            method: 'post',
+            response: {
+                statusName: 'status',
+                statusCode: 1
+            },
+            cols: [[
+                {type: 'numbers'},
+                {field: 'name', title: '一级分类', width:200, align: 'center',templet:function (e) {
+                        return e.level === 1 ? e.name : '';
+                    }},
+                {field: 'name_2', title: '二级分类', width:200, align: 'center',templet:function (e) {
+                        return e.level === 2 ? e.name : '';
+                    }},
+                {field: 'name_3', title: '三级分类', width:200, align: 'center',templet:function (e) {
+                        return e.level === 3 ? e.name : '';
+                    }},
+                {field: 'sort', title: '排序', width:100, align: 'center'},
+                // {field: 'operating', title: '操作', align: 'center'}
+                {fixed: 'right', title:'操作', toolbar: '#barDemo', width:400, align: 'center'}
+            ]]
+        });
+
+        //分类操作
+        layui.form.on('select(class_id)', function(data){
+            classId = data.value;
+            table.reload('categories',{
+                where: {classId:data.value},
+            });
+        });
+
+        //添加分类
+        $(document).on('click', '.add-class', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("/site/quickClassAdd")}',
+                type: 'get',
+                data: {
+                    'classId' :classId
+                },
+                success: function(e){
+                    if (e.status){
+                        window_box = layer.open({
+                            type: 1,
+                            title: '添加栏目',
+                            area: ['400px', '300px'], //宽高
+                            content: e.data,
+                            end: function () {
+                                table.reload();
+                            }
+                        });
+                        // table.reload('categories');
+                    }else{
+                        layer.msg(e.msg);
+                    }
+
+                }
+            });
+            return false
+        });
+
+        //添加品牌
+        $(document).on('click', '.edit-class-brand', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("/site/editClassBrand")}',
+                type: 'get',
+                data: {
+                    'id': id
+                },
+                success: function(e){
+                    if (e.status){
+                        window_box = layer.open({
+                            type: 1,
+                            title: '品牌标签',
+                            area: ['850px', '400px'], //宽高
+                            content: e.data,
+                            end: function () {
+                                // layui.table.reload();
+                            }
+                        });
+                        // table.reload('categories');
+                    }else{
+                        layer.msg(e.msg);
+                    }
+
+                }
+            });
+            return false
+        });
+
+        //查看商品
+        $(document).on('click', '.show-goods', function(){
+            var id = $(this).attr('data-id');
+
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '查看商品'
+                ,area: ['980px', '750px']
+                ,shade: 0
+                ,maxmin: true
+                // ,offset: [ //为了演示，随机坐标
+                //     Math.random()*($(window).height()-300)
+                //     ,Math.random()*($(window).width()-390)
+                // ]
+                ,content: "{:url('goods/getCatGoodsList')}?quickId="+id
+                ,zIndex: layer.zIndex //重点1
+                ,success: function(layero){
+                    layer.setTop(layero); //重点2
+                }
+            });
+
+            // $.ajax({
+            //     url: '{:url("goods/getCatGoodsList")}',
+            //     type: 'get',
+            //     data: {
+            //         'quickId': id
+            //     },
+            //     success: function(e){
+            //
+            //         if (e.status){
+            //             window_box = layer.open({
+            //                 type: 1,
+            //                 title: '查看商品',
+            //                 area: ['850px', '600px'], //宽高
+            //                 content: e.data,
+            //                 end: function () {
+            //                     layui.table.reload();
+            //                 }
+            //             });
+            //             // table.reload('categories');
+            //         }else{
+            //             layer.msg(e.msg);
+            //         }
+            //     }
+            // });
+            return false;
+        });
+
+
+        //添加商品add-class-cat
+        $(document).on('click', '.add-goods', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("goods/GoodsListForQuickChange")}',
+                type: 'get',
+                data: {
+                    'quickId': id
+                },
+                success: function(e){
+                    window_box = layer.open({
+                        type: 1,
+                        title: '选择商品',
+                        area: ['800px', '600px'], //宽高
+                        content: e,
+                        end: function () {
+                            // table.reload();
+                        }
+                    });
+                    // table.reload('categories');
+                    return false;
+                }
+            });
+        });
+
+        //添加子类目
+        $(document).on('click', '.add-class-cat', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("site/quickClassAddSun")}',
+                type: 'get',
+                data: {
+                    'id': id
+                },
+                success: function(e){
+                    window_box = layer.open({
+                        type: 1,
+                        title: '添加子类目',
+                        area: ['430px', '510px'], //宽高
+                        content: e,
+                        end: function () {
+                            // table.reload();
+                        }
+                    });
+                    // table.reload('categories');
+                }
+            });
+            return false;
+        });
+
+        //编辑分类
+        $(document).on('click', '.show-class', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("site/quickClassShow")}',
+                type: 'get',
+                data: {
+                    'id': id
+                },
+                success: function(e){
+                    window_box = layer.open({
+                        type: 1,
+                        title: '编辑分类',
+                        area: ['430px', '510px'], //宽高
+                        content: e.data,
+                        end: function () {
+                            // table.reload();
+                        }
+                    });
+                }
+            })
+        });
+
+
+        //编辑分类
+        $(document).on('click', '.edit-class', function(){
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("site/quickClassEdit")}',
+                type: 'get',
+                data: {
+                    'id': id
+                },
+                success: function(e){
+                    window_box = layer.open({
+                        type: 1,
+                        title: '编辑分类',
+                        area: ['430px', '510px'], //宽高
+                        content: e.data,
+                        end: function () {
+                            table.reload();
+                        }
+                    });
+                }
+            })
+        });
+
+        //删除分类
+        $(document).on('click', '.del-class', function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('确认后子分类和配置的相关商品将全部被删除', {
+                title: '提示', btn: ['确认', '取消'] //按钮
+            }, function(){
+                $.ajax({
+                    url: '{:url("site/quickClassDel")}',
+                    type: 'post',
+                    data: {
+                        'id': id
+                    },
+                    success: function(e){
+                        layer.msg(e.msg, {time: 1300}, function(){
+                            table.reload();
+                        });
+                    }
+                });
+            });
+            return false;
+        });
+
+
+        //添加保存数据
+        $(document).on('click', '.add-save-btn', function(){
+            var id = $("#id").val();
+            var parent_id = $("#parent_id").val();
+            var type_id = $("#type_id").val();
+            var name = $("#name").val();
+            var image_id = $("#image_value_image_id").val();
+            var sort = $("#sort").val();
+
+            var error = false;
+            if(name.length > 6 || name.length < 1){
+                error = true;
+                layer.msg('快速选材名称在1-6个字符之间', {time: 1300});
+                return false;
+            }
+            if(sort < 1 || sort > 100){
+                error = true;
+                layer.msg('请填写1-100的排序值，越小越靠前', {time: 1300});
+                return false;
+            }
+
+            if(!error){
+                $.ajax({
+                    url: '{:url("site/quickClassEditAdd")}',
+                    type: 'post',
+                    data: {
+                        'id': id,
+                        'classId': classId,
+                        'parentId': parent_id,
+                        'name': name,
+                        'sort': sort
+                    },
+                    dataType: 'json',
+                    success: function(e){
+                        if(e.status === true){
+                            layer.close(window_box);
+                            layer.msg(e.msg, {time: 1300}, function(){
+                                table.reload('categories');
+                            });
+                        }else{
+                            layer.msg(e.msg, {time: 1300});
+                        }
+                    }
+                })
+            }
+        });
+
+        //编辑保存数据
+        $(document).on('click', '.edit-save-btn', function(){
+            var id = $("#id").val();
+            var parent_id = $("#parent_id").val();
+            var type_id = $("#type_id").val();
+            var name = $("#name").val();
+            var image_id = $("#image_value_image_id").val();
+            var sort = $("#sort").val();
+
+            if(name.length > 6){
+                layer.msg('分类名称不能大于6个字符');
+                return false;
+            }else{
+                $.ajax({
+                    url: '{:url("site/quickClassEdit")}',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        'id': id,
+                        'parent_id': parent_id,
+                        'name': name,
+                        'sort': sort
+                    },
+                    success: function(e){
+                        if(e.status === true){
+                            layer.close(window_box);
+                            layer.msg(e.msg, {item: 1300}, function(){
+                                table.reload('categories');
+                            });
+                        }else{
+                            layer.msg(e.msg, {time: 1300});
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.seller.css">
+<div style="height:10px"></div>
+<form class="layui-form seller-alone-form" action="" id="add_form">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>选择用户</label>
+        <div class="layui-input-inline seller-inline-6">
+            <select name="buyer_id" id="areaid" lay-verify="required" lay-search="">
+                <option value="">搜索/选择</option>
+                {foreach $buyer as $key=>$vo }
+                <option value="{$vo.buyer_id}">{$vo.buyer_name}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div style="height:10px"></div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">是否授权</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="0" title="否">
+            <input type="radio" name="status" value="1" title="是" checked="">
+        </div>
+    </div>
+
+    <div style="height:10px"></div>
+
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="save-areaCredit">开通</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+
+</form>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_JS__jshop.js"></script>
+
+<script>
+    layui.use(['form','layer'], function(){
+        var form = layui.form
+            ,layer = layui.layer;
+
+        //监听提交
+        form.on('submit(save-areaCredit)', function(data){
+            JsPost("{:url('AreaCredit/creditRootAdd')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    parent.location.reload();
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

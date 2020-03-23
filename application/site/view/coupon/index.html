@@ -1,0 +1,197 @@
+<form class="layui-form seller-form"  action="" >
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width:120px;">优惠券名称：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="name" lay-verify="name" placeholder="请输入优惠券名称" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">启用状态：</label>
+            <div class="layui-input-inline seller-inline-2">
+                <select name="status" lay-verify="">
+                    <option value=""></option>
+                    <option value="1">开启</option>
+                    <option value="2">关闭</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">起止时间：</label>
+            <div class="layui-input-inline seller-inline-6">
+                <input  type="text" name="date" value="" id="date" placeholder="请输入起止时间" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="*"><i class="iconfont icon-chaxun"></i>筛选</button>
+            <a href="{:url('coupon/add')}" class="layui-btn layui-btn-sm option-add">
+                <i class="layui-icon">&#xe608;</i> 添加
+            </a>
+            <!--<a href="{:url('Coupon/index')}" class="layui-btn layui-btn-sm option-add">领取记录</a>-->
+        </div>
+    </div>
+</form>
+
+<div class="table-body">
+    <table id="coupon" lay-filter="coupon"></table>
+</div>
+
+<script>
+    layui.use(['form', 'layedit', 'laydate','table'], function(){
+        //时间插件
+        layui.laydate.render({
+            elem: '#date',
+            range: '到',
+            type: 'datetime'
+        });
+
+        //表格渲染
+        var promotionTable = layui.table.render({
+            elem: '#coupon',
+            height: 'full-300',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'{:config("jshop.page_limit")}',
+            url: "{:url('coupon/index')}?_ajax=1",
+            id:'coupon',
+            cols: [[
+                {type:'numbers'},
+                {field:'cp_title',title:'优惠券名称',width:300,},
+                {field:'status', width:100,title:'启用状态'},
+                {field:'useType', width:100,title:'类型'},
+                {field:'startTime',width:170,title:'开始时间'},
+                {field:'endTime',width:170,title:'结束时间'},
+                {field: 'operating', title: '操作', minWidth:300, align: 'center',templet:function(data){
+                        var html = '';
+                        html += '<a  class="layui-btn layui-btn-xs" href="{:url('coupon/edit')}?id=' + data.cp_id + '">编辑</a>';
+
+                        if(data.cp_type == 4)
+                        {
+                            html += '<a  class="layui-btn layui-btn-xs edit-goods" data-id="' + data.cp_id + '">已设商品</a>';
+                            html += '<a  class="layui-btn layui-btn-xs add-goods" data-id="' + data.cp_id + '">设置商品</a>';
+                        }
+                        html += '<a  class="layui-btn layui-btn-danger layui-btn-xs option-receive" data-id="' + data.cp_id + '" >领取记录</a>';
+                        return html;
+                    }}
+            ]]
+        });
+
+        // href="{:url('coupon/addGoods')}?id=' + data.cp_id + '"
+        layui.form.on('submit(*)', function(data){
+            layui.table.reload('coupon', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //设置店铺
+        $(document).on('click','.edit-site',function(){
+            var cp_id = $(this).attr('data-id');
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '设置店铺'
+                ,area: ['900px', '550px']
+                ,shade: 0
+                ,maxmin: true
+                // ,offset: [ //为了演示，随机坐标
+                //     Math.random()*($(window).height()-300)
+                //     ,Math.random()*($(window).width()-390)
+                // ]
+                ,content: "{:url('coupon/settingSite')}?cid="+cp_id
+                ,zIndex: layer.zIndex //重点1
+                ,success: function(layero){
+                    layer.setTop(layero); //重点2
+                }
+            });
+        });
+        //已设商品
+        $(document).on('click','.edit-goods',function(){
+            var cid = $(this).attr('data-id');
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '查看商品'
+                ,area: ['980px', '750px']
+                ,shade: 0
+                ,maxmin: true
+                // ,offset: [ //为了演示，随机坐标
+                //     Math.random()*($(window).height()-300)
+                //     ,Math.random()*($(window).width()-390)
+                // ]
+                ,content: "{:url('coupon/editGoods')}?cid="+cid
+                ,zIndex: layer.zIndex //重点1
+                ,success: function(layero){
+                    layer.setTop(layero); //重点2
+                }
+            });
+        });
+
+        //设置商品
+        $(document).on('click','.add-goods',function(){
+            var cid = $(this).attr('data-id');
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '查看商品'
+                ,area: ['980px', '750px']
+                ,shade: 0
+                ,maxmin: true
+                // ,offset: [ //为了演示，随机坐标
+                //     Math.random()*($(window).height()-300)
+                //     ,Math.random()*($(window).width()-390)
+                // ]
+                ,content: "{:url('coupon/addGoods')}?cid="+cid
+                ,zIndex: layer.zIndex //重点1
+                ,success: function(layero){
+                    layer.setTop(layero); //重点2
+                }
+            });
+        });
+
+        //促销删除
+        $(document).on('click','.option-del',function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('您确定删除此优惠券信息？', {
+                btn: ['确认','取消'] //按钮
+            }, function(){
+                //去删除
+                JsPost("{:url('coupon/couponDel')}",{'id':id},function(res){
+                    if(res.status){
+                        layer.msg('删除成功');
+                        promotionTable.reload();
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                });
+            }, function(){
+                layer.close(1);
+            });
+        });
+        //领取记录
+        $(document).on('click','.option-receive',function(){
+            var id = $(this).attr('data-id');
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '优惠券领取记录'
+                ,area: ['980px', '535px']
+                ,shade: 0
+                ,maxmin: true
+                // ,offset: [ //为了演示，随机坐标
+                //     Math.random()*($(window).height()-300)
+                //     ,Math.random()*($(window).width()-390)
+                // ]
+                ,content: "{:url('coupon/getCouponListLog')}?cid="+id
+                ,zIndex: layer.zIndex //重点1
+                ,success: function(layero){
+                    layer.setTop(layero); //重点2
+                }
+            });
+
+        });
+
+    });
+</script>

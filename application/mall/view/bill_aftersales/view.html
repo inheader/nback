@@ -1,0 +1,171 @@
+<form class="layui-form aftersales_form" id="aftersales_form" action="" style="margin:10px;">
+    <input type="hidden" name="return_id" value="{$info.return_id}" />
+    <div class="layui-form-item">
+        <label class="layui-form-label">售后单号：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">{$info.return_sn}</div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单地址：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">{$info.address}</div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">订单总金额：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">{$info.refund_amount}</div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">用户：</label>
+            <div class="layui-input-inline"  style="width:100px;">
+                <div class="layui-form-mid">{$info.buyer_name}</div>
+            </div>
+        </div>
+        {if $info.is_goods_send eq 0}
+            {if $info.return_pay_code eq 'WEIXIN_PAY'}
+                <div class="layui-inline">
+                    <label class="layui-form-label">退款金额：</label>
+                    <div class="layui-input-inline" style="width:100px;">
+                        <div class="layui-form-mid">{$info.refund_price}</div>
+                    </div>
+                </div>
+            {else /}
+                <div class="layui-inline">
+                    <label class="layui-form-label">退款金额：</label>
+                    <div class="layui-input-inline" style="width:100px;">
+                        <div class="layui-form-mid">{$info.refund_price + $info.return_shipping_fee + $info.return_floor_fee + $info.return_transport_fee}</div>
+                    </div>
+                </div>
+            {/if}
+        {else /}
+        <div class="layui-inline">
+            <label class="layui-form-label">退款金额：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.refund_price}</div>
+            </div>
+        </div>
+        {/if}
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">售后类型：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.refund_type}</div>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">状态：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.status}</div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">是否上门取件：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.is_come_get == 1 ? '是' : '否';}</div>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">物流费：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.return_transport_fee}</div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">运输费：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.return_shipping_fee}</div>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">退货挑楼费：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.return_floor_fee}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">原因：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">{$info.return_reason}</div>
+        </div>
+    </div>
+
+    {if condition="$info.status != 1 && $info.status != 6"}
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">审核结果：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.status}</div>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">备注：</label>
+            <div class="layui-input-inline" style="width:100px;">
+                <div class="layui-form-mid">{$info.reason}</div>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+    <style>
+        .layui-form-item .layui-form-checkbox[lay-skin="primary"] {
+            margin:0;
+        }
+
+    </style>
+    <div class="layui-form-item">
+        <label class="layui-form-label">退货商品：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">
+                <table id="billAftersalesItems" lay-filter="billAftersalesItems"></table>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">备注：</label>
+        <div class="layui-input-block">
+            <div class="layui-form-mid">
+                {$info.problem_desc}
+            </div>
+        </div>
+    </div>
+
+
+
+</form>
+
+
+<script>
+    layui.use(['form', 'table'], function(){
+        layui.form.render();
+        layui.table.render({
+            elem: '#billAftersalesItems'
+            ,size: 'sm'
+            ,cols: [[ //标题栏
+                {field: 'goods_name', title: '商品名称', width: 200},
+                {field: 'goods_num', title: '购买数量', minWidth: 40},
+                {field: 'return_num', title: '退货数量', minWidth: 40}
+            ]]
+            ,data: stringToJson(htmlDecodeByRegExp('{$info.goods}'))
+            //,skin: 'line' //表格风格
+            ,even: true
+            //,page: true //是否显示分页
+            //,limits: [5, 7, 10]
+            //,limit: 5 //每页默认显示的数量
+        });
+    });
+</script>

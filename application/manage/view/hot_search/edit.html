@@ -1,0 +1,58 @@
+<form  class="layui-form seller-alone-form" id="edit_form">
+    <input type="hidden" name="id" value="{$list.id}">
+    <div class="layui-form-item">
+        <label class="layui-form-label">热门词</label>
+        <div class="layui-input-block">
+            <input type="text" name="keywords" lay-verify="keywords" value="{$list.keywords}" autocomplete="off" placeholder="请输入热门词" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">点击量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="click" lay-verify="required" value="{$list.click}" placeholder="请输入点击量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">搜索量</label>
+        <div class="layui-input-inline">
+            <input type="text" name="search_num" lay-verify="required" value="{$list.search_num}" placeholder="请输入搜索量" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">权重</label>
+        <div class="layui-input-inline">
+            <input type="text" name="weight" lay-verify="required" value="{$list.weight}" placeholder="请输入权重码" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">状态</label>
+        <div class="layui-input-block">
+            <input type="radio" name="status" value="1" title="启用" {if ( $list.status == 1) }checked{/if}>
+            <input type="radio" name="status" value="2" title="禁用" {if ( $list.status == 2) }checked{/if}>
+        </div>
+    </div>
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="save-keyword">保存</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    layui.use(['form','layer'], function(){
+        layui.form.render();
+        //监听提交
+        layui.form.on('submit(save-keyword)', function(data){
+            JsPost("{:url('HotSearch/edit_post')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    window.location.reload();
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+    });
+</script>

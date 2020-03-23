@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<form class="layui-form" action="">
+    <input type="hidden" name="sales_id" value="{$sales.sales_id}">
+    <input type="hidden" name="type" value="{$sales.type}">
+    <div style="margin-top: 10px"></div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">可加客户</label>
+            <div class="layui-input-inline">
+                <select name="buyer_id" lay-verify="required" lay-search="">
+                    <option value="">直接选择或搜索选择</option>
+                    {foreach $buyers as $v}
+                        <option value="{$v.buyer_id}">{$v.buyer_name}({$v.buyer_id})</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="add">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+
+</form>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form','table'], function(){
+        var form = layui.form, table = layui.table;
+
+        //监听提交
+        form.on('submit(add)', function(data){
+            $.ajax({
+                url: '{:url("sales/addBuyer")}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status === true) {
+                        layer.msg(e.msg);
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>

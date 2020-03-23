@@ -1,0 +1,13 @@
+<div id="type-site">
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择店铺</label>
+        <div class="layui-input-inline">
+            <select multiple="multiple" lay-filter="sites">
+                <option value=""></option>
+                {foreach $list as $key=>$vo}
+                <option value="{$vo.site_id}">{$vo.site_name}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+</div>

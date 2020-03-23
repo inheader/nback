@@ -1,0 +1,104 @@
+<link rel="stylesheet" href="__STATIC__/layui/css/layui.css">
+
+<style>
+    .layui-inline .layui-input-block{
+        margin-left: 110px;
+    }
+</style>
+<form class="layui-form" action="" id="add_form">
+    <input type="hidden" name="buyerId" value="{$buyer.buyer_id}">
+    <hr>
+    <!--<div class="layui-form-item">-->
+        <!--<div class="layui-inline">-->
+            <!--<label class="layui-form-label">选择劵类：</label>-->
+            <!--<div class="layui-input-inline">-->
+                <!--<select name="buyerId" lay-verify="required" lay-search=""  lay-filter="category">-->
+                    <!--<option value="">直接选择或搜索选择</option>-->
+                    <!--{foreach $category as $c}-->
+                        <!--<option value="{$c.id}">{$c.name}</option>-->
+                    <!--{/foreach}-->
+                <!--</select>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">选择劵类</label>
+        <div class="layui-input-inline">
+            <select class="select" name="categoryId" id="drpprovince" lay-filter="category">
+                {foreach $category as $c}
+                <option value="{$c.id}">{$c.name}</option>
+                {/foreach}
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select id="drpcity" name="couponId" class="select" lay-filter="drpcity"></select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">发劵数量：</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="number" name="couponNum" placeholder="" value="0" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="sendC">确认发送</button>
+        </div>
+    </div>
+
+</form>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js?time=<?php echo time();?>" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_JS__jshop.js"></script>
+<script>
+    layui.use(['form','layer'], function(){
+        var form = layui.form
+            ,layer = layui.layer;
+
+        //监听提交
+        form.on('submit(sendC)', function(data){
+            JsPost("{:url('User/sendCouponPost')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    parent.location.reload();
+                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(index); //再执行关闭
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+            return false;
+        });
+
+        form.on('select(category)', function(data){
+            $('#drpcity').html("");
+            var category_id = data.value;
+            if (category_id) {
+                $.ajax({
+                    url: '{:url("User/getCoupon")}',
+                    type: 'post',
+                    data: {
+                        'id': category_id,
+                    },
+                    dataType: 'json',
+                    success: function (e) {
+                        $.each(e.dataList, function (i, item) {
+                            $('#drpcity').append('<option  value=' + item.cp_id + '>' + item.cp_title + "</option>");
+                        });
+
+                        form.render('select');
+
+                    }
+
+                });
+            }
+
+        });
+
+    });
+</script>

@@ -1,0 +1,70 @@
+<form style="padding:30px;" class="layui-form layui-form-pane">
+
+    <div id="provinceText" style="display: none">{$provinceText}</div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">所属省份：</label>
+        <div class="layui-input-block">
+            <select lay-filter="sheng" name="sheng" id="sheng">
+                <option value="">请选择省份</option>
+                {volist name='province' id='vo'}
+                <option value="{$vo.id}">{$vo.name}</option>
+                {/volist}
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label shiLabel" style="display: none">所属市：</label>
+        <div class="layui-input-block shiLabel" style="display: none">
+            <select lay-filter="shi" name="shi" id="shi">
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label quLabel" style="display: none">所属区：</label>
+        <div class="layui-input-block  quLabel" style="display: none" id="qu">
+        </div>
+    </div>
+</form>
+<script>
+    console.log();
+    layui.use('form', function(){
+        layui.form.render();
+    });
+    var provinceText = $("#provinceText").text(); //地区树
+    console.log(provinceText);
+    provinceText = JSON.parse(provinceText);
+    console.log(shiTree);
+    var shiTree;
+
+    // 当省份变化时
+    layui.form.on('select(sheng)', function(data){
+
+        var city_resp = $.ajax({type:'get',url: "{:url('area/index')}", data:{'type': 'city','id': data.value }, async: false });
+        var html = '';
+        $(".shiLabel").show();
+        $(".quLabel").hide();
+        city_resp.responseJSON.data.forEach(function(val){
+            html = html + '<option value="'+val.id+'">' + val.name + '</option>'
+        });
+        $("#shi").empty();
+        $("#shi").append(html);
+        layui.form.render();
+    });
+
+    /*当市变化时*/
+    layui.form.on('select(shi)', function(data){
+
+        var area_resp = $.ajax({type:'get',url: "{:url('area/index')}", data:{'type': 'area','id': data.value }, async: false });
+
+        var html2 = '';
+        $(".quLabel").show();
+        area_resp.responseJSON.data.forEach(function(val){
+            html2 = html2 + '<input type="checkbox" value="' + val.id + '" title="'+val.name+'">'
+        });
+        $("#qu").empty();
+        $("#qu").append(html2);
+        layui.form.render();
+    });
+
+</script>

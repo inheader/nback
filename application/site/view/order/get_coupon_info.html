@@ -1,0 +1,38 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<style>
+    .layui-form-label{
+        width: 100px;
+        padding: 5px 15px;
+    }
+    .layui-form-mid{
+        padding: 5px 0 !important;
+    }
+</style>
+<div class="layui-form seller-alone-form">
+    <div class="layui-tab-content">
+        <table class="layui-table" lay-skin="line">
+            <colgroup>
+                <col width="150">
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>优惠劵名称</th>
+                <th>优惠金额</th>
+            </tr>
+            </thead>
+            <tbody>
+            {foreach $list as $vo}
+            <tr>
+                <td>{$vo.coupon_name}</td>
+                <td>{$vo.coupon_price}</td>
+            </tr>
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>

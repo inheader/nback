@@ -1,0 +1,362 @@
+<!--轮播图设置-->
+<div class="swiper-edit">
+    <div class="warning-msg-content">
+        最多可添加6张图片,图片为必填
+    </div>
+    <input type="hidden" value="{$data.field_id}" class="field_id" name="field_id" id="field_id"/>
+    <input type="hidden" value="Swiper" class="field_type" name="field_type" id="field_type"/>
+    <div id="linkKeyTem" style="display: none">
+        <select>
+            <option value="">请选择商品类型</option>
+            {volist name="class_list" id="v" key="kk"}
+            <option value="{$v.class_id}">{$v.class_name}</option>
+            {/volist}
+        </select>
+    </div>
+
+    <div class="swiper-item">
+        <div class="edit-cell">
+            <div class="lab">位置</div>
+            <div class="text">
+                <input type="number" name="sort" value="{$data.field_list.sort}"/>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="swiper-list">
+
+        <?php
+           $empty = !empty($data['field_list']['imageUrl']);
+        ?>
+        {if condition="$empty"}
+            {volist name="data.field_list.imageUrl" id="vo" key="key1"}
+            <div class="swiper-item">
+                <div class="edit-cell">
+                    <div class="lab"><span style="color:red">*</span>上传图片</div>
+                    <div class="text">
+                        {if condition="$vo eq ''"}
+                        <div class="upload-img">
+                            +
+                        </div>
+                        <div class="loading-block" style="display: none">
+                            <div class="loading layui-anim-rotate layui-anim-loop">
+                                <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+                            </div>
+                        </div>
+                        <img src="{$vo}" style="width:100px;height:100px;display: none" class="img"/>
+                        {else/}
+                        <div class="upload-img" style="display: none">
+                            +
+                        </div>
+                        <img src="{$vo}" style="width:100px;height:100px;" class="img"/>
+                        {/if}
+                        <input type="hidden" value="{$vo}" name="imageUrl[{$key1-1}]" lay-verify="required"/>
+                    </div>
+                </div>
+
+                <div class="edit-cell">
+                    <div class="lab">链接类型</div>
+                    <div class="text">
+                        <select  name="linkType[{$key1-1}]" id="linkType" lay-verify="required" lay-filter="linkType">
+                            <option value="">请选择链接类型</option>
+                            <option value="-1" {if condition="$data.field_list.linkType[$key1-1] eq -1"} selected {/if}>无</option>
+                            <option value="0" {if condition="$data.field_list.linkType[$key1-1] eq 0"} selected {/if}>其它</option>
+                            <option value="1" {if condition="$data.field_list.linkType[$key1-1] eq 1"} selected {/if}>商品详情</option>
+                            <option value="2" {if condition="$data.field_list.linkType[$key1-1] eq 2"} selected {/if}>商品列表</option>
+                            <option value="3" {if condition="$data.field_list.linkType[$key1-1] eq 3"} selected {/if}>资讯详情</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="linkKeyName" style="display: none">linkKey[{$key1-1}]</div>
+                <!--外链-->
+                <div class="edit-cell linkType-cell">
+                    <div class="lab">链接地址</div>
+                    <div class="text">
+                        <input type="text"  value="{$data.field_list.linkKey[$key1-1]}"/>
+                    </div>
+                </div>
+                <!--商品详情-->
+                <div class="edit-cell linkType-cell">
+                    <div class="lab">货号</div>
+                    <div class="text">
+                        <input type="text" value="{$data.field_list.linkKey[$key1-1]}"/>
+                    </div>
+                </div>
+                <!--商品列表-->
+                <div class="edit-cell linkType-cell">
+                    <div class="lab">推荐类型</div>
+                    <div class="text">
+                        <select>
+                            {volist name="class_list" id="v" key="k"}
+                            {php}
+                            $index = $key1-1;
+                            $isSeleced = $v['class_id'] == $data['field_list']['linkKey'][$index]?true:false;
+                            {/php}
+                            {if condition="$isSeleced"}
+                            <option value="{$v.class_id}" selected>{$v.class_name}</option>
+                            {else/}
+                            <option value="{$v.class_id}">{$v.class_name}</option>
+                            {/if}
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <!--外链-->
+                <div class="edit-cell linkType-cell">
+                    <div class="lab">链接地址</div>
+                    <div class="text">
+                        <input type="text"  value="{$data.field_list.linkKey[$key1-1]}"/>
+                    </div>
+                </div>
+                <div class="del-swiper-item" onclick="delSwiper(this)"><span>删除图片</span></div>
+            </div>
+            {/volist}
+        {else/}
+            <div class="swiper-item">
+            <div class="edit-cell">
+                <div class="lab"><span style="color:red">*</span>上传图片</div>
+                <div class="text">
+
+                    <div class="upload-img">
+                        +
+                    </div>
+                    <div class="loading-block" style="display: none">
+                        <div class="loading layui-anim-rotate layui-anim-loop">
+                            <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+                        </div>
+                    </div>
+                    <img src="" style="width:100px;height:100px;display: none" class="img"/>
+
+                    <input type="hidden" value="" name="imageUrl[0]" lay-verify="required"/>
+                </div>
+            </div>
+
+            <div class="edit-cell">
+                <div class="lab">链接类型</div>
+                <div class="text">
+                    <select name="linkType[0]" id="linkType" lay-verify="required" lay-filter="linkType">
+                        <option value="">请选择链接类型</option>
+                        <option value="-1">无</option>
+                        <option value="0">其它</option>
+                        <option value="1">商品详情</option>
+                        <option value="2">商品列表</option>
+                        <option value="3">资讯详情</option>
+                    </select>
+                </div>
+            </div>
+            <div class="linkKeyName" style="display: none"></div>
+            <!--外链-->
+            <div class="edit-cell linkType-cell">
+                <div class="lab">链接地址</div>
+                <div class="text">
+                    <input type="text"  value=""/>
+                </div>
+            </div>
+            <!--商品详情-->
+            <div class="edit-cell linkType-cell">
+                <div class="lab">货号</div>
+                <div class="text">
+                    <input type="text" value=""/>
+                </div>
+            </div>
+            <!--商品列表-->
+            <div class="edit-cell linkType-cell">
+                <div class="lab">推荐类型</div>
+                <div class="text">
+                    <select>
+                        {volist name="class_list" id="v" key="kk"}
+                        <option value="{$v.class_id}">{$v.class_name}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+            <!--外链-->
+            <div class="edit-cell linkType-cell">
+                <div class="lab">链接地址</div>
+                <div class="text">
+                    <input type="text"  value=""/>
+                </div>
+            </div>
+            <div class="del-swiper-item" onclick="delSwiper(this)"><span>删除图片</span></div>
+        </div>
+        {/if}
+
+    </div>
+    <div class="add-btn" onclick="addSwiper()">+ 添加轮播图</div>
+</div>
+
+<script>
+    layui.use('upload', function(){
+        var upload = layui.upload;
+        //执行实例  /images/uploadimage?encode=utf-8
+        function uploadInst(className){
+            $(className).each(function(index,el){
+                var pa = $(el).parents(".text");
+                upload.render({
+                    elem: el //绑定元素
+                    ,url: '/images/uploadimage?encode=utf-8' //上传接口
+                    ,before: function(obj){ //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                        $(pa).find(".loading-block").show();
+                        $(el).hide();
+                    }
+                    ,done: function(res){
+                       console.log("res",res)
+                       if (res.status){
+                            $(pa).find(".img").attr("src",res.data.url);
+                            $(pa).find(".img").show();
+                            $(pa).find(".loading-block").hide();
+                            $(pa).find("input[name^='imageUrl']").val(res.data.url)
+                       }
+                    }
+                    ,error: function(){
+                        //请求异常回调
+                        $(pa).find(".loading-block").hide();
+                        $(el).show();
+
+                    }
+                });
+            })
+
+        }
+        $(function(){
+            $('select[name^="linkType"]').each(function(index,el){
+                $(el).parents(".swiper-item").find(".linkType-cell").hide();
+                var name =$(el).parents(".swiper-item").find(".linkKeyName").text();
+                console.log(name);
+                var value = $(el).val();
+                console.log("val-----",value)
+                if(value != -1){ //不是无
+                    $(el).parents(".swiper-item").find(".linkType-cell").eq(value).show();
+                    if(value==2){
+                        $(el).parents(".swiper-item").find(".linkType-cell").eq(value).find('select').attr("name",name)
+                    }else{
+                        $(el).parents(".swiper-item").find(".linkType-cell").eq(value).find('input').attr("name",name)
+                    }
+                }
+            });
+            layui.use(['form','upload'], function() {
+                uploadInst(".upload-img");
+                layui.form.render();
+            });
+        })
+        window.addSwiper=function(){
+            var i = $(".swiper-item").length;
+            var selectHtml = $("#linkKeyTem").html();
+            if(i<6){
+                $(".swiper-list").append('<div class="swiper-item">'+
+                    '<div class="edit-cell">'+
+                    '<div class="lab"><span style="color:red">*</span>上传图片</div>'+
+                    '<div class="text">'+
+                    '<div class="upload-img upload-img2">+ </div>'+
+                    '<div class="loading-block" style="display: none">'+
+                    '<div class="loading layui-anim-rotate layui-anim-loop">'+
+                    '<i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>'+
+                    '</div>'+
+                    '</div>'+
+                    ' <img src="{$vo}" style="width:100px;height:100px;display:none" class="img"/>'+
+                    '<input type="hidden" value="" name="imageUrl['+i+']" lay-verify="required"/>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="edit-cell">'+
+                    '<div class="lab">链接类型</div>'+
+                    '<div class="text">'+
+                    '<select  name="linkType['+i+']" id="linkType['+i+']" lay-verify="required" lay-filter="linkType">'+
+                    '<option value="-1">无</option>'+
+                    '<option value="0">其它</option>'+
+                    '<option value="1">商品详情</option>'+
+                    '<option value="2">商品列表</option>'+
+                    '<option value="3">资讯详情</option>'+
+                    '</select>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="linkKeyName" style="display: none">linkKey['+i+']</div>'+
+                    <!--外链-->
+                    '<div class="edit-cell linkType-cell">'+
+                    '<div class="lab">链接地址</div>'+
+                    '<div class="text">'+
+                    '<input type="text" name="" value=""/>'+
+                    '</div>'+
+                    '</div>'+
+                    <!--商品详情-->
+                    '<div class="edit-cell linkType-cell">'+
+                    '<div class="lab">货号</div>'+
+                    '<div class="text">'+
+                    '<input type="text" name="" value=""/>'+
+                    '</div>'+
+                    '</div>'+
+                    <!--商品列表-->
+                    '<div class="edit-cell linkType-cell">'+
+                    '<div class="lab">推荐类型</div>'+
+                    '<div class="text">'+ selectHtml+
+                    '</div>'+
+                    '</div>'+
+                    <!--资讯外链-->
+                    '<div class="edit-cell linkType-cell">'+
+                    '<div class="lab">链接地址</div>'+
+                    '<div class="text">'+
+                    '<input type="text" name="" value=""/>'+
+                    '</div>'+
+                    '</div>'+
+                    '<div class="del-swiper-item" onclick="delSwiper(this)"><span>删除图片</span></div>'+
+                    '</div>');
+                    // layui.use(['form','upload'], function() {
+                        uploadInst(".upload-img2");
+                        layui.form.render();
+                    // });
+
+
+            }else{
+                layer.msg('最多可添加6张图片');
+            }
+
+        }
+        window.delSwiper=function(obj){
+            $(obj).parents(".swiper-item").remove();
+            $(".swiper-item").each(function(index,el){
+                console.log(index)
+                $(el).find("input[name^='imageUrl']").attr("name","imageUrl["+index+"]");
+                $(el).find("select[name^='linkType']").attr("name","linkType["+index+"]");
+                var value = $(el).find("select[name^='linkType']").val();
+                $(el).find(".linkKeyName").text("linkKey["+index+"]");
+                var name =$(el).find(".linkKeyName").text();
+                if(value==2){
+                    $(el).find(".linkType-cell").eq(value).find('select').attr("name",name)
+                }else{
+                    $(el).find(".linkType-cell").eq(value).find('input').attr("name",name)
+                }
+            });
+            layui.use('form', function() {
+                layui.form.render();
+            })
+        }
+
+    });
+
+
+
+//    function changeLinkType(obj){
+//        console.log("obj",obj);
+//        console.log($(obj).val());
+//        var value = $(obj).val();
+//        $(obj).parents(".swiper-item").find(".linkType-cell").hide();
+//        if(value != -1){ //不是无
+//            $(obj).parents(".swiper-item").find(".linkType-cell").eq(value).show();
+//            if(value==2){
+//                $(obj).parents(".swiper-item").find(".linkType-cell").eq(value).find('select[name^="linkKey"]').removeAttr("disabled");
+//            }else{
+//                $(obj).parents(".swiper-item").find(".linkType-cell").eq(value).find('input[name^="linkKey"]').removeAttr("disabled")
+//            }
+//        }
+//
+//    }
+</script>
+
+<style>
+    .loading-block{
+        width:100px;
+        height:100px;
+        text-align: center;
+        line-height: 100px;
+    }
+</style>

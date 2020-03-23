@@ -1,0 +1,127 @@
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>提现佣金</legend>
+</fieldset>
+
+<blockquote class="layui-elem-quote layui-quote-nm">
+    昨日提现：￥{$z} <br>
+    今日提现：￥{$j}<br>
+    当月提现：￥{$m}<br>
+</blockquote>
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<!--<script type="text/html" id="toolbarDemo">-->
+    <!--<div class="layui-btn-container">-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
+    <!--</div>-->
+<!--</script>-->
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="s">审核</a>-->
+</script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('Cash/salesIndex')}"
+            ,toolbar: '#toolbarDemo'
+            ,title: '提现表'
+            ,limit:15
+            ,limits:[15,20,30,100]
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                // ,{type: 'id', title:'ID'}
+                ,{field:'cash_id', title:'提现ID', width:120, fixed: 'left', unresize: true, sort: true}
+                ,{field:'cash_sn', title:'提现编号', width:180}
+                ,{field:'cash_name', title:'申请人', width:120, sort: true}
+                ,{field:'cash_type', title:'提现方式', width:140, sort: true}
+                ,{field:'card_num', title:'提现账户', width:140, sort: true}
+                ,{field:'price', title:'申请提现金额', width:140}
+                ,{field:'remark', title:'备注'}
+                ,{field:'status', title:'状态', width:80, sort: true, templet: function (res) {
+                        var html = "";
+                        if(res.status == 0)
+                        {
+                                html = "<a style='color: #ACCD3C'>待审核</a>";
+                        } else if(res == 1)
+                        {
+                                html =  "<a style='color: #CC2222'>已审核</a>";
+                        } else if(res == 2)
+                        {
+                                html =  "<a style='color: #0d686f'>已拒绝</a>";
+                        }
+                        return html;
+                    }}
+                ,{field:'createTime', title:'申请时间', width:120}
+                ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+            ]]
+            ,page: true
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '目标'
+                    ,area: ['300px', '300px']
+                    ,shade: 0 //遮罩
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('Cash/edit')}?id=" + data.id
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        console.log(layero);
+
+                        layer.setTop(layero); //重点2
+                    }
+                });
+
+                // layer.prompt({
+                //     formType: 2
+                //     ,value: data.email
+                // }, function(value, index){
+                //     obj.update({
+                //         email: value
+                //     });
+                //     layer.close(index);
+                // });
+            }
+        });
+    });
+</script>

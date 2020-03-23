@@ -1,0 +1,55 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<form class="layui-form" action="">
+    <hr>
+    <div class="layui-form-item">
+        <label class="layui-form-label">代金券批次ID：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="coupon_stock" lay-verify="title" autocomplete="off" placeholder="" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">代金券别名：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="coupon_nick" lay-verify="title" autocomplete="off" placeholder="请输出代金券昵称" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">创建</button>
+        </div>
+    </div>
+
+</form>
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__/jquery-2.1.3.min.js"> </script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form'], function(){
+        var form = layui.form
+            ,layer = layui.layer;
+
+        //监听提交
+        form.on('submit(demo1)', function(data){
+            $.ajax({
+                url: '{:url("WxCoupon/add")}',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                success: function(e){
+                    if(e.status === true){
+                        layer.msg(e.msg, {time: 1300}, function(){
+                            // window.location.href='{:url("WxCoupon/index")}';
+                            parent.location.reload();
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        });
+                    }else{
+                        layer.msg(e.msg, {time: 1300});
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>

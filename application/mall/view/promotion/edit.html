@@ -1,0 +1,254 @@
+
+<form class="layui-form seller-alone-form" action="" style="min-height:600px;">
+    <div class="warning-msg-content" style="font-size:12px">
+        注意：
+        <br>
+        最多可设置五级优惠条件 (每级优惠不累加)，优先级1级＞2级＞3级；
+        <br>
+        如果满足1级，则不执行2级、3级；如果不满足1级，满足2级，则执行2级，不执行3级，以此类推！
+        <br>
+        配置9折的时候，填入0.9
+    </div>
+    <input type="hidden" name="actId" value="{$actInfo.actId}" />
+    <div class="layui-form-item">
+        <label class="layui-form-label">活动名称：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input name="actName" lay-verify="required" autocomplete="off" placeholder="请输入标题" class="layui-input" type="text" maxlength="50" value="{$actInfo.actName}">
+        </div>
+        <div class="layui-form-mid layui-word-aux">促销名称会显示到前台，请合理输入此名称</div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">启用状态：</label>
+        <div class="layui-input-block">
+            {if $actInfo.isEnable == 1}
+                <input type="checkbox" name="isEnable" lay-skin="switch" checked  value="1" lay-text="启用|禁用">
+            {else}
+                <input type="checkbox" name="isEnable" lay-skin="switch"  value="2" lay-text="启用|禁用">
+            {/if}
+
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">活动说明：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <textarea name="discountDescription" lay-verify="title" autocomplete="off" placeholder="活动说明" class="layui-input" style="padding:10px" maxlength="100" value="{$actInfo.discountDescription}">{$actInfo.discountDescription}</textarea>
+        </div>
+        <div class="layui-form-mid layui-word-aux">活动说明最多100个字符</div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">起止时间：</label>
+        <div class="layui-input-inline seller-inline-6">
+            <input  type="text" name="actDate" value="{$actInfo['startTime']} 到 {$actInfo['endTime']}" id="date" placeholder="请输入起止时间" autocomplete="off" class="layui-input" lay-verify="required">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">优惠条件：</label>
+        <div class="layui-input-inline seller-inline-6">
+            <button class="layui-btn layui-btn-primary layui-btn-xs" onclick="addDiscount()" type="button">添加条件</button>
+        </div>
+    </div>
+    <div style="border:1px solid #eee;padding:20px;padding-left:0;background: #fcfcfc;display: inline-block;margin-left:110px;margin-top:-10px;min-width: 330px">
+        <div id="adr-list">
+            {volist name="actInfo.ruleList" id="vo" key="key"}
+                <div class="p-item">
+                <div class="layui-form-item" style="display: inline-block;height:38px;line-height: 38px;padding-left:20px;vertical-align: top">优先级{$key}<input type="hidden" value="{$key}" name="weight[{$key}]"/></div><div class="layui-form-item" style="display: inline-block;">
+                <label class="layui-form-label" style="padding:9px 0 "><i class="required-color">*</i> 类型：</label>
+                <div class="layui-input-inline seller-inline-2">
+                    <select lay-filter="type" name="actType[{$key}]">
+                        <option value="1" {if $vo.actType == 1}selected{/if}>满减活动</option>
+                        <option value="2" {if $vo.actType == 2}selected{/if}>折扣活动</option>
+                    </select>
+                </div>
+                </div><div class="layui-form-item" style="display: inline-block;"><label class="layui-form-label" style="padding:9px 0"><i class="required-color">*</i> 活动商品满</label>
+                <div class="layui-input-inline seller-inline-2" style="padding-left:10px">
+                    <input  value="{$vo.fullMoney}" class="layui-input" lay-verify="integer" name="fullMoney[{$key}]">
+                </div>
+
+                    <!--金额券显示-->
+                    <div class="amount" {if $vo.actType == 1}style="display: inline-block"{/if} >
+                        <div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">元减</div>
+                        <div class="layui-input-inline seller-inline-2">
+                            <input name="reduceMoney[{$key}]" value="{$vo.reduceMoney}" class="layui-input" lay-verify="reduceMoney" >
+                        </div>
+                        <div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">元</div>
+                    </div>
+
+                    <!--折扣券显示-->
+                    <div class="discount" {if $vo.actType == 2}style="display: inline-block"{/if}>
+                        <div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">元打</div>
+                        <div class="layui-input-inline seller-inline-2">
+                            <input name="reduceDiscount[{$key}]" value="{$vo.reduceDiscount}" class="layui-input" lay-verify="reduceDiscount" >
+                        </div>
+                        <div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">折</div>
+                    </div>
+
+
+
+
+
+            </div><div class="layui-form-item" style="display: inline-block;vertical-align: top">
+                <label class="layui-form-label" style="padding:9px 0 "><i class="required-color">*</i> 是否包邮：</label>
+                <div class="layui-input-inline seller-inline-2">
+                    <input type="checkbox" name="isFreeShipping[{$key}]" lay-skin="switch" {if $info.isFreeShipping == 1}checked{/if}   value="1" lay-text="是|否">
+                </div>
+            </div><div class="del-btn" style="display: inline-block;
+                            color:red;
+                            height:38px;
+                            line-height: 38px;
+                            vertical-align: top;
+                            text-decoration: underline;
+                            cursor: pointer">删除</div>
+            </div>
+            {/volist}
+
+        </div>
+        <div class="no-data" style="text-align: center;font-size: 12px;color:#666;display: none">- 请设置优惠条件 -</div>
+
+    </div>
+
+    <div class="layui-form-item" style="margin-top:40px">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="promotion">确定</button>
+        </div>
+    </div>
+</form>
+<style>
+    .discount,.amount{
+        display: none;
+    }
+</style>
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function(){
+        var form = layui.form
+            ,layer = layui.layer
+            ,laydate = layui.laydate;
+        //时间插件
+        laydate.render({
+            elem: '#date',
+            range: '到',
+            type: 'datetime'
+        });
+
+        form.verify({
+            integer: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if(!new RegExp("^[0-9]*[1-9][0-9]*$").test(value)){
+                    return '只能输入正整数';
+                }
+            },
+            reduceMoney: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if ($(item).is(':visible') && !new RegExp("^[0-9]*[1-9][0-9]*$").test(value)) {
+                    return '只能输入正整数';
+                }
+            },
+            reduceDiscount: function(value, item){ //value：表单的值、item：表单的DOM对象
+                if ($(item).is(':visible') && !new RegExp("^-?(0\.\d*[1-9]+\d*)$").test(value)) {
+                    return '只能输入0到1之间的小数';
+                }
+            }
+        });
+
+        //优惠类型切换
+        form.on('select(type)', function(data){
+            if (data.value == 1){
+                $(data.elem).parents(".p-item").find('.discount').css('display','none');
+                $(data.elem).parents(".p-item").find('.amount').css('display','inline-block');
+            }else{
+                $(data.elem).parents(".p-item").find('.discount').css('display','inline-block');
+                $(data.elem).parents(".p-item").find('.amount').css('display','none');
+            }
+        });
+
+        //提交
+        form.on('submit(promotion)', function(data){
+            console.log(data);
+            $.ajax({
+                url:"{:url('promotion/edit')}",
+                type:'post',
+                data:data.field,
+                success:function(res){
+                    if(res.status == true){
+                        layer.msg('添加成功');
+                        window.location.href=res.data;
+                    }else{
+                        layer.msg(res.msg);
+                    }
+                }
+            },"json");
+            return false;
+        });
+
+
+    });
+
+    /*添加优惠条件*/
+    function addDiscount(){
+        var i = $(".p-item").length+1;
+        if (i>5){
+            layer.alert('最多能设置五级优惠条件 ');
+        }else{
+            $("#adr-list").append( '<div class="p-item">'+
+                '<div class="layui-form-item weight-item" style="display: inline-block;height:38px;line-height: 38px;padding-left:20px;vertical-align: top">优先级'+i+'<input type="hidden" value="'+i+'" name="weight['+i+']"/></div>'+
+                '<div class="layui-form-item" style="display: inline-block;">'+
+                '<label class="layui-form-label" style="padding:9px 0 "><i class="required-color">*</i> 类型：</label>'+
+                '<div class="layui-input-inline seller-inline-2">'+
+                '<select lay-filter="type" name="actType['+i+']">'+
+                '<option value="1">满减活动</option>'+
+                '<option value="2">折扣活动</option>'+
+                '</select>'+
+                '</div>'+
+                '</div>'+
+                '<div class="layui-form-item" style="display: inline-block;">'+
+                '<label class="layui-form-label" style="padding:9px 0"><i class="required-color">*</i> 活动商品满</label>'+
+                '<div class="layui-input-inline seller-inline-2" style="padding-left:10px">'+
+                '<input name="fullMoney['+i+']" value="" class="layui-input" lay-verify="integer" >'+
+                '</div>'+
+                '<div class="amount">'+
+                '<div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">元减</div>'+
+                '<div class="layui-input-inline seller-inline-2">'+
+                '<input name="reduceMoney['+i+']" value="" class="layui-input" lay-verify="reduceMoney" >'+
+                '</div>'+
+                '<div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">元</div>'+
+                '</div>'+
+                '<div style="display: none" class="discount">'+
+                '<div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">元打</div>'+
+                '<div class="layui-input-inline seller-inline-2">'+
+                '<input name="reduceDiscount['+i+']" value="" class="layui-input" lay-verify="reduceDiscount" >'+
+                '</div>'+
+                '<div class="layui-input-inline" style="height:38px;line-height: 38px;width:30px">折</div>'+
+                '</div>'+
+                '</div>'+
+                '<div class="layui-form-item" style="display: inline-block;vertical-align: top">'+
+                '<label class="layui-form-label" style="padding:9px 0 "><i class="required-color">*</i> 是否包邮：</label>'+
+                '<div class="layui-input-inline seller-inline-2">'+
+                '<input type="checkbox" name="isFreeShipping['+i+']" lay-skin="switch" checked  value="1" lay-text="是|否">'+
+                '</div>'+
+                '</div>'+
+                '<div class="del-btn" style="display: inline-block;color:red;height:38px;line-height: 38px;vertical-align: top;text-decoration: underline;cursor: pointer">删除</div>'+
+                '</div>');
+            layui.form.render();
+            $(".no-data").hide()
+        }
+    }
+
+    $(function(){
+        /*删除地址*/
+        $("#adr-list").on('click','.del-btn',function(){
+            $(this).parents(".p-item").remove();
+            if ($(".p-item").length == 0){
+                $(".no-data").show()
+            } else{
+                $(".p-item").each(function(i,el){
+                    $(el).find(".weight-item").text("优先级"+(i+1));
+                    $(el).find("input[name^=weight]").attr("name",'weight['+(i+1)+']');
+                    $(el).find("select[name^=actType]").attr("name",'actType['+(i+1)+']');
+                    $(el).find("input[name^=fullMoney]").attr("name",'fullMoney['+(i+1)+']');
+                    $(el).find("input[name^=reduceMoney]").attr("name",'reduceMoney['+(i+1)+']');
+                    $(el).find("input[name^=reduceDiscount]").attr("name",'reduceDiscount['+(i+1)+']');
+                    $(el).find("input[name^=isFreeShipping]").attr("name",'isFreeShipping['+(i+1)+']');
+                });
+                $(".no-data").hide()
+            }
+
+        });
+    })
+</script>

@@ -1,0 +1,106 @@
+
+
+<form class="layui-form seller-alone-form">
+
+    <input type="hidden" name="site_id" value="{$info.site_id}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label" style="padding:0 15px;width:100px">会员分类设置：</label>
+        <div style="width:100px;display: inline-block">
+            <button class="layui-btn layui-btn-primary layui-btn-xs" onclick="addadr()" type="button">添加会员分类名称</button>
+        </div>
+        <div style="height:10px"></div>
+        <div style="border:1px solid #eee;padding:20px;padding-left:0;background: #fcfcfc;display: inline-block;margin-left:130px">
+            <div id="adr-list">
+                {volist name="info" id="vo" key="key"}
+                <!--对于新增的amsaId，为0-->
+                <div class="p-item">
+                    <input type="hidden" name="id[{$key}]" value="{$vo.id}">
+                    <div class="layui-form-item"  style="display: inline-block">
+                        <label class="layui-form-label" style="padding:9px 0"><i class="required-color">*</i> 分类名称：</label>
+                        <div class="layui-input-inline seller-inline-2">
+                            <input name="name[{$key}]" value="{$vo.name}" class="layui-input" lay-verify="required"/>
+                        </div>
+                    </div>
+                    <div class="del-btn"
+                         style="display: inline-block;
+                            color:red;
+                            height:38px;
+                            line-height: 38px;
+                            vertical-align: top;
+                            text-decoration: underline;
+                            cursor: pointer">删除</div>
+                </div>
+                {/volist}
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="add-site">保存</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</form>
+<script>
+    layui.use('form', function(){
+        var $ = layui.$,form = layui.form;
+        form.render();
+        //各种基于事件的操作，下面会有进一步介绍
+
+        form.on('submit(add-site)', function(data){
+            JsPost("{:url('User/editCateMember')}",data.field,function(res){
+                if (res.status) {
+                    layer.msg(res.msg);
+                    window.location.reload()
+                }else{
+                    layer.msg(res.msg);
+                }
+                // if(res){
+                //     layer.msg('保存成功', {time:1300},function(){
+                //         window.location.href = "{:url('User/levelMember')}";
+                //     });
+                // }else{
+                //     layer.msg('保存失败');
+                // }
+            });
+        });
+
+    });
+
+    /*添加会员等级*/
+    function addadr(){
+        var i = $(".p-item").length+1;
+        if (i<7){
+            $("#adr-list").append('<div class="p-item">\n' +
+                '                   <input type="hidden" name="id['+i+']" value="0">\n'+
+                '                    <div class="layui-form-item"  style="display: inline-block">\n' +
+                '                        <label class="layui-form-label" style="padding:9px 0"><i class="required-color">*</i> 分类名称：</label>\n' +
+                '                        <div class="layui-input-inline seller-inline-2">\n' +
+                '                            <input name="name['+i+']" value="" class="layui-input" lay-verify="required"/>\n' +
+                '                        </div>\n' +
+                '                    </div>\n' +
+                '                    <div class="del-btn"\n' +
+                '                         style="display: inline-block;\n' +
+                '                            color:red;\n' +
+                '                            height:38px;\n' +
+                '                            line-height: 38px;\n' +
+                '                            vertical-align: top;\n' +
+                '                            text-decoration: underline;\n' +
+                '                            cursor: pointer">删除</div>\n' +
+                '                </div>')
+        } else{
+            layer.msg("会员等级最多设置6级!");
+        }
+
+    }
+
+
+
+
+</script>

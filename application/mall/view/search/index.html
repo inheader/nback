@@ -1,0 +1,107 @@
+<form class="layui-form seller-form">
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <button type="button" class="layui-btn layui-btn-sm add-keyword"><i class="layui-icon">&#xe608;</i> 添加</button>
+        </div>
+
+    </div>
+</form>
+
+<div class="table-body">
+    <table class="layui-table" id="keywordTable" lay-filter="keywordTable"></table>
+</div>
+
+<script>
+    layui.use(['table','form'], function(){
+        var table = layui.table,form = layui.form;
+        table.render({
+            elem: '#keywordTable',
+            height: 'full-330',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'20',
+            id:'keywordTable',
+            url: "{:url('Search/index')}",
+            cols: [[ //标题栏
+                {type: 'numbers'},
+                {field: 'keywords', width:200, title: '热门词'},
+                {field: 'click',title: '点击量'},
+                {field: 'search_num',title: '搜索量'},
+                {field: 'weight',title: '权重',edit:'text'},
+                {field: 'is_status', title: '状态'},
+                {title:'操作',align:'center',toolbar:'#keywordBar',fixed:'right',width: 200}
+            ]] //设置表头
+        });
+
+        $(document).on('click','.add-keyword',function(){
+            window.location.href = "{:url('Search/add')}";
+        });
+
+        //监听单元格编辑
+        table.on('edit(keywordTable)', function(obj){
+            var data = obj.data;
+            JsGet("{:url('Search/weight')}?id=" + data.id + "&weight=" + obj.value,function(res){
+                if(res.status){
+                    layer.msg(res.msg);
+                    location.reload();
+                }
+                layer.msg(res.msg);
+            });
+            // var value = obj.value //得到修改后的值
+            //     ,data = obj.data //得到所在行所有键值
+            //     ,field = obj.field; //得到字段
+            // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+        });
+
+        //监听工具条
+        table.on('tool(keywordTable)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+
+            if(layEvent === 'stop'){ //停用
+                layer.confirm('真的停用么',{icon:3}, function(index){
+                    JsGet("{:url('Search/stop')}?id="+data.id,function(res){
+                        if(res.status){
+                            location.reload();
+                        }
+                        layer.msg(res.msg);
+                    });
+                });
+            } else if(layEvent === 'edit'){
+                window.location.href = "{:url('Search/edit')}?id="+data.id;
+            }else if(layEvent === 'open'){
+                layer.confirm('真的启用么',{icon:3}, function(index){
+                    JsGet("{:url('Search/open')}?id="+data.id,function(res){
+                        if(res.status){
+                            location.reload();
+                        }
+                        layer.msg(res.msg);
+                    });
+                });
+            }else if(layEvent === 'delete')
+            {
+                layer.confirm('确定删除吗?',{icon:3}, function(index){
+                    JsGet("{:url('Search/delete')}?id="+data.id,function(res){
+                        if(res.status){
+                            location.reload();
+                        }
+                        layer.msg(res.msg);
+                    });
+                });
+            }
+        });
+    });
+</script>
+
+<script type="text/html" id="keywordBar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
+    {{#  if(d.status === 2){ }}
+    <a class="layui-btn layui-btn-xs" lay-event="open">设置为启用</a>
+    {{#  } }}
+    {{#  if(d.status === 1){ }}
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="stop">设置为停用</a>
+    {{#  } }}
+
+</script>

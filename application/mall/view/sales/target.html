@@ -1,0 +1,140 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+
+<div class="site-demo-laydate">
+    <div class="layui-inline" id="test-n3"></div>
+</div>
+
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<!--<script type="text/html" id="toolbarDemo">-->
+    <!--<div class="layui-btn-container">-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
+        <!--<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
+    <!--</div>-->
+<!--</script>-->
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="s">审核</a>
+</script>
+
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['table','laydate'], function(){
+        var table = layui.table,laydate = layui.laydate;
+
+
+        laydate.render({
+            elem: '#test-n3'
+            ,type: 'month'
+            ,position: 'static'
+            ,done: function(value, date){
+                //多窗口模式，层叠置顶
+                layer.open({
+                    type: 2 //此处以iframe举例
+                    ,title: '目标'
+                    ,area: ['300px', '300px']
+                    ,shade: 0.8 //遮罩
+                    ,maxmin: true
+                    // ,offset: [ //为了演示，随机坐标
+                    //     Math.random()*($(window).height()-300)
+                    //     ,Math.random()*($(window).width()-390)
+                    // ]
+                    ,content: "{:url('Sales/report')}?sid={$sales.sales_id}&date=" + value
+                    ,zIndex: layer.zIndex //重点1
+                    ,success: function(layero){
+                        console.log(layero);
+
+                        layer.setTop(layero); //重点2
+                    }
+                });
+
+                // layer.alert('你选择的日期是：' + value + '<br>获得的对象是' + JSON.stringify(date));
+            }
+        });
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('Sales/target')}?sid={$sales.sales_id}"
+            ,toolbar: '#toolbarDemo'
+            ,title: '提现表'
+            ,cols: [[
+                {type: 'checkbox', fixed: 'left'}
+                // ,{type: 'id', title:'ID'}
+                ,{field:'date', title:'月份', width:300, unresize: true, sort: true}
+                ,{field:'target', title:'目标额', minWidth:180, edit: 'text'}
+                // ,{field:'sex', title:'申请人', width:120, edit: 'text', sort: true}
+                // ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+            ]]
+            ,page: true
+        });
+
+        //监听单元格编辑
+        table.on('edit(test)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+            $.ajax({
+                url: '{:url("sales/editReport")}',
+                type: 'post',
+                data: {id:data.id,target:value},
+                dataType: 'json',
+                success: function (e) {
+                    if (e.status === true) {
+                        layer.msg(e.msg);
+                        // var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        // parent.layer.close(index); //再执行关闭
+                    } else {
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+
+            // layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+    });
+</script>

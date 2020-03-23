@@ -1,0 +1,73 @@
+<div style="padding:30px" class="layui-form layui-form-pane">
+
+    <input type="hidden" id="id" value="{$info.id}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">上级分类：</label>
+        <div class="layui-input-block">
+            <input type="text" id="name" value="{$info.name}" placeholder="上级分类" autocomplete="off" class="layui-input" disabled>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类名称：</label>
+        <div class="layui-input-block">
+            <input type="text" id="name_3" name="name_3" value="" required lay-verify="required" placeholder="分类名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序：</label>
+        <div class="layui-input-block">
+            <input type="number" name="sort" id="sort" value="{$info.sort}" required lay-verify="required" placeholder="排序" autocomplete="off" class="layui-input" value="100">
+        </div>
+    </div>
+    <button class="layui-btn layui-btn-fluid add-class-btn">保存</button>
+</div>
+
+
+<script>
+    //渲染表单
+    layui.use('form', function(){
+        var form = layui.form;
+        form.render();
+        //编辑保存数据
+        $(document).on('click', '.add-class-btn', function(){
+            var id = $("#id").val();
+            var parent_id = $("#parent_id").val();
+            var name = $("#name_3").val();
+            var sort = $("#sort").val();
+            var error = false;
+            if(name.length > 6 || name.length < 1){
+                error = true;
+                layer.msg('子分类名称在1-6个字符之间', {time: 1300});
+                return false;
+            }
+            if(sort < 1 || sort > 100){
+                error = true;
+                layer.msg('请填写1-100的排序值，越小越靠前', {time: 1300});
+                return false;
+            }
+            $.ajax({
+                url: '{:url("site/quickClassAddSunPost")}',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    'id': id,
+                    'classId': classId,
+                    'parentId': parent_id,
+                    'name': name,
+                    'sort': sort
+                },
+                success: function(e){
+                    if(e.status === true){
+                        layer.close(window_box);
+                        layer.msg(e.msg, {item: 1300}, function(){
+                            table.reload('categories');
+                        });
+                    }else{
+                        layer.msg(e.msg, {time: 1300});
+                    }
+                }
+            });
+        });
+    });
+</script>

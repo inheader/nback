@@ -1,0 +1,97 @@
+<div style="padding: 20px;" class="layui-form seller-alone-form">
+    <form class="layui-form seller-alone-form">
+        <input type="hidden" name="sm_id" value="{$data.sm_id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:80px;text-align: left;padding:9px 0"><i class="required-color">*</i> 手机号码：</label>
+            <div class="layui-input-inline seller-inline-5">
+                <input type="text" name="buyer_tel" required lay-verify="required"  autocomplete="off" class="layui-input" value="" style="display: inline-block;width:155px;">
+                <button class="layui-btn layui-btn-sm" type="button" lay-submit lay-filter="search-siteMember"  style="height:38px;line-height: 38px;margin-left:-4px;margin-top:-1px"><i class="iconfont icon-chaxun"></i></button>
+            </div>
+        </div>
+
+        <div class="user-info">
+            <div class="user-div">
+                <div class="user-name"></div>
+                <div class="user-phone"></div>
+                <input type="hidden" name="buyer_id" id="buyer_id" required/>
+            </div>
+
+            <div class="error"></div>
+        </div>
+        <button class="layui-btn layui-btn-fluid add-save-btn" lay-submit lay-filter="add-siteMember" style="display: none;margin-top:20px" type="button">添加会员</button>
+    </form>
+
+
+</div>
+<style>
+    .user-info{
+        margin-top:20px;
+        text-align: center;
+
+    }
+    .user-info .user-name{
+        font-size:20px;
+        line-height: 36px;
+
+    }
+    .user-info .user-phone{
+        font-size:20px;
+        line-height: 36px;
+    }
+</style>
+
+<script>
+    layui.use('form', function(){
+        layui.form.render();
+        //搜索
+        layui.form.on('submit(search-siteMember)', function(data){
+            JsPost("{:url('User/searchSiteMember')}",data.field,function(res){
+                $(".user-info").show();
+                if(res.status){
+                    $(".user-name").text(res.data.buyer_name);
+                    $(".user-phone").text(res.data.buyer_tel);
+                    $("#buyer_id").val(res.data.buyer_id);
+                    $(".error").hide();
+                    $(".user-div").show();
+                    $(".add-save-btn").show();
+                }else{
+                    $(".error").text(res.msg);
+                    $(".error").show();
+                    $(".user-div").hide();
+                    $(".add-save-btn").hide();
+                    $("#buyer_id").val("");
+                }
+            });
+        });
+
+        //添加
+        layui.form.on('submit(add-siteMember)', function(data){
+            JsPost("{:url('User/addSiteMember')}",data.field,function(res){
+                if(res.status){
+                    window.location.reload()
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    });
+
+
+    $(function(){
+        $("input[name='buyer_tel']").bind('input propertychange',function(){
+            //做一些事情
+            $(".user-info").hide();
+            $(".add-save-btn").hide();
+            $(".user-div").hide();
+            $("#buyer_id").val("");
+        })
+    });
+
+    // function clearData(){
+    //     $(".user-info").hide();
+    //     $(".add-save-btn").hide();
+    //     $(".user-div").hide();
+    //     $(".buyer_id").val("");
+    // }
+
+</script>

@@ -1,0 +1,63 @@
+<link rel="stylesheet" href="__STATIC__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__step-lay/step.css">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding-top: 40px;">
+            <div class="lay-step" style="width: 750px;">
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">1</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">选择订单信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">2</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">退货商品信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">3</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">确认退货单</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-head step-item-head-active"><i class="layui-icon">4</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">完成</div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="text-align: center;margin-top: 90px;">
+                    <i class="layui-icon layui-circle"
+                       style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+                    <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+                        创建成功
+                    </div>
+                    <!--<div style="font-size: 14px;color: #666;margin-top: 20px;">请手动退货</div>-->
+                </div>
+                <div style="text-align: center;margin-top: 50px;">
+                    <button class="layui-btn next" id="jump-return">再创退单</button>
+                    <button class="layui-btn layui-btn-primary" id="select-return">查看退单</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //再创退单
+    $(document).on('click', '#jump-return', function(){
+        window.location.href = "{:url('ReturnGoods/step')}";
+    });
+
+    //查看退单
+    $(document).on('click', '#select-return', function(){
+        window.location.href = "{:url('ReturnGoods/lists')}";
+    });
+</script>

@@ -1,0 +1,137 @@
+<form class="layui-form seller-form"  action="" >
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">姓名：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="buyer_name" lay-verify="title" style="width:100px;" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">手机号码：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="buyer_tel" lay-verify="title" placeholder="请输入手机号码" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width:150px">微信openid：</label>
+            <div class="layui-input-inline seller-inline-4">
+                <input type="text" name="wx_open_id" lay-verify="title" placeholder="请输入微信openid" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-sm" lay-submit lay-filter="*"><i class="iconfont icon-chaxun"></i>筛选</button>
+                <button class="layui-btn layui-btn-sm" lay-submit  lay-filter="role-add" type="button"><i class="layui-icon">&#xe608;</i>添加会员</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="table-body">
+    <table id="userTable" lay-filter="test"></table>
+</div>
+
+<script>
+    layui.use(['form', 'layedit', 'laydate','table'], function(){
+        var $ = layui.$,form = layui.form;
+        form.render();
+        //各种基于事件的操作，下面会有进一步介绍
+        /**
+         * 添加微信会员信息
+         */
+        form.on('submit(role-add)', function(data){
+            JsGet("{:url('User/addSiteMember')}", function(e){
+                window.box = layer.open({
+                    type:1,
+                    content:e,
+                    area:['400px','320px'],
+                    title:'添加会员'
+                })
+            })
+        });
+
+
+        layui.table.render({
+            elem: '#userTable',
+            height: 'full-230',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'20',
+            url: "{:url('User/siteMember')}",
+            id:'userTable',
+            cols: [[
+                {type:'numbers'},
+                {field:'buyer_name',title:'姓名',width:150},
+                {field:'buyer_tel',title:'手机号码',width:200},
+                {field:'wx_open_id',title:'微信openId',width:300},
+                {field:'is_credit', width:100,title:'赊账权限', align: 'center',templet:function(data){
+                    if(data.is_credit == '1'){
+                        return '<a href="javascript:void(0);">无</a>';
+                    }else if(data.is_credit == '2'){
+                        return '<a href="javascript:void(0);">有</a>';
+                    }else {
+                        return '<a href="javascript:void(0);">未知</a>';
+                    }
+                }},
+                {field:'level_name',title:'会员等级',width:250},
+                {field:'cate_name',title:'会员分类',width:250},
+                {title:'操作',align:'center',toolbar:'#storeBar',fixed:'right',width: 150}
+            ]]
+        });
+        layui.form.on('submit(*)', function(data){
+            layui.table.reload('userTable', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //监听工具条
+        layui.table.on('tool(test)', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+            if(layEvent === 'del'){ //删除
+                layer.confirm('此会员将不享受店铺折扣，真的要删除么',{icon: 3}, function(index){
+                    JsGet("{:url('User/delSiteMember')}?sm_id=" + data.sm_id, function(res){
+                        if(res){
+                            console.log("res.status",res.status)
+                            obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                            layer.close(index);//向服务端发送删除指令
+                        }
+                        layer.msg(res.msg);
+                    })
+                });
+            } else if(layEvent === 'edit'){ //编辑
+                JsGet("{:url('User/editSiteMember')}?sm_id=" + data.sm_id, function(e){
+                    window.box = layer.open({
+                        type:1,
+                        content:e,
+                        area:['400px','320px'],
+                        title:'编辑会员信息'
+                    })
+                })
+            }else if(layEvent === 'credit'){
+                JsGet("{:url('User/creditSiteMember')}?sm_id=" + data.sm_id, function(e){
+                    window.box = layer.open({
+                        type:1,
+                        content:e,
+                        area:['400px','320px'],
+                        title:'修改赊账权限'
+                    })
+                })
+                console.log('aaaa');
+            }
+        });
+
+
+    });
+</script>
+
+<script type="text/html" id="storeBar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="credit">赊账</a>
+</script>

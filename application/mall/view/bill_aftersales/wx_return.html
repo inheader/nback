@@ -1,0 +1,92 @@
+<blockquote class="layui-elem-quote layui-text">
+    手动退款，请确认好再确认退款!
+</blockquote>
+
+<form class="layui-form" action="">
+    <input type="hidden" name="return_id" value="{$info.return_id}">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">订单总金额：</label>
+            <div class="layui-input-inline">
+                <input type="text" value="{$info.refund_amount}" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+        {if $info.is_goods_send eq 1}
+        <div class="layui-inline">
+            <label class="layui-form-label">退款金额</label>
+            <div class="layui-input-inline">
+                <input type="number" name="refund_price" value="{$info.refund_price}" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        {else /}
+        <div class="layui-inline">
+            <label class="layui-form-label">退款金额</label>
+            <div class="layui-input-inline">
+                <input type="number" name="refund_price" value="{$info.refund_price + $info.return_shipping_fee + $info.return_floor_fee + $info.return_transport_fee}" lay-verify="required" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        {/if}
+        <div class="layui-inline">
+            <label class="layui-form-label">备注：</label>
+            <div class="layui-input-inline">
+                <textarea name="reason"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit="" lay-filter="wxReturn">确定退款</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    layui.use(['form'], function(){
+        var form = layui.form;
+
+        //自定义验证规则
+        // form.verify({
+        //     title: function(value){
+        //         if(value.length < 5){
+        //             return '标题至少得5个字符啊';
+        //         }
+        //     }
+        //     ,pass: [
+        //         /^[\S]{6,12}$/
+        //         ,'密码必须6到12位，且不能出现空格'
+        //     ]
+        //     ,content: function(value){
+        //         layedit.sync(editIndex);
+        //     }
+        // });
+
+        //监听提交
+        form.on('submit(wxReturn)', function(data){
+            $.ajax({
+                type:'post',
+                url: "{:url('billAftersales/wxReturnPost')}",
+                data:data.field,
+                success:function(e){
+                    if(e.status === true)
+                    {
+                        layer.msg('退款成功', {
+                            time: 2000
+                        }, function(){
+                            window.location.href="{:url('billAftersales/index')}";
+                        });
+                    }else{
+                        layer.msg('退款失败');
+                    }
+                }
+            });
+
+            // layer.alert(JSON.stringify(data.field), {
+            //     title: '最终的提交信息'
+            // });
+            return false;
+        });
+
+    });
+</script>

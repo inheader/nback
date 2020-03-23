@@ -1,0 +1,25 @@
+<table id="couponLog" lay-filter="pointLog"></table>
+<script>
+    var table;
+    layui.use('table', function(){
+        table = layui.table.render({
+            elem: '#couponLog',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'10',
+            url: "{:url('Promotion/couponLog')}?_ajax=1&id={$id}",
+            id:'couponLog',
+            height: '471',
+            response: {
+                statusName: 'status',
+                statusCode: 1
+            },
+            cols: [[
+                {type:'numbers'},
+                {field:'buyer_name', width:150, title:'领取人'},
+                {field:'coupon_state', width:110, title:'使用状态'},
+                {field:'created_at', width:200, title:'领取时间'},
+            ]]
+        });
+    });
+</script>

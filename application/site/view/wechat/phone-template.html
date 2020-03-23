@@ -1,0 +1,135 @@
+
+    <!--店铺抬头-->
+    <div class="shop-rise flex flex-start-center">
+        <div class="left-text">
+            <div class="logo flex center-center">
+                <img src="{$data.siteLogo}" style="width:100%;"/>
+            </div>
+            <div class="info">
+                <div class="name">{$data.siteName}</div>
+                <div class="calladr">
+                    <div class="call" >
+                        <img src="__STATIC_IMAGES__phone.png" style="width:16px"/> 打电话
+                    </div>
+                    <div class="adr" >
+                        <img src="__STATIC_IMAGES__gps.png" style="width:14px"/> 去实体店
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-text">
+            <div class="scBtn" >
+                <img src="__STATIC_IMAGES__start.png" style="width:16px"/> 收藏
+            </div>
+        </div>
+
+    </div>
+    <!--搜索组件-->
+    <div class="search-component">
+        <div class="search-block">
+            <i class="iconfont icon-chaxun" style="margin-right:0;"></i>搜商品
+        </div>
+    </div>
+    {volist name="data.list" id="vo"}
+        {switch name="vo.field_type" }
+            {case value="Swiper"}
+                <!--轮播-->
+                <div class="shop-swiper" onclick="editfieldsInfo('Swiper',{$vo.field_id})">
+                    <input type="hidden" value="{$vo.field_id}" class="field_id" name="field_id"/>
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper" style="line-height: 200px">
+                            {volist name="vo.field_list.imageUrl" id="v"}
+                                <div class="swiper-slide" style="background-image: url('{$v}');background-size: cover"></div>
+                            {/volist}
+                        </div>
+                        <!-- Add Pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                </div>
+            {/case}
+            {case value="ProductGroup"}
+                <!--商品组-->
+                <div class="goodsPush-component" onclick="editfieldsInfo('ProductGroup',{$vo.field_id})">
+                    <input type="hidden" value="{$vo.field_id}" class="field_id" name="field_id"/>
+                    <div class="title flex space-between-center">{$vo.field_list.groupName}
+                        <div class="more">更多<img src="__STATIC_IMAGES__jt-right.png" style="width:12px;vertical-align: text-top"/></div>
+                    </div>
+                    <div class="goodsPush-list">
+                        {foreach $vo.products_list as $key=>$v}
+                            <div class="goods-item">
+                                <div class="pic">
+                                    <img src="{$v.goodsImage}" style="width:100%;height:100%" />
+                                </div>
+                                <div class="name text-overflow2">{$v.goodsName}</div>
+                                <div class="price">￥{$v.goodsPrice}</div>
+                            </div>
+                        {/foreach}
+                    </div>
+                </div>
+            {/case}
+
+            {case value="Notice"}
+                <!--公告-->
+                <div class="shop-notice" onclick="editfieldsInfo('Notice',{$vo.field_id})">
+                    <input type="hidden" value="{$vo.field_id}" class="field_id" name="field_id"/>
+                    <div class="notice-component flex flex-start-center">
+                        <div style="width:64px;height:38px;"><img src="__STATIC_IMAGES__noticeShop.svg" style="width:64px;height:38px;display: block"/></div>
+                        <div class="notice-swiper">
+                            <div class="swiper-wrapper">
+                                {volist name="vo.field_list.content" id="v"}
+                                    <div class="swiper-slide text text-overflow">{$v}.</div>
+                                {/volist}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            {/case}
+
+            {case value="Image"}
+                <!--图片链接-->
+                <div class="picLink-component flex space-around-center" onclick="editfieldsInfo('Image',{$vo.field_id})">
+                    <input type="hidden" value="{$vo.field_id}" class="field_id" name="field_id"/>
+                    <div class="pic-item">
+                        <div class="pic">
+                            <img src="https://ssl.picture.qingger.com/FlC9nofeNkfNGpK8ocnJL0g5n18r"/>
+                        </div>
+                        <div class="text">券中心</div>
+                    </div>
+                    <div class="pic-item">
+                        <div class="pic">
+                            <img src="https://ssl.picture.qingger.com/Fn_3f7i8pr6eVA5aj4GbTDQhFgRB"/>
+                        </div>
+                        <div class="text">最近上新</div>
+                    </div>
+                    <div class="pic-item">
+                        <div class="pic">
+                            <img src="https://ssl.picture.qingger.com/Fr4Oua4M0PGzD0idBhLgl71q2gYr"/>
+                        </div>
+                        <div class="text">本店热买</div>
+                    </div>
+
+                    <div class="pic-item">
+                        <div class="pic">
+                            <img src="https://ssl.picture.qingger.com/FkRIy9qnsTF4FRkY7rQxXiz5WMtz"/>
+                        </div>
+                        <div class="text">全部商品</div>
+                    </div>
+
+                </div>
+            {/case}
+
+        {/switch}
+
+
+
+
+
+
+
+
+
+
+    {/volist}
+
+

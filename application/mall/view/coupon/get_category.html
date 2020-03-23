@@ -1,0 +1,94 @@
+{if $find.type eq 1}
+<input type="hidden" name="cp_type" value="1">
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券金额：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value=""  placeholder="请输入数字" class="layui-input" type="number">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">满：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_money_limit" lay-verify="title" autocomplete="off"   value=""placeholder="请输入金额" class="layui-input" type="number">
+    </div>
+    <div class="layui-form-mid layui-word-aux">元可用</div>
+</div>
+{elseif $find.type eq 2 /}
+<input type="hidden" name="cp_type" value="3">
+<div class="layui-form-item">
+    <label class="layui-form-label">现金劵金额：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value=""  placeholder="请输入数字" class="layui-input" type="number">
+    </div>
+</div>
+{elseif $find.type eq 3 /}
+<input type="hidden" name="cp_type" value="2">
+<div class="layui-form-item">
+    <label class="layui-form-label">满：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_money_limit" lay-verify="title" autocomplete="off"   value=""placeholder="请输入金额" class="layui-input" type="number">
+    </div>
+    <div class="layui-form-mid layui-word-aux">元可打折扣</div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">折扣：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_money_discount" lay-verify="title" autocomplete="off"   value=""placeholder="请输入金额" class="layui-input" type="number">
+    </div>
+    <div class="layui-form-mid layui-word-aux">折</div>
+</div>
+{elseif $find.type eq 4 /}
+<input type="hidden" name="cp_type" value="1">
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券金额：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value=""  placeholder="请输入数字" class="layui-input" type="number">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">满：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_money_limit" lay-verify="title" autocomplete="off"   value=""placeholder="请输入金额" class="layui-input" type="number">
+    </div>
+    <div class="layui-form-mid layui-word-aux">元抵用</div>
+</div>
+{elseif $find.type eq 5 /}
+<input type="hidden" name="cp_type" value="4">
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券金额：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value=""  placeholder="请输入数字" class="layui-input" type="number">
+    </div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">满：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_money_limit" lay-verify="title" autocomplete="off"   value=""placeholder="请输入金额" class="layui-input" type="number">
+    </div>
+    <div class="layui-form-mid layui-word-aux">元可用</div>
+</div>
+<div class="layui-form-item">
+    <label class="layui-form-label">满：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_num_limit" lay-verify="title" autocomplete="off"   value=""placeholder="请输入件数" class="layui-input" type="number">
+    </div>
+    <div class="layui-form-mid layui-word-aux">件可用</div>
+</div>
+{elseif $find.type eq 6 /}
+<input type="hidden" name="cp_type" value="5">
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券金额：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value=""  placeholder="请输入数字" class="layui-input" type="number">
+    </div>
+</div>
+{elseif $find.type eq 7 /}
+<input type="hidden" name="cp_type" value="6">
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券金额：</label>
+    <div class="layui-input-inline seller-inline-5">
+        <input name="cp_price_discount" lay-verify="title" autocomplete="off" value=""  placeholder="请输入数字" class="layui-input" type="number">
+    </div>
+</div>
+{/if}
+

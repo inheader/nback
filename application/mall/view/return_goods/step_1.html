@@ -1,0 +1,197 @@
+<link rel="stylesheet" href="__STATIC__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__step-lay/step.css">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding-top: 40px;">
+            <div class="lay-step" style="width: 750px;">
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">1</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">选择订单信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head step-item-head-active"><i class="layui-icon">2</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">退货商品信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">3</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">确认退货单</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-head"><i class="layui-icon">4</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-card-body">
+    <table class="layui-hide" id="test" lay-filter="test"></table>
+
+    <form class="layui-form" style="margin: 0 auto;max-width: 800px;padding-top: 40px;">
+        <!--<div id="transferTable"></div>-->
+        <!--<br>-->
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" lay-demotransferactive="getData">
+                    &emsp;下一步&emsp;
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<?php
+    $g = urlencode(json_encode($goodsData));
+?>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    layui.use(['form','table','layer','util'], function(){
+        var $ = layui.$
+            ,form = layui.form
+            // ,transfer = layui.transfer
+            ,table = layui.table
+            ,layer = layui.layer
+            ,util  = layui.util;
+
+        table.render({
+            elem: '#test'
+            ,url:"{:url('ReturnGoods/step_1_order_return_goods')}?buyerId=<?php echo $_GET['buyerId'];?>"+"&goods=<?php echo $g;?>"
+            ,cellMinWidth: 80
+            ,cols: [[
+                {type:'numbers'}
+                // ,{type: 'checkbox'}
+                ,{field:'order_sn', title:'订单编号', width:200, unresize: true, sort: true}
+                // ,{field:'osp_id', title:'订单商品ID', width:120, unresize: true, sort: true}
+                ,{field:'goods_name', title:'商品名', templet: '#usernameTpl'}
+                ,{field:'goods_return_num', title:'退货数量(可改)',width:160,edit:'text'}
+            ]]
+            ,id: 'testReload'
+            ,page: true
+        });
+
+
+        //修改商品退货数量
+        table.on('edit(test)', function(obj){
+            var value = obj.value //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+
+            $.ajax({
+                 url: '{:url("ReturnGoods/step_1_update_goods_num")}',
+                 async:false,
+                 type: 'post',
+                 data:{osp_id:data.order_osp_id,goods_return_num:value},
+                 dataType: 'json',
+                 success: function (e) {
+                     if (e.status === true) {
+                         layer.msg(e.msg);
+                     } else {
+                         //返回失败 重载表格
+                         layer.msg(e.msg);
+                         table.reload('testReload');
+                     }
+                 }
+             });
+             return false;
+            // layer.msg('[ID: '+ data.order_osp_id +'] ' + field + ' 字段更改为：'+ value);
+        });
+
+        //监听操作生成记录
+        util.event('lay-demoTransferActive', {
+            getData: function(othis){
+                var getData = table.on('testReload').cache.testReload;
+                $.ajax({
+                    url: '{:url("ReturnGoods/step_1_add_goods")}',
+                    async:false,
+                    type: 'post',
+                    data:{aid:"<?php echo $_GET['aid']?>",goods:getData},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            window.location.href = "{:url('ReturnGoods/step_2')}?aid=<?php echo $_GET['aid']?>&buyerId=<?php echo $_GET['buyerId'];?>&bind="+e.bind+"&goods="+e.data;
+                        } else {
+                            //返回失败 重载表格
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+                console.log(table.on('testReload').cache.testReload);
+            }
+        });
+
+
+        //定义标题及数据源
+        // transfer.render({
+        //     elem: '#transferTable'
+        //     ,title: ['待选商品', '已选商品']  //自定义标题
+        //     ,data: goods()
+        //     ,id: 'key123' //定义唯一索引
+        //     ,width: 300 //定义宽度
+        //     ,height:800
+        // });
+        //
+        // //批量办法定事件
+        // util.event('lay-demoTransferActive', {
+        //     getData: function(othis){
+        //         var getData = transfer.getData('key123'); //获取右侧数据
+        //         $.ajax({
+        //             url: '{:url("ReturnGoods/step_2")}?type=d&orderId=<?php echo $_GET["orderId"]?>',
+        //             async:false,
+        //             type: 'post',
+        //             data:{
+        //                 'orderId': '<?php echo $_GET["orderId"]?>',
+        //                 'goods': getData
+        //             },
+        //             dataType: 'json',
+        //             success: function (e) {
+        //                 if (e.status === true) {
+        //                     window.location.href = "{:url('ReturnGoods/step_2')}?orderId=<?php echo $_GET['orderId']?>";
+        //                 } else {
+        //                     layer.msg(e.msg);
+        //                 }
+        //             }
+        //         });
+        //
+        //         // layer.alert(JSON.stringify(getData));
+        //     }
+        //     // ,reload:function(){
+        //     //     //实例重载
+        //     //     transfer.reload('key123', {
+        //     //         title: ['待选商品', '已选商品']
+        //     //         ,value: ['2', '5', '9']
+        //     //         ,showSearch: true
+        //     //     })
+        //     // }
+        // });
+
+    });
+
+    function goods(){
+        var data;
+        $.ajax({
+            url: '{:url("ReturnGoods/step_1_info")}?type=d&orderId=<?php echo $_GET["orderId"]?>',
+            async:false,
+            type: 'get',
+            dataType: 'json',
+            success: function (e) {
+                if (e.status === true) {
+                    data =  e.data;
+                } else {
+                    layer.msg(e.msg);
+                }
+            }
+        });
+
+        return data;
+    }
+</script>

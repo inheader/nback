@@ -1,0 +1,1 @@
+<?php/** * Created by PhpStorm. * User: Lyunp * Date: 2019/12/26 * Time: 14:41 */namespace app\common\model;class BuyerPhoto extends Common{}

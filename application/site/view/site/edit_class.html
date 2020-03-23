@@ -1,0 +1,93 @@
+
+
+<form class="layui-form seller-alone-form">
+
+    <input type="hidden" name="class_id" value="{$info.class_id}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>分类名称：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="class_name" value="{$info.class_name}" lay-verify="required" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">分类LOGO：</label>
+        <button type="button" class="layui-btn" id="logoUpload">上传图片</button>
+        <div class="layui-upload-list" style="padding-left:110px">
+            <div class="loading-block" style="display: none;width:60px;height:60px;text-align: center;line-height: 60px">
+                <div class="loading layui-anim-rotate layui-anim-loop">
+                    <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+                </div>
+            </div>
+            <img class="layui-upload-img" src="{$info.class_logo}" id="image_src_head_img" style="width:60px;height:60px;">
+            <input type="hidden" name="class_logo"/>
+        </div>
+
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>分类排序：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="class_sort" value="{$info.class_sort}" lay-verify="required" placeholder="请输入分类名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item" style="margin-top:50px">
+        <div class="layui-input-block">
+            <button type="button" class="layui-btn" lay-submit lay-filter="add-site">保存</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</form>
+<script>
+    layui.use(['form','upload'], function(){
+        var $ = layui.$,form = layui.form;
+        form.render();
+        //各种基于事件的操作，下面会有进一步介绍
+        form.on('submit(add-site)', function(data){
+            JsPost("{:url('Site/editClass')}",data.field,function(res){
+                if(res.status){
+                    layer.msg(res.msg, {time:1300},function(){
+                        window.location.href = "{:url('Site/siteClass')}";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        });
+        var upload = layui.upload;
+        //执行实例  /images/uploadimage?encode=utf-8
+        var pa = $('#logoUpload').parents(".layui-form-item");
+        function uploadInst() {
+            upload.render({
+                elem: '#logoUpload' //绑定元素
+                , url: '/images/uploadimage?encode=utf-8' //上传接口
+                , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                    $(pa).find(".loading-block").show();
+                    $(pa).find("img").hide();
+                }
+                , done: function (res) {
+                    console.log(res)
+                    if (res.status) {
+                        $(pa).find("img").attr("src", res.data.url);
+                        $(pa).find("img").show();
+                        $(pa).find(".loading-block").hide();
+                        $(pa).find("input[name='site_logo']").val(res.data.url)
+                    }
+                }
+                , error: function () {
+                    //请求异常回
+                    $(pa).find(".loading-block").hide();
+                    $(pa).find("img").show();
+
+                }
+            });
+        }
+        uploadInst();
+
+    });
+
+</script>

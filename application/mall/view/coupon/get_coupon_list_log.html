@@ -1,0 +1,59 @@
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.seller.css">
+<form class="layui-form seller-form"  action="" >
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width:120px;">用户ID：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="buyerId" lay-verify="name" placeholder="请输入用户ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="*"><i class="iconfont icon-chaxun"></i>筛选</button>
+        </div>
+    </div>
+</form>
+<div class="table-body">
+    <table id="couponLog" lay-filter="pointLog"></table>
+</div>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var table;
+    layui.use(['form','table'], function(){
+        var layer = layui.layer,
+            $ = layui.jquery,
+            form = layui.form;
+
+        table = layui.table.render({
+            elem: '#couponLog',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'10',
+            url: "{:url('coupon/getCouponListLog')}?_ajax=1&id={$cp.cp_id}",
+            id:'couponLog',
+            height: '471',
+            // response: {
+            //     statusName: 'status',
+            //     statusCode: 1,
+            // },
+            cols: [[
+                {type:'numbers'},
+                {field:'buyer_id', width:150, title:'用户ID'},
+                {field:'buyer_name', width:150, title:'领取人'},
+                {field:'coupon_state', width:110, title:'使用状态'},
+                {field:'created_at', width:200, title:'领取时间'},
+            ]]
+        });
+        form.on('submit(*)', function(data){
+            layui.table.reload('couponLog', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>

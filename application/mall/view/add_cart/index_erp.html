@@ -1,0 +1,160 @@
+<link href="https://cdn.bootcss.com/select2/4.0.10/css/select2.css" rel="stylesheet">
+<table class="layui-table">
+  <colgroup>
+    <col width="150">
+    <col width="200">
+    <col>
+  </colgroup>
+  <thead>
+    <tr>
+      <th>商品货号</th>
+      <th>商品名称</th>
+      <th>品牌</th>
+      <th>商品类别</th>
+      <th>商品分类</th>
+      <th>商品价格</th>
+      <th>是否虚拟商品</th>
+      <th>商品库存</th>
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody class="good_info">
+    <tr>
+      <td>
+        <select class="js-example-basic-single bn" name="good_bn">
+        </select>
+      </td>
+      <td>
+        <select class="js-example-basic-single good_name" name="good_name">
+        </select>
+      </td>
+      <td>
+        <input type="text" name="good_brand" placeholder="请输入货号" class="good_brand">
+      </td>
+      <td>
+        <input type="text" name="good_cat" placeholder="请输入货号" class="good_cat">
+      </td>
+      <td>
+        <input type="text" name="good_type" placeholder="请输入货号" class="good_type">
+      </td>
+      <td>
+        <input type="text" name="good_price" placeholder="请输入货号" class="good_price">
+      </td>
+      <td>
+        <input type="text" name="good_nomal" placeholder="请输入货号" class="good_nomal">
+      </td>
+      <td>
+        <input type="text" name="good_stock" placeholder="请输入货号" class="good_stock">
+      </td>
+    </tr>
+  </tbody>
+</table>
+<button type="button" class="layui-btn  add" style="float: right">
+  <i class="layui-icon">&#xe608;</i> 添加
+</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+<script>
+
+  $(document).ready(function () {
+    $(".add").click(function () {
+      var html = "<tr>" +
+        "<td>" +
+        "<input type='text' name='good_bn' placeholder='请输入货号' class='good_bn'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_name' placeholder='请输入货号' class='good_name'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_brand' placeholder='请输入货号' class='good_brand'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_cat' placeholder='请输入货号' class='good_cat'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_type' placeholder='请输入货号' class='good_type'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_price' placeholder='请输入货号' class='good_price'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_nomal' placeholder='请输入货号' class='good_nomal'>" +
+        "</td>" +
+        "<td>" +
+        "<input type='text' name='good_stock' placeholder='请输入货号' class='good_stock'>" +
+        "</td>" +
+        "<td>" +
+        "<button type='button' class='layui-btn layui-btn-sm del'>" +
+        "<i class='layui-icon'>&#xe640;</i>" +
+        "</button>" +
+        "</td>" +
+        "</tr>"
+
+      $(".good_info").append(html)
+    })
+
+    $(document).on('click', '.del', function () {
+      $(this).parent().parent().remove()
+    })
+
+    $('.good_name').select2({
+      ajax: {
+        url: "{:url('AddCart/search')}",
+        dataType: "json",
+        delay: 250,
+        data: function (params) {
+          console.log(123)
+          return {
+            search: params.term,
+            type: 'name'
+          }
+        },
+        processResults: function (res) {
+          return {
+            results: res.data
+          }
+        },
+        cache: true,
+      },
+      escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+      minimumInputLength: 1,
+      templateResult: formatRepo,
+      templateSelection: formatRepoSelection
+    })
+
+    $('.bn').select2({
+      ajax: {
+        url: "{:url('AddCart/search')}",
+        dataType: "json",
+        delay: 250,
+        data: function (params) {
+          console.log(234)
+          return {
+            search: params.term,
+            type: 'bn'
+          }
+        },
+        processResults: function (res) {
+          return {
+            results: res.data
+          }
+        },
+        cache: true,
+      },
+      escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+      minimumInputLength: 1,
+      templateResult: formatRepo,
+      templateSelection: formatRepoSelection
+    });
+    function formatRepo(results) {
+      if (results.loading) return results.text;
+      var markup = `<option value="${results.id}">${results.text}</option>`;
+      return markup;
+    }
+    //根据选中的最新返回显示在选择框中的文字
+    function formatRepoSelection(results) {
+      console.log(results)
+      return results.full_name || results.text;
+    }
+
+  });
+</script>

@@ -1,0 +1,27 @@
+<table id="creditLog" lay-filter="creditLog"></table>
+<script>
+    var table;
+    layui.use(['form', 'layedit', 'laydate','table'], function(){
+        table = layui.table.render({
+            elem: '#creditLog',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'10',
+            url: "{:url('User/creditLog')}?_ajax=1&buyer_id={$buyer_id}",
+            id:'creditLog',
+            height: '471',
+            response: {
+                statusName: 'status',
+                statusCode: 1
+            },
+            cols: [[
+                {type:'numbers'},
+                {field:'type', width:70, title:'类型'},
+                {field:'price', width:110, title:'数量'},
+                {field:'balance', width:110, title:'余额'},
+                {field:'remarks', width:250,title: '备注'},
+                {field:'created_at', width:165, title:'时间'}
+            ]]
+        });
+    });
+</script>

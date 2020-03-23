@@ -1,0 +1,323 @@
+<link rel="stylesheet" href="__STATIC__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC__step-lay/step.css">
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body" style="padding-top: 40px;">
+            <div class="lay-step" style="width: 750px;">
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head step-item-head-active"><i class="layui-icon">1</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">选择商品信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">2</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">退货商品信息</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-tail"><i class=""></i></div>
+                    <div class="step-item-head"><i class="layui-icon">3</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">确认退货单</div>
+                    </div>
+                </div>
+                <div class="step-item" style="width: 23.3333%;">
+                    <div class="step-item-head"><i class="layui-icon">4</i></div>
+                    <div class="step-item-main">
+                        <div class="step-item-main-title">完成</div>
+                    </div>
+                </div>
+            </div>
+            {if $get}
+                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">选择数据:</label>
+                        <div class="layui-input-block">
+                            <select name="buyer" lay-filter="buyer">
+                                <option value="{$get.buyer_id}" selected>{$get.buyer_name}({$get.buyer_id})</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            {else }
+                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+
+                    <div class="layui-form-item">
+                        <div class="ui-widget">
+                            <label for="birds" class="layui-form-label">搜索用户:</label>
+                            <!--<div class="layui-input-inline">-->
+                                <input id="birds" class="layui-input">
+                                <!--<button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">搜索</button>-->
+                            <!--</div>-->
+                        </div>
+                        <!--<div class="layui-input-block">-->
+
+                        <!--</div>-->
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">选择数据:</label>
+                        <div class="layui-input-block">
+                            <select name="buyer" id="buyer" lay-search="" lay-filter="buyer">
+                                <option value="">请选择用户</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            {/if}
+
+        </div>
+    </div>
+</div>
+<div class="layui-card-body">
+    <form class="layui-form layui-hide" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">关键字:</label>
+            <div class="layui-input-inline">
+                <input type="text" name="keyword" lay-verify="required"  placeholder="商品名称/商品货号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-input-block">
+            <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">搜索</button>
+        </div>
+    </form>
+    <table class="layui-hide" id="test"></table>
+</div>
+
+<form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formStep">
+                &emsp;下一步&emsp;
+            </button>
+        </div>
+    </div>
+</form>
+
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="__STATIC__/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+{if !$get}
+<script>
+    layui.use(['form', 'layedit', 'laydate','table','step','tableSelect'], function(){
+        var $ = layui.jquery
+            ,form = layui.form
+            ,table = layui.table;
+
+        $( function() {
+            $("#birds").bind("input propertychange", function() {
+                document.onkeyup = function (e) {
+                    if (e.code === "Enter") {
+                        $("#buyer").html("")
+                        //    默认按回车键，完成查找输入操作
+                        var val = $("#birds").val();
+                        console.log(val);
+                        $.ajax( {
+                            url: "{:url('ReturnGoods/getByKeywords')}",
+                            dataType: "json",
+                            data: {
+                                keywords: val
+                            },
+                            success: function( data ) {
+                                $.each(data.dataList, function (i, item) {
+                                    console.log(item.buyer_id);
+                                    $('#buyer').append('<option  value=' + item.buyer_id + '>' + item.buyer_name + '('+ item.buyer_id +')'+ "</option>");
+                                });
+                                form.render('select');
+                            }
+                        });
+                    }
+                };
+            });
+            // function log( message ) {
+            //     $( "<div>" ).text( message ).prependTo( "#log" );
+            //     $( "#log" ).scrollTop( 0 );
+            // }
+            // $( "#birds" ).autocomplete({
+            //     source: function( request, response ) {
+            //         $.ajax( {
+            //             url: "{:url('ReturnGoods/getByKeywords')}",
+            //             dataType: "json",
+            //             data: {
+            //                 keywords: request.term
+            //             },
+            //             success: function( data ) {
+            //                 response( data.dataList );
+            //                 // form.render('select'); //刷新select选择框渲染
+            //                 $.each(data.dataList, function (i, item) {
+            //                     console.log(item.buyer_id);
+            //                     $('#buyer').append('<option  value=' + item.buyer_id + '>' + item.buyer_name + '('+ item.buyer_id +')'+ "</option>");
+            //                 });
+            //             }
+            //         });
+            //         // form.render('select');
+            //
+            //     },
+            //     minLength: 1,
+            //     // select: function( event, ui ) {
+            //     //     // form.render(); //更新全部
+            //     //     log( "Selected: " + ui.item.value + " aka " + ui.item.id );
+            //     // }
+            // } );
+
+
+        } );
+
+
+        // $.getJSON("{:url('ReturnGoods/getBuyer')}?page=1&limit=20", function (data) {
+        //     $.each(data.dataList, function (i, item) {
+        //         $('#buyer').append('<option  value=' + item.buyer_id + '>' + item.buyer_name + '('+ item.buyer_id +')'+ "</option>");
+        //     });
+        //     form.render('select');
+        // });
+
+        //根据用户读取商品
+        form.on('select(buyer)', function(data){
+            var proid = data.value;
+
+            //移除class属性
+            // $("form").click(function(){
+            $("form").removeClass("layui-hide");
+            // });
+            //监听提交
+            form.on('submit(demo1)', function(data){
+                //执行重载
+                table.reload('testReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: data.field
+                });
+                return false;
+            });
+
+            table.render({
+                elem: '#test'
+                ,url:"{:url('ReturnGoods/step_order_goods')}?buyerId="+proid
+                ,cellMinWidth: 80
+                ,cols: [[
+                    {type:'numbers'}
+                    ,{type: 'checkbox'}
+                    ,{field:'order_sn', title:'订单编号', width:230, unresize: true, sort: true}
+                    // ,{field:'osp_id', title:'订单商品ID', width:120, unresize: true, sort: true}
+                    ,{field:'goods_image', title:'商品图片',width:120,templet:function (res) {
+                            return "<img src='"+res.goods_image+"' />";
+                        }}
+                    ,{field:'goods_name', title:'商品名', templet: '#usernameTpl'}
+                    ,{field:'goods_num', title:'商品数量',width:100}
+                ]]
+                ,id: 'testReload'
+                ,page: true
+            });
+
+
+            form.on('submit(formStep)', function (data) {
+                //获取表格数据
+                var datas = table.cache.testReload;
+                // console.log(datas);
+                var arr = [];
+                for(j = 0,len=datas.length; j < len; j++) {
+                    if(datas[j].LAY_CHECKED === true)
+                    {
+                        arr.push(datas[j]);//写入数组
+                    }
+                }
+                console.log(arr);
+                $.ajax({
+                    url: '{:url("ReturnGoods/step_add_goods")}',
+                    type: 'post',
+                    data: {goods:arr},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            window.location.href = "{:url('ReturnGoods/step_1')}?buyerId="+proid+"&goods="+e.data;//JSON.stringify(arr)
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+                return false;
+            });
+
+        });
+
+    });
+</script>
+{else }
+<script>
+    layui.use(['form', 'layedit', 'laydate','table','step','tableSelect'], function(){
+        var $ = layui.jquery
+            ,form = layui.form
+            ,table = layui.table;
+
+            var proid = '{$get.buyer_id}';
+
+            //移除class属性
+            // $("form").click(function(){
+            $("form").removeClass("layui-hide");
+            // });
+            //监听提交
+            form.on('submit(demo1)', function(data){
+                //执行重载
+                table.reload('testReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    ,where: data.field
+                });
+                return false;
+            });
+
+
+            table.render({
+                elem: '#test'
+                ,url:"{:url('ReturnGoods/step_order_goods')}?buyerId="+proid
+                ,cellMinWidth: 80
+                ,cols: [[
+                    {type:'numbers'}
+                    ,{type: 'checkbox'}
+                    ,{field:'order_sn', title:'订单编号', width:200, unresize: true, sort: true}
+                    // ,{field:'osp_id', title:'订单商品ID', width:120, unresize: true, sort: true}
+                    ,{field:'goods_image', title:'商品图片',width:120,templet:function (res) {
+                            return "<img src='"+res.goods_image+"' />";
+                        }}
+                    ,{field:'goods_name', title:'商品名', templet: '#usernameTpl'}
+                    ,{field:'goods_num', title:'商品数量',width:100}
+                ]]
+                ,id: 'testReload'
+                ,page: true
+            });
+            form.on('submit(formStep)', function (data) {
+
+                //获取表格数据
+                var datas = table.cache.testReload;
+                // console.log(datas);
+                var arr = [];//写入的新数组
+                for(j = 0,len=datas.length; j < len; j++) {
+                    if(datas[j].LAY_CHECKED === true)
+                    {
+                        arr.push(datas[j]);//写入数组
+                    }
+                }
+                console.log(arr);
+                $.ajax({
+                    url: '{:url("ReturnGoods/step_add_goods")}',
+                    type: 'post',
+                    data: {goods:arr},
+                    dataType: 'json',
+                    success: function (e) {
+                        if (e.status === true) {
+                            window.location.href = "{:url('ReturnGoods/step_1')}?aid=<?php echo $_GET['id']?>&buyerId="+proid+"&goods="+e.data;//JSON.stringify(arr)
+                        } else {
+                            layer.msg(e.msg);
+                        }
+                    }
+                });
+                return false;
+            });
+    });
+</script>
+{/if}

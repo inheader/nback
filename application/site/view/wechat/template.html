@@ -1,0 +1,363 @@
+<style>
+    .flex{
+        display: -webkit-box; /* OLD - iOS 6-, Safari 3.1-6 */
+        display: -moz-box; /* OLD - Firefox 19- (buggy but mostly works) */
+        display: -ms-flexbox; /* TWEENER - IE 10 */
+        display: -webkit-flex; /* NEW - Chrome */
+        display: flex;
+
+    }
+    .space-between{
+        /* 09版 */
+        -webkit-box-align: flex-start;
+        /* 12版 */
+        -webkit-align-items: flex-start;
+        -moz-align-items: flex-start;
+        -ms-flex-align: flex-start;
+        -o-align-items: flex-start;
+        align-items: flex-start;
+        -webkit-box-pack: space-between;
+        -ms-flex-pack: space-between;
+        justify-content: space-between
+    }
+    .space-between-center{
+        /* 09版 */
+        -webkit-box-align: center;
+        /* 12版 */
+        -webkit-align-items: center;
+        -moz-align-items: center;
+        -ms-flex-align: center;
+        -o-align-items: center;
+        align-items: center;
+        -webkit-box-pack: space-between;
+        -ms-flex-pack: space-between;
+        justify-content: space-between
+    }
+    .center-center{
+        -webkit-box-align: center;
+        /* 12版 */
+        -webkit-align-items: center;
+        -moz-align-items:center;
+        -ms-flex-align: center;
+        -o-align-items: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+    }
+    .flex-start-center{
+        /* 09版 */
+        -webkit-box-align: center;
+        /* 12版 */
+        -webkit-align-items:center;
+        -moz-align-items: center;
+        -ms-flex-align: center;
+        -o-align-items: center;
+        align-items: center;
+        -webkit-box-pack: flex-start;
+        -ms-flex-pack: flex-start;
+        justify-content: flex-start
+    }
+    .space-around-center{
+        /* 09版 */
+        -webkit-box-align: center;
+        /* 12版 */
+        -webkit-align-items:center;
+        -moz-align-items: center;
+        -ms-flex-align: center;
+        -o-align-items: center;
+        align-items: center;
+        -webkit-box-pack: space-around;
+        -ms-flex-pack: space-around;
+        justify-content: space-around
+    }
+    .text-overflow2 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        word-break: break-all;
+    }
+    .text-overflow {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -webkit-line-clamp: 1;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        word-break: break-all;
+    }
+
+</style>
+
+<div class="seller-alone-form">
+
+
+<div class="layui-tab layui-tab-brief" lay-filter="template">
+    <div class="layui-tab-content" style="">
+
+        <div class="shop-template-page flex space-between">
+            <div class="left">
+                <ul class="component-ul">
+                    <li class="component-li" onclick="addCom('Swiper')">
+                        <div class="pic"><img src="__STATIC_IMAGES__swper.png" width="32" /></div>
+                        <div class="text">轮播图</div>
+                    </li>
+                    <li class="component-li" onclick="addCom('Notice')">
+                        <div class="pic"><img src="__STATIC_IMAGES__noice.png" width="32" /></div>
+                        <div class="text">通知公告</div>
+                    </li>
+                    <li class="component-li" onclick="addCom('Image')">
+                        <div class="pic"><img src="__STATIC_IMAGES__pic.png" width="32" /></div>
+                        <div class="text">图片链接</div>
+                    </li>
+                    <li class="component-li"  onclick="addCom('ProductGroup')">
+                        <div class="pic"><img src="__STATIC_IMAGES__list.png" width="32" /></div>
+                        <div class="text">商品组</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="center">
+                <div class="btn-block">
+                    点击元素即可编辑
+                    <!--<div class="save-btn">保存</div>-->
+                </div>
+                <div class="canvas-main">
+                    <div class="phone-loading">
+                        <div class="loading layui-anim-rotate layui-anim-loop">
+                            <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+                        </div>
+                    </div>
+                    <div class="phone" style="display: none"></div>
+                </div>
+            </div>
+            <div class="right">
+                <form  class="layui-form edit-component-form">
+                    <div class="con">
+                        <div class="con-loading" style="text-align: center;padding-top:100px;display: none">
+                            <div class="loading layui-anim-rotate layui-anim-loop">
+                                <i class="layui-icon layui-icon-loading " style="font-size: 30px"></i>
+                            </div>
+                        </div>
+
+                        <div class="edit-component"></div>
+
+                    </div>
+
+                    <div class="bottom flex space-between-center">
+                        <button type="button" class="layui-btn layui-btn-radius layui-btn-primary  bottom-btn del-btn" lay-submit lay-filter="del-btn">删除组件</button>
+                        <button type="button" class="layui-btn layui-btn-radius layui-btn-normal bottom-btn save-btn"lay-submit lay-filter="save-btn">保存组件</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+
+
+
+    $(function(){
+        var h = $(".layui-body").height();
+        $(".layui-tab-content").height(h-150);
+        renderPhone();
+
+    });
+
+    /**
+     *渲染模板
+     */
+     function renderPhone(){
+
+        $.ajax({
+            type: 'post',
+            url: "templatePhone",
+            success: function (data) {
+                $(".phone-loading").hide();
+                $(".phone").show();
+                $(".phone").empty();
+                $(".phone").html(data.data);
+                var swiper = new Swiper('.swiper-container', {
+                    autoplay:true,
+                    pagination: {
+                        el: '.swiper-pagination',
+                        bulletActiveClass: 'my-bullet-active',
+                    },
+                });
+
+                var swiper2 = new Swiper('.notice-swiper', {
+                    direction : 'vertical',
+                    autoplay:true,
+
+                });
+            },
+            error: function (xhr) {
+            }
+        });
+    }
+    /***
+     * 增加组件
+     * @param componentType 添加的组件类型
+     */
+    function addCom(componentType){
+            var html='';
+            switch (componentType){
+                case 'Swiper':{
+                    html='<div class="shop-swiper" onclick="editfieldsInfo(\'Swiper\',0)">'+
+                            '<input type="hidden" value="" class="field_id" name="field_id"/>'+
+                            '<div class="swiper-container">'+
+                                '<div class="swiper-wrapper" style="line-height: 200px">'+
+                                    '<div class="swiper-slide"></div>'+
+                                 '</div>'+
+                                '<div class="swiper-pagination"></div>'+
+                             '</div>'+
+                        '</div>'
+                    break;
+                };
+                case 'Notice':{
+                    html='<div class="shop-notice" onclick="editfieldsInfo(\'Notice\',0)">'+
+                            '<input type="hidden" value="" class="field_id" name="field_id"/>'+
+                           '<div class="notice-component flex flex-start-center">'+
+                            '<div style="width:64px;height:38px;"><img src="__STATIC_IMAGES__noticeShop.svg" style="width:64px;height:38px;display: block"/></div>'+
+                            '<div class="notice-swiper">'+
+                            '<div class="swiper-wrapper">'+
+                            '</div>'+
+                            '</div>'+
+                           '</div>'+
+                            '</div>';
+                    break;
+                };
+                case 'Image':{
+                    html='<div class="picLink-component flex space-around-center" onclick="editfieldsInfo(\'Image\',0)">'+
+                            '<input type="hidden" value="" class="field_id" name="field_id"/>'+
+                            '<div class="pic-item">'+
+                            '<div class="pic">'+
+                            '<img src="https://ssl.picture.qingger.com/FlC9nofeNkfNGpK8ocnJL0g5n18r"/>'+
+                            '</div>'+
+                            '<div class="text">券中心</div>'+
+                            '</div>'+
+                            '<div class="pic-item">'+
+                            '<div class="pic">'+
+                            '<img src="https://ssl.picture.qingger.com/Fn_3f7i8pr6eVA5aj4GbTDQhFgRB"/>'+
+                            '</div>'+
+                            '<div class="text">最近上新</div>'+
+                            '</div>'+
+                            '<div class="pic-item">'+
+                            '<div class="pic">'+
+                            '<img src="https://ssl.picture.qingger.com/Fr4Oua4M0PGzD0idBhLgl71q2gYr"/>'+
+                            '</div>'+
+                            '<div class="text">本店热买</div>'+
+                            '</div>'+
+                            '<div class="pic-item">'+
+                            '<div class="pic">'+
+                            '<img src="https://ssl.picture.qingger.com/FkRIy9qnsTF4FRkY7rQxXiz5WMtz"/>'+
+                            '</div>'+
+                            '<div class="text">全部商品</div>'+
+                            '</div>'+
+                            '</div>'
+                    break;
+                };
+                case 'ProductGroup':{
+                    html='<div class="goodsPush-component" onclick="editfieldsInfo(\'ProductGroup\',0)">'+
+                            '<input type="hidden" value="" class="field_id" name="field_id"/>'+
+                            '<div class="title flex space-between-center">商品分类名'+
+                            '<div class="more">更多<img src="__STATIC_IMAGES__jt-right.png" style="width:12px;vertical-align: text-top"/></div>'+
+                            '</div>'+
+                            '<div class="goodsPush-list">'+
+                            '<div style="font-size:12px;color:#666;text-align:center;padding:20px">请选择商品类型</div>'+
+                            '</div>'+
+                            '</div>'
+                    break;
+                };
+            }
+            $(".phone").append(html);
+            $(".canvas-main").scrollTop($(".phone").height());
+           editfieldsInfo(componentType,0);
+    }
+
+    /**
+     * 保存组件
+     * @param componentType
+     */
+    function editfieldsInfo(componentType,field_id){
+        $(".edit-component").hide();
+        $(".con-loading").show();
+        $.ajax({
+            type: 'post',
+            url: "fieldsInfo",
+            data: {
+                field_type:componentType,
+                field_id:field_id
+            },
+            success: function (data) {
+                $(".right").find(".edit-component").empty();
+                $(".right").find(".edit-component").html(data.data);
+                $(".edit-component").show();
+                $(".con-loading").hide();
+                layui.use('form', function(){
+                    layui.form.render();
+
+                    /*提交*/
+                    layui.form.on('submit(save-btn)', function(data){
+                        JsPost("{:url('saveTemplate')}",data.field,function(res){
+                            if(res.status == true){
+                                layer.msg(res.msg, {icon: 6},function(){
+                                    $(".phone-loading").show();
+                                    $(".phone").hide();
+                                    renderPhone();
+                                });
+                            }else{
+                                layer.msg(res.msg,{icon: 5});
+                            }
+                        });
+                    });
+
+                    /*删除组件*/
+                    layui.form.on('submit(del-btn)', function(data){
+                        JsPost("{:url('delTemplate')}",data.field,function(res){
+                            if(res.status == true){
+                                layer.msg(res.msg, {icon: 6},function(){
+                                    $(".phone-loading").show();
+                                    $(".phone").hide();
+                                    renderPhone();
+                                });
+                            }else{
+                                layer.msg(res.msg,{icon: 5});
+                            }
+                        });
+                    });
+
+                    /*链接类型选择*/
+                    layui.form.on('select(linkType)', function(data){
+                        console.log("==============")
+                        $(data.elem).parents(".swiper-item").find(".linkType-cell").hide();
+                        var name =$(data.elem).parents(".swiper-item").find(".linkKeyName").text();
+                        if(data.value != -1){ //不是无
+                            $(data.elem).parents(".swiper-item").find(".linkType-cell").eq(data.value).show();
+                            if(data.value==2){
+                                console.log("data.value:",data.value);
+                                $(data.elem).parents(".swiper-item").find(".linkType-cell").eq(data.value).find('select').attr("name",name)
+
+                            }else{
+                                $(data.elem).parents(".swiper-item").find(".linkType-cell").eq(data.value).find('input').attr("name",name)
+                            }
+                        }
+
+                    });
+
+                });
+
+            },
+            error: function (xhr) {
+            }
+        });
+    }
+
+
+
+
+</script>

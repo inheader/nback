@@ -1,0 +1,229 @@
+<style type="text/css">
+    .layui-card-body{
+        background-color: #fff;
+        padding: 10px;
+        margin-top: 10px;
+        border: 1px solid #e6e6e6;
+    }
+
+    .layui-tab-card>.layui-tab-title{
+        background-color: #f9f9f9;
+        border-bottom: none;
+    }
+    .layui-tab-content{
+        padding: 0;
+    }
+    .layui-table, .layui-table-view{
+        margin: 0;
+    }
+    .layui-margin-10{
+        margin:10px ;
+    }
+    .layui-card-body .bottom-btn{
+        text-align: right;
+        padding-top:20px
+    }
+</style>
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.css">
+<link rel="stylesheet" href="__STATIC_LIB__layui/css/layui.seller.css">
+
+<input type="hidden" value="{$quickId}" id="quickId"/>
+<form class="layui-form quick-form"  action="" >
+    <div class="layui-inline">
+        <label class="layui-form-label">商品名称：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="name" lay-verify="title" placeholder="请输入商品名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-inline">
+        <button class="layui-btn layui-btn-sm" lay-submit lay-filter="goods-search"><i class="iconfont icon-chaxun"></i>筛选</button>
+    </div>
+
+    <a class="layui-btn layui-btn-sm add-cat-goods"><i class="iconfont icon-chaxun"></i>添加商品</a>
+    <a class="layui-btn layui-btn-sm get-refresh-cat-goods"><i class="iconfont icon-chaxun"></i>刷新</a>
+
+</form>
+
+<div class="layui-card-body" style="padding-top:0px;margin:0px;border:0px">
+    <div class="layui-tab layui-tab-card">
+        <div class="layui-tab-content" >
+            <table id="selectGoodsTable" lay-filter="selectGoodsTable"></table>
+
+            <script type="text/html" id="opToolbar">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-sm" lay-event="multiDelete">批量移除</button>
+                </div>
+            </script>
+
+            <script type="text/html" id="rightDemo">
+                <a class="layui-btn layui-btn-danger layui-btn-xs remove-class" data-id="{{d.id}}">移除</a>
+                <a class="layui-btn layui-btn-xs edit-set-tags" data-id="{{d.id}}">设置标签</a>
+            </script>
+        </div>
+    </div>
+</div>
+<script src="__STATIC_JS__jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC__/lib/layui/layui.all.js" type="text/javascript" charset="utf-8"></script>
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var table1, window_box;
+    var quickId = $("#quickId").val();
+    layui.use(['form', 'layedit','upload', 'laydate','table','element'], function(){
+        var form1 = layui.form;
+        var filter = {};
+        table1 = layui.table.render({
+            elem: '#selectGoodsTable',
+            height: 600,
+            cellMinWidth: '50',
+            toolbar: '#opToolbar',
+            page: 'true',
+            limit:'20',
+            url: "{:url('Goods/getQuickGoodsList')}?_ajax=1&quickId="+quickId,
+            id:'selectGoodsTable',
+            cols: [[
+                {type:'checkbox', fixed: 'left'},
+                {type:'numbers'},
+                {field:'image', width:70,title:'主图', align: 'center',templet: function(data){
+                        return '<a href="javascript:void(0);" onclick=viewImage("'+data.image+'")><image style="max-width:30px;max-height:30px;" src="'+data.image+'"/></a>';
+                    }},
+                {field:'name', width:150,title:'名称', align: 'left'},
+                {field:'brand_name', width:150,title:'品牌', align: 'left'},
+                {field:'tag', width:150,title:'标签', align: 'left'},
+                {field:'sort', width:150,title:'排序', align: 'left'},
+                {field:'price', width:100,title:'销售价', align: 'center', templet:function(data){return data.price}},
+                {field:'stock', width:100,title:'库存', align: 'center'},
+                {field:'right', width:150,title:'操作', align: 'center',toolbar: '#rightDemo'},
+            ]]
+        });
+        //搜索
+        layui.form.on('submit(goods-search)', function(data){
+            var tempfilter=$.extend({},filter,data.field);//合并tab筛选和普通搜索
+            table1.reload({
+                where: tempfilter
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //头工具栏事件
+        layui.table.on('toolbar(selectGoodsTable)', function(obj){
+            var checkStatus = layui.table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'multiDelete':
+                    var data = checkStatus.data;
+                    var ids = "";
+                    for(var i=0;i<data.length;i++){
+                        ids += data[i].id+",";
+                    }
+                        $.ajax({
+                            url: '{:url("goods/removeQuickGoodsMulti")}',
+                            type: 'post',
+                            data: {
+                                'ids': ids
+                            },
+                            success: function(e){
+                                layer.msg(e.msg);
+                                layui.table.reload('selectGoodsTable', {
+                                    url: "{:url('Goods/getQuickGoodsList')}?_ajax=1&quickId="+quickId
+                                    ,where: {} //设定异步数据接口的额外参数
+                                    //,height: 300
+                                });
+                            }
+                        });
+
+                        // layer.alert(JSON.stringify(ids));
+                    break;
+            }
+        });
+
+
+        $(document).on('click', '.add-cat-goods', function(){
+
+            //多窗口模式，层叠置顶
+            layer.open({
+                type: 2 //此处以iframe举例
+                ,title: '选择商品'
+                ,area: ['750px', '600px']
+                ,shade: 0
+                ,maxmin: true
+                // ,offset: [ //为了演示，随机坐标
+                //     Math.random()*($(window).height()-300)
+                //     ,Math.random()*($(window).width()-390)
+                // ]
+                ,content: "{:url('goods/GoodsListForQuickChange')}?quickId="+quickId
+                ,zIndex: layer.zIndex //重点1
+                ,success: function(layero){
+                    layer.setTop(layero); //重点2
+                }
+            });
+
+        });
+
+
+        $(document).on('click', '.get-refresh-cat-goods', function(){
+            layui.table.reload('selectGoodsTable', {
+                url: "{:url('Goods/getQuickGoodsList')}?_ajax=1&quickId="+quickId
+                ,where: {} //设定异步数据接口的额外参数
+                //,height: 300
+            });
+        });
+
+        // //设置标签
+        $(document).on('click', '.edit-set-tags', function(){
+            var goodsId = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("/site/editClassTags")}',
+                type: 'get',
+                data: {
+                    'id': quickId,
+                    'goodsId': goodsId,
+                },
+                success: function(e){
+                    if (e.status){
+                        window_box = layer.open({
+                            type: 1,
+                            title: '设置标签',
+                            area: ['600px', '400px'], //宽高
+                            content: e.data,
+                            end: function () {
+                                // layui.table.reload();
+                            }
+                        });
+                        // table.reload('categories');
+                    }else{
+                        layer.msg(e.msg);
+                    }
+                }
+            });
+            return false;
+        });
+
+        //删除分类下的商品
+        $(document).on('click', '.remove-class', function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('确认移除该商品吗？', {
+                title: '提示', btn: ['确认', '取消'] //按钮
+            }, function(){
+                $.ajax({
+                    url: '{:url("goods/removeQuickGoods")}',
+                    type: 'post',
+                    data: {
+                        'id': id
+                    },
+                    success: function(e){
+                        layer.msg(e.msg);
+                        layui.table.reload('selectGoodsTable', {
+                            url: "{:url('Goods/getQuickGoodsList')}?_ajax=1&quickId="+quickId
+                            ,where: {} //设定异步数据接口的额外参数
+                            //,height: 300
+                        });
+                    }
+                });
+            });
+            return false;
+        });
+
+    });
+</script>

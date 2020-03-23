@@ -1,0 +1,66 @@
+<table id="setArea" lay-filter="setArea"></table>
+<script>
+    var table;
+    layui.use(['form', 'layedit', 'laydate','table'], function(){
+
+        table = layui.table.render({
+            elem: '#setArea',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:'10',
+            url: "{:url('User/setArea')}?_ajax=1&buyer_id={$buyer_id}",
+            id:'setArea',
+            height: '471',
+            response: {
+                statusName: 'status',
+                statusCode: 1
+            },
+            cols: [[
+                {type:'numbers'},
+                {field:'mall_id', width:70, title:'ID'},
+                {field:'mall_name', width:110, title:'区域名称'},
+                {field:'longitude', width:110, title:'经度'},
+                {field:'latitude', width:250,title: '纬度'},
+                {field:'option',title:'操作', minWidth:100, templet: function (d) {
+                    var html = '';
+                    if(d.switch == true){
+                        html += '<span class="layui-btn layui-btn-xs layui-btn-warm  switch" data-id="'+d.mall_id+'">关闭</span>';
+                    }else{
+                        html += '<span class="layui-btn layui-btn-xs  switch" data-id="'+d.mall_id+'">开启</span>';
+                    }
+                    return html;
+                }, align:'center', fixed:'right'}
+            ]]
+        });
+    });
+
+    //加入PLUS
+    $(document).on('click', '.switch', function () {
+        var mall_id = $(this).attr('data-id');
+        var buyer_id = {$buyer_id};
+        $.ajax({
+            url: "{:url('mall/user/doSetArea')}",
+            type: 'get',
+            data: {
+                'mall_id': mall_id,
+                'buyer_id': buyer_id,
+            },
+            success: function (e) {
+                if(e.data){
+                    layer.msg(e.msg);
+                    layui.table.reload('setArea');
+                }else{
+                    layer.msg(e.msg);
+                }
+
+            },
+            error:function (err) {
+                layer.msg(err.msg);
+            }
+        });
+    });
+
+
+
+
+</script>

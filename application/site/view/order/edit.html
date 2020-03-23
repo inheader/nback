@@ -1,0 +1,70 @@
+<style>
+	.layui-form-label{
+		width: 100px;
+	}
+	.order-edit-btn{
+		margin: 0 auto;
+		display: block;
+		margin-top: 25px;
+	}
+</style>
+<div class="layui-form seller-alone-form">
+	<div class="layui-form-item" lay-size="sm">
+		<label class="layui-form-label">订单号：</label>
+		<div class="layui-form-mid seller-inline-3">{$order.order_sn}</div>
+		<input type="hidden" id="order_id" value="{$order.order_id}">
+    </div>
+    <div class="layui-form-item" lay-size="sm">
+		<label class="layui-form-label">收货区域：</label>
+        <div class="layui-form-mid seller-inline-3">{$order.buyerInfo.receiver_area}</div>
+	</div>
+	<div class="layui-form-item" lay-size="sm">
+		<label class="layui-form-label">收货人姓名：</label>
+        {if $can_edit == 1}
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" id="receiver_name" name="receiver_name" value="{$order.buyerInfo.receiver_name}" class="layui-input">
+        </div>
+        {else}
+        <div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_name}</div>
+        {/if}
+
+    </div>
+    <div class="layui-form-item" lay-size="sm">
+		<label class="layui-form-label">收货地址：</label>
+        {if $can_edit == 1}
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" id="receiver_address_info" name="receiver_address_info" value="{$order.buyerInfo.receiver_address_info}" class="layui-input">
+        </div>
+        {else}
+        <div class="layui-form-mid seller-inline-3">{$order.buyerInfo.receiver_address_info}</div>
+        {/if}
+
+	</div>
+	<div class="layui-form-item" lay-size="sm">
+		<label class="layui-form-label">收货人电话：</label>
+        {if $can_edit == 1}
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" id="receiver_tel" name="receiver_tel" value="{$order.buyerInfo.receiver_tel}" class="layui-input">
+        </div>
+        {else}
+        <div class="layui-form-mid seller-inline-4">{$order.buyerInfo.receiver_tel}</div>
+        {/if}
+    </div>
+
+    {if $order['order_type'] != 'points_order'}
+        <div class="layui-form-item" lay-size="sm">
+            <label class="layui-form-label">订单总金额：</label>
+            {if $can_edit == 1}
+            <div class="layui-input-inline seller-inline-4">
+                <input type="number" id="order_price" name="order_price" value="{$order.order_price}" class="layui-input">
+            </div>
+            {else}
+            <div class="layui-form-mid seller-inline-3">{$order.order_price}</div>
+            {/if}
+        </div>
+    {/if}
+
+    {if $can_edit == 1}
+	<button class="layui-btn layui-btn-fluid order-edit-btn">保存</button>
+    {/if}
+</div>

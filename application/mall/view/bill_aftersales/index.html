@@ -1,0 +1,196 @@
+<form class="layui-form seller-form"  action="" >
+    <div class="layui-form-item" style="margin-bottom:0;">
+        <div class="layui-inline">
+            <label class="layui-form-label">售后单号：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="return_sn" lay-verify="title" placeholder="请输入售后单号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">订单号：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="order_sn" lay-verify="title" placeholder="请输入订单号" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width:120px;">用户ID：</label>
+            <div class="layui-input-inline seller-inline-3">
+                <input type="text" name="buyer_id" lay-verify="title" placeholder="请输入用户ID" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-inline">
+            <label class="layui-form-label">售后类型：</label>
+            <div class="layui-input-inline seller-inline-3" >
+                <select name="refund_type" lay-verify="">
+                    <option value=""></option>
+                    <option value="0">只退款</option>
+                    <option value="1">退款退货</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">状态：</label>
+            <div class="layui-input-inline seller-inline-3" >
+                <select name="status" lay-verify="">
+                    <option value=""></option>
+                    <option value="1">待审核</option>
+                    <option value="2">退货中</option>
+                    <option value="3">审核退货失败</option>
+                    <option value="4">退货成功</option>
+                    <option value="5">退货失败</option>
+                    <option value="6">申请退款中</option>
+                    <option value="7">等待退款</option>
+                    <option value="8">退款成功</option>
+                    <option value="9">退款失败</option>
+                    <option value="10">取消退货</option>
+                    <option value="11">取消退款</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="*"><i class="iconfont icon-chaxun"></i>筛选</button>
+        </div>
+    </div>
+</form>
+
+<div class="table-body">
+    <table id="billAftersales" lay-filter="test"></table>
+</div>
+
+<div class="table-body">
+	<table id="noticeTable" lay-filter="noticeTable"></table>
+    <script type="text/html" id="show-img">
+        <img src="{{d.buyer_header}}" width="40" height="40"/>
+    </script>
+</div>
+
+<script>
+    layui.use(['form', 'layedit', 'util','laydate','table'], function(){
+		var util = layui.util;
+        layui.table.render({
+            elem: '#billAftersales',
+            height: 'full-330',
+            cellMinWidth: '80',
+            page: 'true',
+            limit:"{:config('jshop.page_limit')}",
+            url: "{:url('billAftersales/index')}?_ajax=1",
+            id:'billAftersales',
+            cols: [[
+            {field:'return_sn', width:160, sort: true,title:'售后单号'},
+            {field:'buyer_header', width:180, sort: true,title:'头像', templet:'#show-img'},
+            {field:'buyer_id', width:80, sort: true,title:'用户id'},
+            {field:'buyer_name', width:160, sort: true,title:'用户名'},
+            {field:'buyer_tel', width:160, sort: true,title:'联系电话'},
+            {field:'order_sn', width:180, sort: true,title:'订单号'},
+            {field:'return_pay_code', width:180, sort: true,title:'退款类型'},
+            {field:'status_name', width:100,title:'状态'},
+            {field:'refund_type_name', width:100,title:'售后类型'},
+            {field:'return_price', title: '退款金额', width:120, align: 'center'},
+            {field:'return_reason',title:'原因'},
+            {field:'create_time',width:140,title:'申请时间',templet:"<div>{{layui.util.toDateString(d.create_time*1000)}}</div>"},
+            {field: 'operating', title: '操作', width:300, align: 'center',templet:function(data){
+                    var html = '';
+                    if(data.status == 1 || data.status == 6){
+                        // html += '<a  class="layui-btn layui-btn-xs option-wx-return" data-id="' + data.return_id + '">手动退款</a>';
+                        html += '<a  class="layui-btn layui-btn-xs option-audit" data-id="' + data.return_id + '">操作</a>';
+                    }
+                    html += '<a  class="layui-btn layui-btn-xs option-view layui-btn-primary" data-id="' + data.return_id + '">明细</a>';
+                    return html;
+                }},
+            ]]
+        });
+
+        layui.form.on('submit(*)', function(data){
+            layui.table.reload('billAftersales', {
+                where: data.field
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    //审核操作
+    $(document).on('click','.option-audit',function(){
+        $.ajax({
+            type:'get',
+            url: "{:url('billAftersales/audit')}",
+            data:'return_id='+$(this).attr('data-id'),
+            success:function(e){
+                if(e.status){
+                    window.box = layer.open({
+                        type: 1,
+                        content: e.data,
+                        area: ['980px', '650px'],
+                        title:'售后单审核',
+                        btn: ['确认','取消'],
+                        yes: function(index, layero){
+                            $.ajax({
+                                type:'post',
+                                url: "{:url('billAftersales/audit')}",
+                                data: $('#aftersales_form').serialize(),
+                                success:function(res){
+                                    if(res.status){
+                                        layer.msg('保存成功');
+                                        window.setTimeout("window.location.reload();",500);     //如果想做的更好就关掉弹出框，然后表格重新加载即可
+                                    }else{
+                                        layer.msg(res.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }else{
+                    layer.msg(e.msg);
+                }
+
+            }
+        });
+    });
+        //手动退款操作
+        $(document).on('click','.option-wx-return',function(){
+            $.ajax({
+                type:'get',
+                url: "{:url('billAftersales/wxReturn')}",
+                data:'return_id='+$(this).attr('data-id'),
+                success:function(e){
+                    if(e.status){
+                        window.box = layer.open({
+                            type: 1,
+                            content: e.data,
+                            area: ['600px', '600px'],
+                            title:'售后单查看'
+                        });
+                    }else{
+                        layer.msg(e.msg);
+                    }
+
+                }
+            });
+        });
+
+
+        //查看操作
+        $(document).on('click','.option-view',function(){
+            $.ajax({
+                type:'get',
+                url: "{:url('billAftersales/view')}",
+                data:'return_id='+$(this).attr('data-id'),
+                success:function(e){
+                    if(e.status){
+                        window.box = layer.open({
+                            type: 1,
+                            content: e.data,
+                            area: ['600px', '600px'],
+                            title:'售后单查看'
+                        });
+                    }else{
+                        layer.msg(e.msg);
+                    }
+
+                }
+            });
+        });
+    });
+</script>
