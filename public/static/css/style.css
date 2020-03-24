@@ -166,7 +166,7 @@
     width: 500px;
 }
 
-/*.layui-card .layui-table{
+.layui-card .layui-table{
 	margin: 1px 0;
 }
 .layui-card .layui-table td,.layui-card .layui-table th{
@@ -182,7 +182,7 @@
 	border-radius: 50%;
 	font-style: normal;
 	margin-right: 10px;
-}*/
+}
 
 .layui-card .layui-table tr:last-child td i {
     background-color: #ccc;

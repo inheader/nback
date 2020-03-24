@@ -94,13 +94,9 @@
     }
 
 </style>
-
-<div class="seller-alone-form">
-
-
+<div class="seller-alone-form" style="height: 95vh;">
 <div class="layui-tab layui-tab-brief" lay-filter="template">
-    <div class="layui-tab-content" style="">
-
+    <div class="layui-tab-content" style="height: 90vh;">
         <div class="shop-template-page mall-template-page flex space-between">
             <div class="left">
                 <ul class="component-ul">
@@ -181,9 +177,9 @@
      *渲染模板
      */
      function renderPhone(){
-
         $.ajax({
             type: 'post',
+            async: false,
             url: "templatePhone",
             success: function (data) {
                 $(".phone-loading").hide();
@@ -197,7 +193,6 @@
                         bulletActiveClass: 'my-bullet-active',
                     },
                 });
-
                 var swiper2 = new Swiper('.notice-swiper', {
                     direction : 'vertical',
                     autoplay:true,
@@ -299,6 +294,7 @@
         $.ajax({
             type: 'post',
             url: "fieldsInfo",
+            // async: false,
             data: {
                 field_type:componentType,
                 field_id:field_id
@@ -370,4 +366,13 @@
 
 
 
+</script>
+
+<script>
+    layui.config({
+        base:'/static/layui_exts/',
+    });
+    layui.use('element', function() {
+        var element = layui.element;
+    }); 
 </script>
